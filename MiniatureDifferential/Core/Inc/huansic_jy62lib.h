@@ -11,18 +11,7 @@
 #include "stm32f1xx_hal.h"
 #include <assert.h>
 #include <math.h>
-
-typedef struct {
-	UART_HandleTypeDef *uartPort;
-
-	uint8_t buffer[11];
-
-	float accel_x, accel_y, accel_z;
-	float omega_x, omega_y, omega_z;
-	float theta_x, theta_y, theta_z;
-
-	uint32_t lastUpdated;
-} JY62_HandleTypeDef;
+#include "huansic_types.h"
 
 void huansic_jy62_init(JY62_HandleTypeDef *hjy62);
 
