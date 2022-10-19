@@ -8,7 +8,6 @@
 #ifndef INC_HUANSIC_JY62LIB_H_
 #define INC_HUANSIC_JY62LIB_H_
 
-#include "stm32f1xx_hal.h"
 #include <assert.h>
 #include <math.h>
 #include "huansic_types.h"

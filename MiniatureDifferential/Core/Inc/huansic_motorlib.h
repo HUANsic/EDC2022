@@ -10,7 +10,6 @@
 
 #include <assert.h>
 #include <math.h>
-#include "stm32f1xx_hal.h"
 #include "huansic_types.h"
 
 void huansic_motor_init(Motor_HandleTypeDef *hmotor);

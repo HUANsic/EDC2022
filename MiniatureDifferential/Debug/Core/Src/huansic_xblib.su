@@ -1,0 +1,2 @@
+../Core/Src/huansic_xblib.c:10:6:huansic_xb_init	4	static
+../Core/Src/huansic_xblib.c:14:6:decodeHeader	4	static

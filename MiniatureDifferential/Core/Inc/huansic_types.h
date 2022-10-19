@@ -8,25 +8,26 @@
 #ifndef INC_HUANSIC_TYPES_H_
 #define INC_HUANSIC_TYPES_H_
 
-typedef struct {
-	uint8_t x, y;
-}Coordinate;
+#include "stm32f1xx_hal.h"
 
 typedef struct {
-	Coordinate coord;
-	uint8_t isAlly;
-} Beacon;
+	uint16_t x, y;
+} Coordinate;
 
 typedef struct {
-	Coordinate startCoord, destCoord;
-	uint32_t timeLimit;
-	uint8_t reward;
-	uint32_t startTime;
-} Order;
+	float x, y;
+} fCoordinate;
 
-typedef struct{
-	Coordinate coord1, coord2;
-} Obstacle;
+typedef struct {
+	Coordinate startCoord, destCoord;		// 4 + 4
+	uint32_t timeLimit;						// 4
+	uint32_t startTime;						// 4
+	uint8_t reward;							// 1 (4)
+} Order;									// = 20
+
+typedef struct {
+	Coordinate coord1, coord2;				// 4 + 4
+} Rectangle;								// = 8
 
 typedef struct {
 	TIM_HandleTypeDef *counter;
@@ -45,14 +46,54 @@ typedef struct {
 
 typedef struct {
 	UART_HandleTypeDef *uartPort;
-
-	uint8_t buffer[11];
+	DMA_HandleTypeDef *rxDMA;
 
 	float accel_x, accel_y, accel_z;
 	float omega_x, omega_y, omega_z;
 	float theta_x, theta_y, theta_z;
 
 	uint32_t lastUpdated;
+
+	uint8_t buffer[11];		// put at the end to prevent block alignment issues
 } JY62_HandleTypeDef;
+
+typedef struct {
+	UART_HandleTypeDef *uartPort;
+	DMA_HandleTypeDef *rxDMA;
+
+	uint32_t lastUpdated;
+	uint8_t checkedHeader;
+	uint8_t msgType;
+
+	// for internal use; user shall not modify this
+	uint8_t nextPackageID;		// 0x00: next is header; others: check ID
+	uint8_t nextPackageLength;		// length of next DMA receive
+
+	// uint8_t buffer[max(1 + 8 + 8 + 8 + 4 + (4 + 5 * 32) + 32, 1 + (4 + 5 * 16) + 8 + 2 * (4 + (3 * 8))];
+	// uint8_t buffer[max(225, 149)];
+	uint8_t buffer[225];	// put at the end to prevent block alignment issues
+} XB_HandleTypeDef;
+
+typedef union{
+	enum Type{
+		ignore = 0,
+		linear = 1,
+		angular = 2,
+		sizeExpander = 2147483647	// make it 4 bytes for alignment
+	} type;
+
+	struct Line{
+		enum Type type;				// 4
+		Coordinate start, end;		// 4 + 4
+		float speed;				// 2 (4)
+	} linear;
+
+	struct Arc{
+		enum Type type;				// 4
+		Coordinate start, end;		// 4 + 4
+		float radius;				// 2
+		float omega;				// 2
+	} angular;
+} Path;
 
 #endif /* INC_HUANSIC_TYPES_H_ */
