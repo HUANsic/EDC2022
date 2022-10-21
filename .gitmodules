@@ -1,3 +1,3 @@
 [submodule "EDC24"]
-	url = https://github.com/ming-bot/EDC24.git
+	url = git@github.com:ming-bot/EDC24.git
 	path = EDC24

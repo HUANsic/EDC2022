@@ -80,12 +80,13 @@ Coordinate oppoBeacons[3];		// opponent charging station coordinate
 
 // game information 2
 Order *delivering[5];		// package picked up but not yet delivered
-Order orders[60];			// package that has not yet been picked up
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
 fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 double omegaZ, accelY;		// turning speed and linear acceleration
+float myScore;				// current score returned by Master
+float myCharge;				// current charge returned by Master
 
 // interchange information 1
 uint32_t gameStageTimeLeft;		// in ms

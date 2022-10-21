@@ -8,10 +8,10 @@
 #include "huansic_malloc.h"
 
 #ifndef HUANSIC_PATH_MALLOC_SIZE
-#define HUANSIC_PATH_MALLOC_SIZE 32
+#define HUANSIC_PATH_PREMALLOC_SIZE 32
 #endif
 
-Path pathBuffers[HUANSIC_PATH_MALLOC_SIZE];
+Path pathBuffers[HUANSIC_PATH_PREMALLOC_SIZE];
 
 __weak void custom_path_free_fault(Path *ptr) {
 
@@ -19,7 +19,7 @@ __weak void custom_path_free_fault(Path *ptr) {
 
 void huansic_path_malloc_init() {
 	uint8_t i;
-	for (i = 0; i < HUANSIC_PATH_MALLOC_SIZE; i++) {
+	for (i = 0; i < HUANSIC_PATH_PREMALLOC_SIZE; i++) {
 		pathBuffers[i].referenceCount = 0;	// clear referenced counter so that it can be malloced
 		pathBuffers[i].nextPath = 0;		// set to nullptr just in case
 	}
@@ -28,7 +28,7 @@ void huansic_path_malloc_init() {
 Path* huansic_path_new() {
 	Path *retPtr = 0;
 	uint8_t i;
-	for (i = 0; i < HUANSIC_PATH_MALLOC_SIZE; i++) {
+	for (i = 0; i < HUANSIC_PATH_PREMALLOC_SIZE; i++) {
 		if (pathBuffers[i].referenceCount == 0) {
 			pathBuffers[i].referenceCount = 1;
 			retPtr = &pathBuffers[i];
@@ -41,7 +41,7 @@ Path* huansic_path_new() {
 
 void huansic_path_delete(Path *ptr) {
 	uint8_t i;
-	for (i = 0; i < HUANSIC_PATH_MALLOC_SIZE; i++) {
+	for (i = 0; i < HUANSIC_PATH_PREMALLOC_SIZE; i++) {
 		if (pathBuffers[i].nextPath == ptr) {			// clear all references in the list
 			ptr->referenceCount--;
 			pathBuffers[i].nextPath = 0;
