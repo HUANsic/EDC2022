@@ -621,11 +621,7 @@ static void HUAN_IMU_Init(void) {
 static void HUAN_ZIGBEE_Init(void) {
 	hxb.uartPort = &huart2;
 	hxb.rxDMA = &hdma_usart2_rx;
-	huansic_xb_init(&himu);
-}
-
-static void HUAN_OLED_Init(void) {
-	ssd1306_Init();
+	huansic_xb_init(&hxb);
 }
 
 /* USER CODE END 4 */

@@ -1,0 +1,6 @@
+../Core/Src/huansic_malloc.c:16:13:custom_path_free_fault	16	static
+../Core/Src/huansic_malloc.c:20:6:huansic_path_malloc_init	16	static
+../Core/Src/huansic_malloc.c:28:7:huansic_path_new	16	static
+../Core/Src/huansic_malloc.c:42:6:huansic_path_delete	24	static
+../Core/Src/huansic_malloc.c:59:6:huansic_path_cascade	16	static
+../Core/Src/huansic_malloc.c:73:7:huansic_path_break	24	static

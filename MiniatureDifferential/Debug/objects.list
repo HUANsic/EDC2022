@@ -1,4 +1,6 @@
+"./Core/Src/collab_util.o"
 "./Core/Src/huansic_jy62lib.o"
+"./Core/Src/huansic_malloc.o"
 "./Core/Src/huansic_motorlib.o"
 "./Core/Src/huansic_xblib.o"
 "./Core/Src/main.o"

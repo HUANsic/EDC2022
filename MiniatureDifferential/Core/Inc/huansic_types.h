@@ -66,7 +66,7 @@ typedef struct {
 	uint8_t msgType;
 
 	// for internal use; user shall not modify this
-	uint8_t nextPackageID;		// 0x00: next is header; others: check ID
+	uint8_t nextPackageID;			// 0x00: next is header; others: check ID
 	uint8_t nextPackageLength;		// length of next DMA receive
 
 	// uint8_t buffer[max(1 + 8 + 8 + 8 + 4 + (4 + 5 * 32) + 32, 1 + (4 + 5 * 16) + 8 + 2 * (4 + (3 * 8))];
@@ -74,26 +74,17 @@ typedef struct {
 	uint8_t buffer[225];	// put at the end to prevent block alignment issues
 } XB_HandleTypeDef;
 
-typedef union{
+typedef struct Path_t{
+	Coordinate start, end;		// 4 + 4
+	float speed;				// 2
+	float radius, omega;		// 2 + 2
 	enum Type{
 		ignore = 0,
 		linear = 1,
-		angular = 2,
-		sizeExpander = 2147483647	// make it 4 bytes for alignment
-	} type;
-
-	struct Line{
-		enum Type type;				// 4
-		Coordinate start, end;		// 4 + 4
-		float speed;				// 2 (4)
-	} linear;
-
-	struct Arc{
-		enum Type type;				// 4
-		Coordinate start, end;		// 4 + 4
-		float radius;				// 2
-		float omega;				// 2
-	} angular;
+		angular = 2
+	} type;						// 1
+	uint8_t referenceCount;		// 1
+	struct Path_t *nextPath;	// 4
 } Path;
 
 #endif /* INC_HUANSIC_TYPES_H_ */

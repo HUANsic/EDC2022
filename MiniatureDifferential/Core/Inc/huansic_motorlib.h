@@ -8,7 +8,6 @@
 #ifndef INC_HUANSIC_MOTORLIB_H_
 #define INC_HUANSIC_MOTORLIB_H_
 
-#include <assert.h>
 #include <math.h>
 #include "huansic_types.h"
 

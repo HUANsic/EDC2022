@@ -10,6 +10,8 @@
 
 #include "huansic_types.h"
 
+float name_calculateCost(Path path);
+
 
 
 #endif /* INC_COLLAB_UTIL_H_ */

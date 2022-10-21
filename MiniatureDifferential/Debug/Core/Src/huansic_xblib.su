@@ -1,2 +1,3 @@
-../Core/Src/huansic_xblib.c:10:6:huansic_xb_init	4	static
-../Core/Src/huansic_xblib.c:14:6:decodeHeader	4	static
+../Core/Src/huansic_xblib.c:12:6:huansic_xb_init	16	static
+../Core/Src/huansic_xblib.c:16:9:huansic_xb_decodeHeader	16	static
+../Core/Src/huansic_xblib.c:35:6:huansic_xb_decodeBody	16	static
