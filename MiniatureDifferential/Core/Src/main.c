@@ -84,7 +84,7 @@ Order *delivering[5];		// package picked up but not yet delivered
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
 fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
-double omegaZ, accelY;		// turning speed and linear acceleration
+double angleZ, omegaZ, accelY;		// turning speed and linear acceleration
 float myScore;				// current score returned by Master
 float myCharge;				// current charge returned by Master
 
@@ -189,6 +189,12 @@ int main(void)
 	{
 		GREEN_LED_TOGGLE;
 		HAL_Delay(1000);
+		// pathfind
+
+		// evaluate, find best path
+
+		// move
+
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

@@ -19,12 +19,11 @@ extern Coordinate oppoBeacons[3];		// opponent charging station coordinate
 
 // game information 2
 extern Order *delivering[5];		// package picked up but not yet delivered
-extern Order orders[60];			// package that has not yet been picked up
 
 // game information 3
 extern Coordinate myCoord;			// precise coordinate returned by game master
 extern fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
-extern double omegaZ, accelY;		// turning speed and linear acceleration
+extern double angleZ, omegaZ, accelY;		// turning speed and linear acceleration
 extern float myScore;				// current score returned by Master
 extern float myCharge;				// current charge returned by Master
 
