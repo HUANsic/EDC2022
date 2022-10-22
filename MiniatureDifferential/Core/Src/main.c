@@ -109,7 +109,6 @@ static void HUAN_MOTOR_LEFT_Init(void);
 static void HUAN_MOTOR_RIGHT_Init(void);
 static void HUAN_IMU_Init(void);
 static void HUAN_ZIGBEE_Init(void);
-static void HUAN_OLED_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -160,6 +159,10 @@ int main(void)
 
 	HUAN_MOTOR_LEFT_Init();
 	HUAN_MOTOR_RIGHT_Init();
+
+	HUAN_IMU_Init();
+
+	HUAN_ZIGBEE_Init();
 
 	RED_LED_ON;
 	HAL_Delay(1000);

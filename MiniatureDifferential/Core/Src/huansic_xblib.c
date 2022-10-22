@@ -31,7 +31,8 @@ extern float myCharge;				// current charge returned by Master
 extern uint32_t gameStageTimeLeft;		// in ms
 
 void huansic_xb_init(XB_HandleTypeDef *hxb) {
-
+	hxb->nextPackageLength = 6;		// header length
+	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
 }
 
 uint8_t huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {

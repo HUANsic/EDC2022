@@ -70,9 +70,9 @@ typedef struct {
 	uint8_t nextPackageID;			// 0x00: next is header; others: check ID
 	uint8_t nextPackageLength;		// length of next DMA receive
 
-	// uint8_t buffer[max(1 + 8 + 8 + 8 + 4 + (4 + 5 * 32) + 32, 1 + (4 + 5 * 16) + 8 + 2 * (4 + (3 * 8))];
-	// uint8_t buffer[max(225, 149)];
-	uint8_t buffer[225];	// put at the end to prevent block alignment issues
+	// uint8_t buffer[max(1 + 4 + 4 + 8 + 4 + (1 + 5 * 28) + 28, 1 + (1 + 5 * 16) + 4 + 2 * (1 + (3 * 8))];
+	// uint8_t buffer[max(190, 136)];
+	uint8_t buffer[192];	// put at the end to prevent block alignment issues
 } XB_HandleTypeDef;
 
 typedef struct Path_t{
