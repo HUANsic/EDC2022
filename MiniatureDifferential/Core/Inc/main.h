@@ -69,12 +69,12 @@ void Error_Handler(void);
 #define XB_RX_GPIO_Port GPIOA
 #define Buzzer_Pin GPIO_PIN_12
 #define Buzzer_GPIO_Port GPIOB
-#define LED_B_Pin GPIO_PIN_13
-#define LED_B_GPIO_Port GPIOB
+#define LED_R_Pin GPIO_PIN_13
+#define LED_R_GPIO_Port GPIOB
 #define LED_G_Pin GPIO_PIN_14
 #define LED_G_GPIO_Port GPIOB
-#define LED_R_Pin GPIO_PIN_15
-#define LED_R_GPIO_Port GPIOB
+#define LED_B_Pin GPIO_PIN_15
+#define LED_B_GPIO_Port GPIOB
 #define JY_TX_Pin GPIO_PIN_9
 #define JY_TX_GPIO_Port GPIOA
 #define JY_RX_Pin GPIO_PIN_10
