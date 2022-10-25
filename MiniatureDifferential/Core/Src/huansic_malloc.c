@@ -8,7 +8,7 @@
 #include "huansic_malloc.h"
 
 #ifndef HUANSIC_PATH_PREMALLOC_SIZE
-#define HUANSIC_PATH_PREMALLOC_SIZE 32
+#define HUANSIC_PATH_PREMALLOC_SIZE 128
 #endif
 
 #ifndef HUANSIC_ORDER_PREMALLOC_SIZE
@@ -121,5 +121,8 @@ Order* huansic_order_new(int8_t id) {
 }
 
 void huansic_order_delete(Order *ptr) {
-	ptr->id = -1;		// simple as is
+	if(ptr->id == -1)
+		custom_order_free_fault(ptr);
+	else
+		ptr->id = -1;		// simple as is
 }
