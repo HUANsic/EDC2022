@@ -30,3 +30,10 @@ extern float myCharge;				// current charge returned by Master
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
 
+Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end){
+	Path* StraightPath = huansic_path_new();
+	StraightPath->start = *start;
+	StraightPath->end = *end;
+	StraightPath->type = linear;
+	return StraightPath;
+}
