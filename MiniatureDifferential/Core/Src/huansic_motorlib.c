@@ -55,16 +55,18 @@ void huansic_motor_init(Motor_HandleTypeDef *hmotor) {
 }
 
 void huansic_motor_pid(Motor_HandleTypeDef *hmotor) {
-	uint32_t diffTick = hmotor->counter->Instance->CNT - hmotor->lastTick;
+	int32_t diffTick = hmotor->counter->Instance->CNT - hmotor->lastTick;
+
+	hmotor->lastTick = hmotor->counter->Instance->CNT;
 
 	hmotor->lastSpeed = (float) diffTick / hmotor->dt;
-	hmotor->last5Speed = (4.0 * hmotor->last5Speed + hmotor->lastSpeed) / 5.0;
+	//hmotor->last5Speed = (4.0 * hmotor->last5Speed + hmotor->lastSpeed) / 5.0;
 
 	// Derivative
-	float dError = hmotor->lastError - (hmotor->goalSpeed - hmotor->last5Speed);
+	float dError = hmotor->lastError - (hmotor->goalSpeed - hmotor->lastSpeed);
 
 	// Proportional
-	hmotor->lastError = hmotor->goalSpeed - hmotor->last5Speed;
+	hmotor->lastError = hmotor->goalSpeed - hmotor->lastSpeed;
 
 	// Integral
 	hmotor->sumError += hmotor->lastError;

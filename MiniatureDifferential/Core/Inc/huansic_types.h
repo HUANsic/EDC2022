@@ -47,7 +47,6 @@ typedef struct {
 
 typedef struct {
 	UART_HandleTypeDef *uartPort;
-	DMA_HandleTypeDef *rxDMA;
 
 	float accel_x, accel_y, accel_z;	// 4 + 4 + 4
 	float omega_x, omega_y, omega_z;	// 4 + 4 + 4

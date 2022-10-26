@@ -19,7 +19,7 @@ uint8_t sleepAndAwake_pack[3] = { 0xFF, 0xAA, 0x60 };
 
 void huansic_jy62_init(JY62_HandleTypeDef *hjy62) {
 	if(!hjy62) return;
-	if(!hjy62->uartPort || !hjy62->rxDMA) return;
+	if(!hjy62->uartPort) return;
 
 	huansic_jy62_resetAngle(hjy62);
 

@@ -154,30 +154,43 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 	RED_LED_ON;
-	HAL_Delay(500);
+	HAL_Delay(200);
 	RED_LED_OFF;
-
+	HAL_Delay(500);
 	HUAN_MOTOR_LEFT_Init();
 	HUAN_MOTOR_RIGHT_Init();
 
-	// HUAN_IMU_Init();
+	RED_LED_ON;
+	HAL_Delay(200);
+	RED_LED_OFF;
+	HAL_Delay(200);
+	RED_LED_ON;
+	HAL_Delay(200);
+	RED_LED_OFF;
+	HAL_Delay(500);
+	HUAN_IMU_Init();
 
+	RED_LED_ON;
+	HAL_Delay(200);
+	RED_LED_OFF;
+	HAL_Delay(200);
+	RED_LED_ON;
+	HAL_Delay(200);
+	RED_LED_OFF;
+	HAL_Delay(200);
+	RED_LED_ON;
+	HAL_Delay(200);
+	RED_LED_OFF;
+	HAL_Delay(500);
 	// HUAN_ZIGBEE_Init();
 
-	RED_LED_ON;
-	HAL_Delay(1000);
-	RED_LED_OFF;
-	HAL_Delay(500);
-
-	RED_LED_ON;
-	HAL_Delay(2000);
-	RED_LED_OFF;
-	HAL_Delay(500);
+	hmotor_left.goalSpeed = 1000;
+	hmotor_right.goalSpeed = 1000;
 
 	HAL_TIM_Base_Start_IT(&htim1);		// for PID
 
 	RED_LED_ON;
-	HAL_Delay(4000);
+	HAL_Delay(3000);
 	RED_LED_OFF;
 	HAL_Delay(500);
 
@@ -185,6 +198,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	uint8_t dc = 0;
 	while (1)
 	{
 		GREEN_LED_TOGGLE;
@@ -296,7 +310,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 72 - 1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 20000 - 1;
+  htim1.Init.Period = 50000 - 1;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -390,7 +404,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 100;
+  htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 72*40 - 1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -466,7 +480,7 @@ static void MX_TIM4_Init(void)
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
-  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+  sConfig.IC1Polarity = TIM_ICPOLARITY_FALLING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC1Filter = 0;
@@ -603,28 +617,33 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 static void HUAN_MOTOR_LEFT_Init(void) {
-	hmotor_left.counter = &htim2;
-	hmotor_left.dt = 0.02;
+	hmotor_left.counter = &htim4;
+	hmotor_left.dt = 0.05;
 	hmotor_left.posTimer = &htim3;
-	hmotor_left.pos_channel = TIM_CHANNEL_1;
+	hmotor_left.pos_channel = TIM_CHANNEL_4;
 	hmotor_left.negTimer = &htim3;
-	hmotor_left.neg_channel = TIM_CHANNEL_2;
+	hmotor_left.neg_channel = TIM_CHANNEL_3;
+	hmotor_left.kp = 0.00005;
+	hmotor_left.ki = 0.0001;
+	hmotor_left.kd = 0.0000;
 	huansic_motor_init(&hmotor_left);
 }
 
 static void HUAN_MOTOR_RIGHT_Init(void) {
-	hmotor_right.counter = &htim4;
-	hmotor_right.dt = 0.02;
+	hmotor_right.counter = &htim2;
+	hmotor_right.dt = 0.05;
 	hmotor_right.posTimer = &htim3;
-	hmotor_right.pos_channel = TIM_CHANNEL_3;
+	hmotor_right.pos_channel = TIM_CHANNEL_1;
 	hmotor_right.negTimer = &htim3;
-	hmotor_right.neg_channel = TIM_CHANNEL_4;
+	hmotor_right.neg_channel = TIM_CHANNEL_2;
+	hmotor_right.kp = 0.00005;
+	hmotor_right.ki = 0.0001;
+	hmotor_right.kd = 0.0000;
 	huansic_motor_init(&hmotor_right);
 }
 
 static void HUAN_IMU_Init(void) {
 	himu.uartPort = &huart1;
-	himu.rxDMA = &hdma_usart1_rx;
 	huansic_jy62_init(&himu);
 }
 
