@@ -55,7 +55,7 @@ uint8_t huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 }
 
 void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
-	uint8_t listLength = 0, i, index = 0;
+	uint8_t listLength = 0, i, j, index = 0;
 	uint32_t temp;
 	if (hxb->nextPackageID == 0x01) {		// game information
 		/* game stage */
@@ -78,11 +78,11 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		index++;
 		gameStageTimeLimit = hxb->buffer[index++];
 		gameStageTimeLimit <<= 8;
-		gameStageTimeLimit = hxb->buffer[index++];
+		gameStageTimeLimit |= hxb->buffer[index++];
 		gameStageTimeLimit <<= 8;
-		gameStageTimeLimit = hxb->buffer[index++];
+		gameStageTimeLimit |= hxb->buffer[index++];
 		gameStageTimeLimit <<= 8;
-		gameStageTimeLimit = hxb->buffer[index++];
+		gameStageTimeLimit |= hxb->buffer[index++];
 
 		/* ally beacons */
 		listLength = hxb->buffer[index];
@@ -109,21 +109,22 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		/* time since round started */
 		gameStageTimeSinceStart = hxb->buffer[index++];
 		gameStageTimeSinceStart <<= 8;
-		gameStageTimeSinceStart = hxb->buffer[index++];
+		gameStageTimeSinceStart |= hxb->buffer[index++];
 		gameStageTimeSinceStart <<= 8;
-		gameStageTimeSinceStart = hxb->buffer[index++];
+		gameStageTimeSinceStart |= hxb->buffer[index++];
 		gameStageTimeSinceStart <<= 8;
-		gameStageTimeSinceStart = hxb->buffer[index++];
+		gameStageTimeSinceStart |= hxb->buffer[index++];
+		gameStageTimeLeft = gameStageTimeLimit - gameStageTimeSinceStart;
 
 		/* fetch score */
 		temp = hxb->buffer[index++];
 		temp <<= 8;
-		temp = hxb->buffer[index++];
+		temp |= hxb->buffer[index++];
 		temp <<= 8;
-		temp = hxb->buffer[index++];
+		temp |= hxb->buffer[index++];
 		temp <<= 8;
-		temp = hxb->buffer[index++];
-		myScore = *(float*)&temp;			// decode float from uint32
+		temp |= hxb->buffer[index++];
+		myScore = *(float*) &temp;			// decode float from uint32
 
 		/* my position */
 		index += 3;
@@ -134,15 +135,51 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		/* fetch battery */
 		temp = hxb->buffer[index++];
 		temp <<= 8;
-		temp = hxb->buffer[index++];
+		temp |= hxb->buffer[index++];
 		temp <<= 8;
-		temp = hxb->buffer[index++];
+		temp |= hxb->buffer[index++];
 		temp <<= 8;
-		temp = hxb->buffer[index++];
-		myCharge = *(float*)&temp;			// decode float from uint32
+		temp |= hxb->buffer[index++];
+		myCharge = *(float*) &temp;			// decode float from uint32
 
 		/* my orders */
 		listLength = hxb->buffer[index++];
+		for (i = 0; i < listLength; i++) {
+			temp = hxb->buffer[index + 24];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 25];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 26];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 27];
+			Order *tempOrder = huansic_order_new(temp);
+
+			tempOrder->startCoord.x = hxb->buffer[index + 3];
+			tempOrder->startCoord.y = hxb->buffer[index + 7];
+
+			tempOrder->destCoord.x = hxb->buffer[index + 11];
+			tempOrder->destCoord.y = hxb->buffer[index + 15];
+
+			temp = hxb->buffer[index + 16];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 17];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 18];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 19];
+			tempOrder->timeLimit = temp;
+
+			temp = hxb->buffer[index + 20];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 21];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 22];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 23];
+			tempOrder->reward = *(float*) &temp;
+
+			index += 28;
+		}
 		// TODO order management
 	}
 

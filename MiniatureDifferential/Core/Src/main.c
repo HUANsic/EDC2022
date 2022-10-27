@@ -182,7 +182,7 @@ int main(void)
 	HAL_Delay(200);
 	RED_LED_OFF;
 	HAL_Delay(500);
-	// HUAN_ZIGBEE_Init();
+	HUAN_ZIGBEE_Init();
 
 	hmotor_left.goalSpeed = 1000;
 	hmotor_right.goalSpeed = 1000;
@@ -649,7 +649,6 @@ static void HUAN_IMU_Init(void) {
 
 static void HUAN_ZIGBEE_Init(void) {
 	hxb.uartPort = &huart2;
-	hxb.rxDMA = &hdma_usart2_rx;
 	huansic_xb_init(&hxb);
 }
 

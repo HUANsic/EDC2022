@@ -22,9 +22,9 @@ typedef struct {
 	Coordinate startCoord, destCoord;		// 4 + 4
 	uint32_t timeLimit;						// 4
 	uint32_t startTime;						// 4
-	uint8_t reward;							// 1
-	int8_t id;								// 1 (3)
-} Order;									// = 20
+	int32_t id;								// 4
+	float reward;							// 4
+} Order;									// = 24
 
 typedef struct {
 	Coordinate coord1, coord2;				// 4 + 4
@@ -59,7 +59,6 @@ typedef struct {
 
 typedef struct {
 	UART_HandleTypeDef *uartPort;
-	DMA_HandleTypeDef *rxDMA;
 
 	uint32_t lastUpdated;
 	uint8_t checkedHeader;
