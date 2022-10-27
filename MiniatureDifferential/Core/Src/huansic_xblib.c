@@ -185,6 +185,7 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 
 	// set up next DMA
 	hxb->nextPackageLength = 6;		// header length
+	hxb->nextPackageID = 0x00;		// the next one is header
 	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
 }
 

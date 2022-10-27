@@ -31,6 +31,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "ssd1306.h"
+#include "huansic_jy62lib.h"
+#include "huansic_motorlib.h"
+#include "huansic_xblib.h"
 
 /* USER CODE END Includes */
 
@@ -59,12 +63,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define XB_TX_Pin GPIO_PIN_2
+#define XB_TX_GPIO_Port GPIOA
+#define XB_RX_Pin GPIO_PIN_3
+#define XB_RX_GPIO_Port GPIOA
 #define LED1_Pin GPIO_PIN_0
 #define LED1_GPIO_Port GPIOB
 #define LED2_Pin GPIO_PIN_1
 #define LED2_GPIO_Port GPIOB
 #define LED3_Pin GPIO_PIN_2
 #define LED3_GPIO_Port GPIOB
+#define JY_TX_Pin GPIO_PIN_10
+#define JY_TX_GPIO_Port GPIOC
+#define JY_RX_Pin GPIO_PIN_11
+#define JY_RX_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

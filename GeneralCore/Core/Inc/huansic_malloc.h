@@ -20,4 +20,12 @@ void huansic_path_cascade(Path *last, Path *next);
 
 Path* huansic_path_break(Path *newTail);
 
+
+void huansic_order_init();
+
+Order* huansic_order_new(int8_t id);
+
+void huansic_order_delete(Order *ptr);
+
+
 #endif /* INC_HUANSIC_MALLOC_H_ */

@@ -61,8 +61,6 @@ typedef struct {
 	UART_HandleTypeDef *uartPort;
 
 	uint32_t lastUpdated;
-	uint8_t checkedHeader;
-	uint8_t msgType;
 
 	// for internal use; user shall not modify this
 	uint8_t nextPackageID;			// 0x00: next is header; others: check ID

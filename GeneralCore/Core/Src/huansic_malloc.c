@@ -7,13 +7,22 @@
 
 #include "huansic_malloc.h"
 
-#ifndef HUANSIC_PATH_MALLOC_SIZE
-#define HUANSIC_PATH_PREMALLOC_SIZE 32
+#ifndef HUANSIC_PATH_PREMALLOC_SIZE
+#define HUANSIC_PATH_PREMALLOC_SIZE 128
+#endif
+
+#ifndef HUANSIC_ORDER_PREMALLOC_SIZE
+#define HUANSIC_ORDER_PREMALLOC_SIZE 60
 #endif
 
 Path pathBuffers[HUANSIC_PATH_PREMALLOC_SIZE];
+Order orderBuffers[HUANSIC_ORDER_PREMALLOC_SIZE];
 
 __weak void custom_path_free_fault(Path *ptr) {
+
+}
+
+__weak void custom_order_free_fault(Order *ptr) {
 
 }
 
@@ -80,4 +89,40 @@ Path* huansic_path_break(Path *newTail) {
 		newTail->nextPath = 0;
 	}
 	return retPath;
+}
+
+void huansic_order_init() {
+	uint8_t i;
+	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++)
+		orderBuffers[i].id = -1;
+}
+
+Order* huansic_order_new(int8_t id) {
+	if (id == -1)
+		return 0;
+
+	uint8_t i;
+
+	// find duplicates
+	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++) {
+		if (orderBuffers[i].id == id)
+			return &orderBuffers[i];
+	}
+
+	// find spares
+	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++) {
+		if (orderBuffers[i].id == -1) {
+			orderBuffers[i].id = id;
+			return &orderBuffers[i];
+		}
+	}
+
+	return 0;
+}
+
+void huansic_order_delete(Order *ptr) {
+	if(ptr->id == -1)
+		custom_order_free_fault(ptr);
+	else
+		ptr->id = -1;		// simple as is
 }
