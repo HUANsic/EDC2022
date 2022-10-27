@@ -7,6 +7,10 @@
 
 #include "collab_util.h"
 
+/* constants and definitions */
+#define PATH_DEFAULT_LINEAR_SPEED 1000
+#define PATH_DEFAULT_ANGULAR_SPEED 1
+
 /* exported variables */
 // game information 1
 extern uint8_t gameStage;			// 0: pre-match(standby); 1: first half; 2: second half
@@ -31,9 +35,10 @@ extern float myCharge;				// current charge returned by Master
 extern uint32_t gameStageTimeLeft;		// in ms
 
 Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end){
-	Path* StraightPath = huansic_path_new();
-	StraightPath->start = *start;
-	StraightPath->end = *end;
-	StraightPath->type = linear;
-	return StraightPath;
+	Path* straightPath = huansic_path_new();
+	straightPath->start = *start;
+	straightPath->end = *end;
+	straightPath->type = linear;
+	straightPath->speed = PATH_DEFAULT_LINEAR_SPEED;
+	return straightPath;
 }
