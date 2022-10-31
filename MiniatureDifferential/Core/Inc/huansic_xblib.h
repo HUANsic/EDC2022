@@ -9,6 +9,7 @@
 #define INC_HUANSIC_XBLIB_H_
 
 #include "huansic_types.h"
+#include "huansic_malloc.h"
 
 void huansic_xb_init(XB_HandleTypeDef *hxb);
 

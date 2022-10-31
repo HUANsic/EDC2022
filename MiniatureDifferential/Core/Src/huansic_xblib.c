@@ -30,7 +30,7 @@ extern float myCharge;				// current charge returned by Master
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
 
-__weak void custom_order_new_failed(uint8_t id){
+__weak void custom_order_new_failed(uint8_t id) {
 
 }
 
@@ -214,10 +214,10 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			if (delivering[i]->id != -1) {
 				for (j = 0; i < updatedOrderIndex; j++)
 					if (delivering[i]->id == updatedOrder[j]) {		// pulled from remote
-						j = 1000;
+						j = 255;
 						break;
 					}
-				if (j != 1000)
+				if (j != 255)
 					huansic_order_delete(delivering[i]);// delete the order if the order is no longer in the delivery list
 			}
 
@@ -233,36 +233,36 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		if (!tempOrder) {
 			index += 28;
 			custom_order_new_failed(temp);
-			continue;
+		} else {
+			// start coordinate
+			tempOrder->startCoord.x = ((uint16_t) hxb->buffer[index + 2] << 8)
+					| hxb->buffer[index + 3];
+			tempOrder->startCoord.y = ((uint16_t) hxb->buffer[index + 6] << 8)
+					| hxb->buffer[index + 7];
+			// end coordinate
+			tempOrder->destCoord.x = ((uint16_t) hxb->buffer[index + 10] << 8)
+					| hxb->buffer[index + 11];
+			tempOrder->destCoord.y = ((uint16_t) hxb->buffer[index + 14] << 8)
+					| hxb->buffer[index + 15];
+			// time limit
+			temp = hxb->buffer[index + 16];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 17];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 18];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 19];
+			tempOrder->timeLimit = temp;
+			// reward
+			temp = hxb->buffer[index + 20];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 21];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 22];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 23];
+			tempOrder->reward = *(float*) &temp;
 		}
-		// start coordinate
-		tempOrder->startCoord.x = ((uint16_t) hxb->buffer[index + 2] << 8)
-				| hxb->buffer[index + 3];
-		tempOrder->startCoord.y = ((uint16_t) hxb->buffer[index + 6] << 8)
-				| hxb->buffer[index + 7];
-		// end coordinate
-		tempOrder->destCoord.x = ((uint16_t) hxb->buffer[index + 10] << 8)
-				| hxb->buffer[index + 11];
-		tempOrder->destCoord.y = ((uint16_t) hxb->buffer[index + 14] << 8)
-				| hxb->buffer[index + 15];
-		// time limit
-		temp = hxb->buffer[index + 16];
-		temp <<= 8;
-		temp |= hxb->buffer[index + 17];
-		temp <<= 8;
-		temp |= hxb->buffer[index + 18];
-		temp <<= 8;
-		temp |= hxb->buffer[index + 19];
-		tempOrder->timeLimit = temp;
-		// reward
-		temp = hxb->buffer[index + 20];
-		temp <<= 8;
-		temp |= hxb->buffer[index + 21];
-		temp <<= 8;
-		temp |= hxb->buffer[index + 22];
-		temp <<= 8;
-		temp |= hxb->buffer[index + 23];
-		tempOrder->reward = *(float*) &temp;
 	}
 
 	// set up next DMA
