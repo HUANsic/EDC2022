@@ -8,8 +8,11 @@
 #include "collab_util.h"
 
 /* constants and definitions */
-#define PATH_DEFAULT_LINEAR_SPEED 1000
-#define PATH_DEFAULT_ANGULAR_SPEED 1
+#define PATH_DEFAULT_LINEAR_SPEED 10	// in cm/s
+#define PATH_DEFAULT_ANGULAR_SPEED 1	// in rad/s
+#define MOTOR_TICKS_PER_REV 28		// per rotor turn
+#define MOTOR_REDUCTION_RATIO 30
+#define MOTOR_WHEEL_DIAMETER 33		// in mm
 
 /* exported variables */
 // game information 1

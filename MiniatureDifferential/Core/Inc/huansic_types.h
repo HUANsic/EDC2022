@@ -38,7 +38,7 @@ typedef struct {
 	float dt;		// (4) Feedback Control Period; used to perform the calculation
 	// uint16_t maxCount;			// divider used to normalize the error; just assume it is 16 bit
 	// uint16_t timerPeriod;		// multiplier used to convert the normalized output into timer output; get this from 'timer'
-	uint32_t lastTick;				// 4
+	uint16_t lastTick;				// 2 (4)
 	float lastError;				// 4
 	float lastSpeed, last5Speed;	// 4 + 4
 	float sumError;					// 4
