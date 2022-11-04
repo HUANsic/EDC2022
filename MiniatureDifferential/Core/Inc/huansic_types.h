@@ -84,4 +84,29 @@ typedef struct Path_t{
 	uint8_t referenceCount;		// 1
 } Path;
 
+// add by ming-bot
+// some A* utils
+#define MAXSIZE 255
+#define MAPSIZE 175
+// create for A* search, it records cost(from start), inspire(to end)
+// and the node are sorted by cost + inspire
+typedef struct Node {
+	uint16_t x,y;
+	uint16_t C,F,H;
+	struct Node* father;
+}Node;
+// realize a priority queue
+typedef struct {
+	Node data[MAXSIZE];
+	uint16_t len;
+}Queue;
+// map infomation
+typedef struct {
+	uint16_t b[MAPSIZE];
+}datatype;
+
+typedef struct {
+	datatype a[MAPSIZE];
+}Map;
+
 #endif /* INC_HUANSIC_TYPES_H_ */
