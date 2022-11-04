@@ -20,8 +20,8 @@
 #define MOTOR_REV_PER_CM 82 // in rev
 
 /*inside functions*/
-#define max(a, b) a > b ? a : b
-#define min(a, b) a < b ? a : b
+#define max(a, b) (a > b ? a : b)
+#define min(a, b) (a < b ? a : b)
 
 /* exported variables */
 // game information 1
@@ -56,6 +56,10 @@ Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
 }
 
 void chao_move(Path *path) {
+	float currentAngle;
+	float diffAngle;
+	int8_t isClockwise;
+
 	switch (path->type) {
 	case ignore:
 		break;
@@ -68,7 +72,6 @@ void chao_move(Path *path) {
 
 		while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
 				&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
-			float currentAngle;
 
 			if (currentX == targetX) {
 				if (currentY < targetY) {
@@ -78,45 +81,29 @@ void chao_move(Path *path) {
 				}
 			} else if (targetY >= currentY) {
 				if (targetX > currentX) {
-					currentAngle =
-							atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 				} else {
-					currentAngle = M_PI
-							+ atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+					currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
 				}
 			} else {
 				if (targetX > currentX) {
-					currentAngle =
-							atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 				} else {
 					currentAngle = -M_PI
-							+ atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+							+ atan((float) (targetY - currentY) / (targetX - currentX));
 				}
 			}
 
-			float diffAngle;
-			int8_t isClockwise;
 			if (max(currentAngle, angleZ) - min(currentAngle, angleZ)
-				> 2 * M_PI - (max(currentAngle, angleZ)
-				- min(currentAngle, angleZ))) {
-				diffAngle = 2 * M_PI - max(currentAngle, angleZ)
-							+ min(currentAngle, angleZ);
+					> 2 * M_PI - (max(currentAngle, angleZ) - min(currentAngle, angleZ))) {
+				diffAngle = 2 * M_PI - max(currentAngle, angleZ) + min(currentAngle, angleZ);
 				if (currentAngle > angleZ) {
 					isClockwise = 1;
 				} else {
 					isClockwise = -1;
 				}
 			} else {
-				diffAngle = max(currentAngle, angleZ)
-							- min(currentAngle, angleZ);
+				diffAngle = max(currentAngle, angleZ) - min(currentAngle, angleZ);
 				if (currentAngle > angleZ) {
 					isClockwise = -1;
 				} else {
@@ -183,11 +170,13 @@ void chao_move(Path *path) {
 
 			float diffAngle;
 			int8_t isClockwise;
-			if (max(currentAngle, angleZ) - min(currentAngle, angleZ)
-				> 2 * M_PI - (max(currentAngle, angleZ)
-				- min(currentAngle, angleZ))) {
+			if (max(currentAngle, angleZ)
+					- min(currentAngle, angleZ)
+					> 2 * M_PI
+							- (max(currentAngle, angleZ)
+									- min(currentAngle, angleZ))) {
 				diffAngle = 2 * M_PI - max(currentAngle, angleZ)
-							+ min(currentAngle, angleZ);
+						+ min(currentAngle, angleZ);
 				if (currentAngle > angleZ) {
 					isClockwise = 1;
 				} else {
@@ -195,7 +184,7 @@ void chao_move(Path *path) {
 				}
 			} else {
 				diffAngle = max(currentAngle, angleZ)
-							- min(currentAngle, angleZ);
+						- min(currentAngle, angleZ);
 				if (currentAngle > angleZ) {
 					isClockwise = -1;
 				} else {
