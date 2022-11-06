@@ -36,6 +36,18 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
+#define LED1_ON	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1)
+#define LED1_OFF	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 0)
+#define LED1_TOGGLE	HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin)
+#define LED2_ON	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, 1)
+#define LED2_OFF	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, 0)
+#define LED2_TOGGLE	HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin)
+#define LED3_ON 	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, 1)
+#define LED3_OFF	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, 0)
+#define LED3_TOGGLE	HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin)
+
+#define LED1_BLINK(n) for(uint8_t i = 0; i < n; i++){LED1_ON; HAL_Delay(150); LED1_OFF; HAL_Delay(150);}
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -168,7 +180,7 @@ int main(void)
 	while (1)
 	{
 		/* USER CODE END WHILE */
-
+		LED1_BLINK(100);
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */

@@ -9,7 +9,6 @@
 #define INC_COLLAB_UTIL_H_
 
 #include "huansic_types.h"
-#include "huansic_malloc.h"
 
 // evaluation; decide which path is better by analyzing the cost
 float xiao_calculateCost(Path *path);
@@ -27,6 +26,6 @@ void chao_move(Path *path);
 // void name_get_destination();
 
 // Kalman filter
-void ming_coord_kalman_filter();
+// void ming_coord_kalman_filter();
 
 #endif /* INC_COLLAB_UTIL_H_ */

@@ -48,11 +48,12 @@ extern Motor_HandleTypeDef hmotor_left, hmotor_right;
 extern uint32_t gameStageTimeLeft;		// in ms
 
 Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
-	Path *StraightPath = huansic_path_new();
-	StraightPath->start = *start;
-	StraightPath->end = *end;
-	StraightPath->type = linear;
-	return StraightPath;
+	Path *straightPath = huansic_path_new();
+	straightPath->start = *start;
+	straightPath->end = *end;
+	straightPath->type = linear;
+	straightPath->speed = PATH_DEFAULT_LINEAR_SPEED;
+	return straightPath;
 }
 
 void chao_move(Path *path) {
@@ -144,27 +145,16 @@ void chao_move(Path *path) {
 				}
 			} else if (targetY >= currentY) {
 				if (targetX > currentX) {
-					currentAngle =
-							atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 				} else {
-					currentAngle = M_PI
-							+ atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+					currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
 				}
 			} else {
 				if (targetX > currentX) {
-					currentAngle =
-							atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 				} else {
 					currentAngle = -M_PI
-							+ atan(
-									(float) ((targetY - currentY)
-											/ (targetX - currentX)));
+							+ atan((float) (targetY - currentY) / (targetX - currentX));
 				}
 			}
 

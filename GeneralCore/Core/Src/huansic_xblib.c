@@ -30,6 +30,10 @@ extern float myCharge;				// current charge returned by Master
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
 
+__weak void custom_order_new_failed(uint8_t id) {
+
+}
+
 void huansic_xb_init(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = 6;		// header length
 	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
@@ -63,14 +67,19 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 
 		/* barrier list */
 		// listLength = hxb->buffer[index];		// the length is fixed to 5
+		index++;
 		for (i = 0; i < 5; i++) {
-			index += 4;
-			obstacles[i].coord1.x = hxb->buffer[index];
-			index += 4;
+			index += 2;
+			obstacles[i].coord1.x = (uint16_t) hxb->buffer[index++] << 8;
+			obstacles[i].coord1.x = hxb->buffer[index++];
+			index += 2;
+			obstacles[i].coord1.y = (uint16_t) hxb->buffer[index++] << 8;
 			obstacles[i].coord1.y = hxb->buffer[index];
-			index += 4;
+			index += 2;
+			obstacles[i].coord2.x = (uint16_t) hxb->buffer[index++] << 8;
 			obstacles[i].coord2.x = hxb->buffer[index];
-			index += 4;
+			index += 2;
+			obstacles[i].coord2.y = (uint16_t) hxb->buffer[index++] << 8;
 			obstacles[i].coord2.y = hxb->buffer[index];
 		}
 
@@ -87,20 +96,24 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		/* ally beacons */
 		listLength = hxb->buffer[index];
 		for (i = 0; i < listLength; i++) {
-			index += 4;
-			allyBeacons[i].x = hxb->buffer[index];
-			index += 4;
-			allyBeacons[i].y = hxb->buffer[index];
+			index += 2;
+			allyBeacons[i].x = (uint16_t) hxb->buffer[index++] << 8;
+			allyBeacons[i].x = hxb->buffer[index++];
+			index += 2;
+			allyBeacons[i].y = (uint16_t) hxb->buffer[index++] << 8;
+			allyBeacons[i].y = hxb->buffer[index++];
 		}
 
 		/* opponent beacons */
 		index++;
 		listLength = hxb->buffer[index];
 		for (i = 0; i < listLength; i++) {
-			index += 4;
-			allyBeacons[i].x = hxb->buffer[index];
-			index += 4;
-			allyBeacons[i].y = hxb->buffer[index];
+			index += 2;
+			oppoBeacons[i].x = (uint16_t) hxb->buffer[index++] << 8;
+			oppoBeacons[i].x = hxb->buffer[index++];
+			index += 2;
+			oppoBeacons[i].y = (uint16_t) hxb->buffer[index++] << 8;
+			oppoBeacons[i].y = hxb->buffer[index++];
 		}
 	} else if (hxb->nextPackageID == 0x05) {		// game status
 		/* game status */
@@ -127,9 +140,11 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		myScore = *(float*) &temp;			// decode float from uint32
 
 		/* my position */
-		index += 3;
+		index += 2;
+		myCoord.x = (uint16_t) hxb->buffer[index++] << 8;
 		myCoord.x = hxb->buffer[index++];
-		index += 3;
+		index += 2;
+		myCoord.y = (uint16_t) hxb->buffer[index++] << 8;
 		myCoord.y = hxb->buffer[index++];
 
 		/* fetch battery */
@@ -143,6 +158,9 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		myCharge = *(float*) &temp;			// decode float from uint32
 
 		/* my orders */
+		int8_t updatedOrder[] = { -1, -1, -1, -1, -1 };
+		uint8_t updatedOrderIndex = 0;
+		Order *tempOrder;
 		listLength = hxb->buffer[index++];
 		for (i = 0; i < listLength; i++) {
 			temp = hxb->buffer[index + 24];
@@ -152,14 +170,23 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			temp |= hxb->buffer[index + 26];
 			temp <<= 8;
 			temp |= hxb->buffer[index + 27];
-			Order *tempOrder = huansic_order_new(temp);
-
-			tempOrder->startCoord.x = hxb->buffer[index + 3];
-			tempOrder->startCoord.y = hxb->buffer[index + 7];
-
-			tempOrder->destCoord.x = hxb->buffer[index + 11];
-			tempOrder->destCoord.y = hxb->buffer[index + 15];
-
+			tempOrder = huansic_order_new(temp);
+			if (!tempOrder) {
+				index += 28;
+				custom_order_new_failed(temp);
+				continue;
+			}
+			// start coordinate
+			tempOrder->startCoord.x = ((uint16_t) hxb->buffer[index + 2] << 8)
+					| hxb->buffer[index + 3];
+			tempOrder->startCoord.y = ((uint16_t) hxb->buffer[index + 6] << 8)
+					| hxb->buffer[index + 7];
+			// destination
+			tempOrder->destCoord.x = ((uint16_t) hxb->buffer[index + 10] << 8)
+					| hxb->buffer[index + 11];
+			tempOrder->destCoord.y = ((uint16_t) hxb->buffer[index + 14] << 8)
+					| hxb->buffer[index + 15];
+			// time limit
 			temp = hxb->buffer[index + 16];
 			temp <<= 8;
 			temp |= hxb->buffer[index + 17];
@@ -168,7 +195,7 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			temp <<= 8;
 			temp |= hxb->buffer[index + 19];
 			tempOrder->timeLimit = temp;
-
+			// reward
 			temp = hxb->buffer[index + 20];
 			temp <<= 8;
 			temp |= hxb->buffer[index + 21];
@@ -177,10 +204,65 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			temp <<= 8;
 			temp |= hxb->buffer[index + 23];
 			tempOrder->reward = *(float*) &temp;
-
+			// increment index and record id
 			index += 28;
+			updatedOrder[updatedOrderIndex++] = tempOrder->id;
 		}
-		// TODO order management
+
+		/* order management */
+		for (i = 0; i < 5; i++)
+			if (delivering[i]->id != -1) {
+				for (j = 0; i < updatedOrderIndex; j++)
+					if (delivering[i]->id == updatedOrder[j]) {		// pulled from remote
+						j = 255;
+						break;
+					}
+				if (j != 255)
+					huansic_order_delete(delivering[i]);// delete the order if the order is no longer in the delivery list
+			}
+
+		/* record latest order */
+		temp = hxb->buffer[index + 24];
+		temp <<= 8;
+		temp |= hxb->buffer[index + 25];
+		temp <<= 8;
+		temp |= hxb->buffer[index + 26];
+		temp <<= 8;
+		temp |= hxb->buffer[index + 27];
+		tempOrder = huansic_order_new(temp);
+		if (!tempOrder) {
+			index += 28;
+			custom_order_new_failed(temp);
+		} else {
+			// start coordinate
+			tempOrder->startCoord.x = ((uint16_t) hxb->buffer[index + 2] << 8)
+					| hxb->buffer[index + 3];
+			tempOrder->startCoord.y = ((uint16_t) hxb->buffer[index + 6] << 8)
+					| hxb->buffer[index + 7];
+			// end coordinate
+			tempOrder->destCoord.x = ((uint16_t) hxb->buffer[index + 10] << 8)
+					| hxb->buffer[index + 11];
+			tempOrder->destCoord.y = ((uint16_t) hxb->buffer[index + 14] << 8)
+					| hxb->buffer[index + 15];
+			// time limit
+			temp = hxb->buffer[index + 16];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 17];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 18];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 19];
+			tempOrder->timeLimit = temp;
+			// reward
+			temp = hxb->buffer[index + 20];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 21];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 22];
+			temp <<= 8;
+			temp |= hxb->buffer[index + 23];
+			tempOrder->reward = *(float*) &temp;
+		}
 	}
 
 	// set up next DMA

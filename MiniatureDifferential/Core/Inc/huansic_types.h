@@ -91,9 +91,9 @@ typedef struct Path_t{
 // create for A* search, it records cost(from start), inspire(to end)
 // and the node are sorted by cost + inspire
 typedef struct Node {
-	uint16_t x,y;
-	uint16_t C,F,H;
-	struct Node* father;
+	uint16_t x,y;		// 2 + 2 = 4
+	uint16_t C,H;		// 2 + 2 = 4
+	struct Node* father;	// 4
 }Node;
 // realize a priority queue
 typedef struct {

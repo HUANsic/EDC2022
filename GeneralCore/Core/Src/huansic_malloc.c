@@ -35,7 +35,7 @@ void huansic_path_malloc_init() {
 }
 
 Path* huansic_path_new() {
-	Path *retPtr = 0;
+	Path *retPtr = (void *)0;
 	uint8_t i;
 	for (i = 0; i < HUANSIC_PATH_PREMALLOC_SIZE; i++) {
 		if (pathBuffers[i].referenceCount == 0) {
