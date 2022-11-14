@@ -22,14 +22,16 @@ A_Star_Node* TopNode(A_Star_Node* head, Map* map);
 // calculate the H function
 uint16_t cal_H(A_Star_Node* current, A_Star_Node* end);
 // expand the queue
-A_Star_Node* Find_around_node(A_Star_Node* current, A_Star_Node* head, Map* map, A_Star_Node* end, uint8_t step);
+A_Star_Node* Find_around_node(A_Star_Node* current, int8_t lastdir, A_Star_Node* head, Map* map, A_Star_Node* end, uint8_t step);
 // edit the node which is in openlist
 void Editcost(A_Star_Node* head, A_Star_Node* p);
+// return if turn
+int8_t dir(A_Star_Node* from, A_Star_Node* to);
 
 // init_Map (No expand)
 Map* init_map(Rectangle obstacles[5], Coordinate oppoBeacons[3]);
 // init Node
-A_Star_Node* init_Node(uint8_t x, uint8_t y, A_Star_Node* f, A_Star_Node* end, uint8_t step);
+A_Star_Node* init_Node(uint8_t x, uint8_t y, A_Star_Node* f, int8_t lastdir, A_Star_Node* end, uint8_t step);
 
 // A Star search
 A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step);

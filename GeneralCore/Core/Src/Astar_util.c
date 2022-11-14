@@ -7,6 +7,7 @@
 
 #include "Astar_util.h"
 #include "stdlib.h"
+#include "collab_util.h"
 
 extern Rectangle obstacles[5];			// area that depletes charge faster
 extern Coordinate oppoBeacons[3];		// opponent charging station coordinate
@@ -43,8 +44,8 @@ void queue_append(A_Star_Node* head, A_Star_Node* NewNode) {
 		}
 		if (isappend == 0) {
 			p->next = NewNode;
-			p = NULL;
 		}
+		p = NULL;
 	}
 	NewNode = NULL;
 }
@@ -74,43 +75,59 @@ uint16_t cal_H(A_Star_Node* current, A_Star_Node* end) {
 
 void Editcost(A_Star_Node* head, A_Star_Node* p) {
 	A_Star_Node* t = head;
-	while(t != NULL) {
-		if((t->x == p->x) && (t->y == p->y)) {
-			if(p->Cost < t->Cost) {
-				t->Cost = p->Cost;
-				t->Total = p->Total;
-				t->father = p->father;
+	if((head->x == p->x) && (head->y == p->y)) {
+		if(p->Cost < head->Cost) {
+			head = head->next;
+			free(t);
+		}
+	}
+	while(t->next != NULL) {
+		if((t->next->x == p->x) && (t->next->y == p->y)) {
+			if(p->Cost < t->next->Cost) {
+				A_Star_Node* l = t->next;
+				t->next = l->next;
+				free(l);
+				l = NULL;
 			}
 		break;
 		}
 	}
 	t = NULL;
-	p = NULL;
+	queue_append(head, p);
+}
+int8_t dir(A_Star_Node* from, A_Star_Node* to){
+	return ((to->x - from->x) + 2*(to->y - from->y));
 }
 
-A_Star_Node* init_Node(uint8_t x, uint8_t y, A_Star_Node* f, A_Star_Node* end, uint8_t step) {
+A_Star_Node* init_Node(uint8_t x, uint8_t y, A_Star_Node* f, int8_t lastdir, A_Star_Node* end, uint8_t step) {
 	A_Star_Node* p = (A_Star_Node*)malloc(sizeof(A_Star_Node));
 	p->x = x;
 	p->y = y;
 	p->father = f;
+	P->next = NULL;
 	p->Cost = f->Cost + abs(step);
+	if(lastdir != 0) {
+		if(lastdir != dir(f, p)){
+			p->Cost = p->Cost + 10;
+		}
+	}
 	p->Total = p->Cost + cal_H(p, end);
 	return p;
 }
 
-A_Star_Node* Find_around_node(A_Star_Node* current, A_Star_Node* head, Map* map, A_Star_Node* end, uint8_t step) {
+A_Star_Node* Find_around_node(A_Star_Node* current, int8_t lastdir, A_Star_Node* head, Map* map, A_Star_Node* end, uint8_t step) {
 	// left
 	if(current->x >= step) {
 		uint8_t curx = current->x - step;
 		uint8_t cury = current->y;
 		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			if(p->Cost == p->Total) return p;
 			map->map_icon[curx][cury] = 1;
 			queue_append(head, p);
 		}
 		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			Editcost(head, p);
 		}
 	}
@@ -119,13 +136,13 @@ A_Star_Node* Find_around_node(A_Star_Node* current, A_Star_Node* head, Map* map,
 		uint8_t curx = current->x + step;
 		uint8_t cury = current->y;
 		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			if(p->Cost == p->Total) return p;
 			map->map_icon[curx][cury] = 1;
 			queue_append(head, p);
 		}
 		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			Editcost(head, p);
 		}
 	}
@@ -134,13 +151,13 @@ A_Star_Node* Find_around_node(A_Star_Node* current, A_Star_Node* head, Map* map,
 		uint8_t curx = current->x;
 		uint8_t cury = current->y - step;
 		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			if(p->Cost == p->Total) return p;
 			map->map_icon[curx][cury] = 1;
 			queue_append(head, p);
 		}
 		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			Editcost(head, p);
 		}
 	}
@@ -149,13 +166,13 @@ A_Star_Node* Find_around_node(A_Star_Node* current, A_Star_Node* head, Map* map,
 		uint8_t curx = current->x;
 		uint8_t cury = current->y + step;
 		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			if(p->Cost == p->Total) return p;
 			map->map_icon[curx][cury] = 1;
 			queue_append(head, p);
 		}
 		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, end, step);
+			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
 			Editcost(head, p);
 		}
 	}
@@ -212,6 +229,7 @@ A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
 	head->x = start->x;
 	head->y = start->y;
 	head->father = NULL;
+	head->next = NULL;
 	head->Cost = 0;
 	head->Total = abs(start->x - end->x) + abs(start->y - end->y);
 
@@ -219,21 +237,66 @@ A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
 	END->x = end->x;
 	END->y = end->y;
 	END->father = NULL;
+	head->next = NULL;
 
 	Map* map = init_map(obstacles, oppoBeacons);
 	A_Star_Node* CurNode = NULL;
 	A_Star_Node* Flag = NULL;
+	int8_t lastdir = 0;     // left:-step up:-2*step right:step down:2*step
 	while(1){
 		CurNode = TopNode(head, map);
+		if(CurNode->father != NULL) {
+			lastdir = dir(CurNode->father, CurNode);
+		}
 		list_append(closehead, closetail, CurNode);
-		Flag = Find_around_node(CurNode, head, map, END, step);
+		Flag = Find_around_node(CurNode, lastdir, head, map, END, step);
 		if (Flag != NULL) {
 			free_queue(head);
 			free(map);
-			//closelist is not freed
-			return Flag;
+			// closelist is not freed
+			break;
 		}
 	}
+	// we now get the path
+	Coordinate Astar_path[8];
+	Astar_path[7].x = Flag->x;
+	Astar_path[7].y = Flag->y;
+	uint8_t i = 6;
+	A_Star_Node* m = Flag;
+	lastdir = dir(m->father, m);
+	while(m->father != NULL){
+		if(lastdir != dir(m->father, m)) {
+			Astar_path[i].x = m->father.x;
+			Astar_path[i].y = m->father.y;
+			if(i == 1){
+				i = 0;
+				break; //Fail
+			}
+			i = i - 1;
+			lastdir = dir(m->father, m);
+		}
+		m = m->father;
+	}
+	Astar_path[i].x = m->x;
+	Astar_path[i].y = m->y;
+	Path* huanpathhead = jymm_pathfind_straight(&Astar_path[i], &Astar_path[i+1]);
+	Path* op = huanpathhead;
+	for(i = i + 1;i < 7;i++){
+		Path* straightPath = jymm_pathfind_straight(&Astar_path[i], &Astar_path[i+1]);
+		huansic_path_cascade(op, straightPath);
+		op = straightPath;
+	}
+	free_queue(closehead);
+	free(Flag);
+	Flag = NULL;
+	A_Star_Node* closehead = NULL;
+	A_Star_Node* closetail = NULL;
+	free(END);
+	END = NULL;
+	op = NULL;
+	straightPath = NULL;
+
+	return huanpathhead;
 }
 
 
