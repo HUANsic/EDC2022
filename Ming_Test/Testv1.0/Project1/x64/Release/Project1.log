@@ -1,0 +1,50 @@
+﻿  Astar_util.c
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Tsinghua\EDC2022\Ming_Test\Testv1.0\Astar_util.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(24,33): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(57,32): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(57,52): warning C4028: 形参 2 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(69,28): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(69,40): warning C4028: 形参 2 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(82,29): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(82,41): warning C4028: 形参 2 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(112,36): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(112,56): warning C4028: 形参 2 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(112,81): warning C4028: 形参 3 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(116,24): warning C4047: “函数”:“A_Star_Node **”与“A_Star_Node ***”的间接级别不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(116,14): warning C4024: “list_append”: 形参和实参 1 的类型不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(116,36): warning C4047: “函数”:“A_Star_Node **”与“A_Star_Node ***”的间接级别不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(116,26): warning C4024: “list_append”: 形参和实参 2 的类型不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(124,29): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(154,33): warning C4028: 形参 1 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(154,45): warning C4028: 形参 2 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(170,83): warning C4028: 形参 3 与声明不同
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(316,9): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint16_t *”
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(316,9): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint16_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(317,9): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint16_t *”
+D:\Tsinghua\EDC2022\Ming_Test\Astar_util.c(317,9): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint16_t *" 的参数 1 冲突
+  main.c
+d:\Tsinghua\EDC2022\Ming_Test\Astar_util.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\Tsinghua\EDC2022\Ming_Test\main.c(86,9): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint8_t *”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(86,9): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint8_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\main.c(87,9): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint8_t *”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(87,9): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint8_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\main.c(91,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“size_t”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(91,10): message : 请考虑在格式字符串中使用“%zd”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(92,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint8_t *”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(92,10): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint8_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\main.c(93,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“size_t”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(93,10): message : 请考虑在格式字符串中使用“%zd”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(94,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint8_t *”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(94,10): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint8_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\main.c(95,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint16_t *”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(95,10): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint16_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\main.c(96,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“uint16_t *”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(96,10): warning C4313: "printf": 格式字符串中的 "%d" 与类型为 "uint16_t *" 的参数 1 冲突
+D:\Tsinghua\EDC2022\Ming_Test\main.c(97,10): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“size_t”
+D:\Tsinghua\EDC2022\Ming_Test\main.c(97,10): message : 请考虑在格式字符串中使用“%zd”
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+  All 17 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  Project1.vcxproj -> D:\Tsinghua\EDC2022\Ming_Test\Testv1.0\Project1\x64\Release\Project1.exe
