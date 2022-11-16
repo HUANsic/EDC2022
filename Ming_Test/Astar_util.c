@@ -7,7 +7,7 @@
 
 #include "Astar_util.h"
 #include "stdlib.h"
-#include "collab_util.h"
+// #include "collab_util.h"
 
 extern Rectangle obstacles[5];			// area that depletes charge faster
 extern Coordinate oppoBeacons[3];		// opponent charging station coordinate
@@ -61,11 +61,54 @@ void list_append(A_Star_Node* head, A_Star_Node* tail, A_Star_Node* NewNode){
 	NewNode = NULL;
 }
 
-A_Star_Node* TopNode(A_Star_Node* head, Map* map) {
+uint8_t Find_ifin(uint8_t x, uint8_t y, A_Star_Node* head) {
+	A_Star_Node* p = head;
+	while (p != NULL) {
+		if(p->x == x && p->y == y) {
+			return 0;
+		}
+		else {
+			p = p->next;
+		}
+	}
+	return 1;
+}
+
+uint8_t Find_crash(uint8_t x, uint8_t y) {
+	//walls
+	if((x >= 38 && x <= 40) && ((y >= 38 && y <= 107) || (y >= 147 && y <= 216))) {
+		return 0;
+	}
+	if((x >= 214 && x <= 216) && ((y >= 38 && y <= 107) || (y >= 147 && y <= 216))){
+		return 0;
+	}
+	if((y >= 38 && y <= 40) && ((x >= 38 && x <= 107) || (x >= 147 && x <= 216))){
+		return 0;
+	}
+	if((y >= 214 && y <= 216) && ((x >= 38 && x <= 107) || (x >= 147 && x <= 216))){
+		return 0;
+	}
+	//obstacles
+	for(uint8_t k = 0;k < 5; k++){
+		if(x >= obstacles[k].coord1.x && y >= obstacles[k].coord1.y && x <= obstacles[k].coord2.x && y <= obstacles[k].coord2.y){
+			return 0;
+		}
+	}
+	// oppoBeacons
+	for(uint8_t k = 0;k <= 2; k++){
+		uint16_t distance = (x - oppoBeacons[k].x)*(x - oppoBeacons[k].x)+(y - oppoBeacons[k].y)*(y - oppoBeacons[k].y);
+		if(distance <= 400){
+			return 0;
+		}
+	}
+	return 1;
+}
+
+A_Star_Node* TopNode(A_Star_Node* head, A_Star_Node* closehead, A_Star_Node* closetail) {
 	A_Star_Node* p = head;
 	head = p->next;
 	p->next = NULL;
-	map->map_icon[p->x][p->y] = 2;
+	list_append(closehead, closetail, p);
 	return p;
 }
 
@@ -95,6 +138,7 @@ void Editcost(A_Star_Node* head, A_Star_Node* p) {
 	t = NULL;
 	queue_append(head, p);
 }
+
 int8_t dir(A_Star_Node* from, A_Star_Node* to){
 	return ((to->x - from->x) + 2*(to->y - from->y));
 }
@@ -115,111 +159,81 @@ A_Star_Node* init_Node(uint8_t x, uint8_t y, A_Star_Node* f, int8_t lastdir, A_S
 	return p;
 }
 
-A_Star_Node* Find_around_node(A_Star_Node* current, int8_t lastdir, A_Star_Node* head, Map* map, A_Star_Node* end, uint8_t step) {
+A_Star_Node* Find_around_node(A_Star_Node* current, int8_t lastdir, A_Star_Node* openhead, A_Star_Node* closehead, A_Star_Node* end, uint8_t step) {
 	// left
 	if(current->x >= step) {
 		uint8_t curx = current->x - step;
 		uint8_t cury = current->y;
-		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			if(p->Cost == p->Total) return p;
-			map->map_icon[curx][cury] = 1;
-			queue_append(head, p);
-		}
-		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			Editcost(head, p);
+		if (Find_crash(curx, cury)) {
+			if(Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)) {
+				A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+				if(p->Cost == p->Total) return p;
+				queue_append(openhead, p);
+			}
+			else{
+				if(!Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)){
+					A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+					Editcost(openhead, p);
+				}
+			}
 		}
 	}
 	// right
 	if(current->x <= 255 - step) {
 		uint8_t curx = current->x + step;
 		uint8_t cury = current->y;
-		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			if(p->Cost == p->Total) return p;
-			map->map_icon[curx][cury] = 1;
-			queue_append(head, p);
-		}
-		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			Editcost(head, p);
+		if (Find_crash(curx, cury)) {
+			if(Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)) {
+				A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+				if(p->Cost == p->Total) return p;
+				queue_append(openhead, p);
+			}
+			else{
+				if(!Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)){
+					A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+					Editcost(openhead, p);
+				}
+			}
 		}
 	}
 	// up
 	if(current->y >= step) {
 		uint8_t curx = current->x;
 		uint8_t cury = current->y - step;
-		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			if(p->Cost == p->Total) return p;
-			map->map_icon[curx][cury] = 1;
-			queue_append(head, p);
-		}
-		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			Editcost(head, p);
+		if (Find_crash(curx, cury)) {
+			if(Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)) {
+				A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+				if(p->Cost == p->Total) return p;
+				queue_append(openhead, p);
+			}
+			else{
+				if(!Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)){
+					A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+					Editcost(openhead, p);
+				}
+			}
 		}
 	}
 	// down
 	if(current->y <= 255 - step) {
 		uint8_t curx = current->x;
 		uint8_t cury = current->y + step;
-		if(map->map_icon[curx][cury] == 0) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			if(p->Cost == p->Total) return p;
-			map->map_icon[curx][cury] = 1;
-			queue_append(head, p);
-		}
-		if(map->map_icon[curx][cury] == 1) {
-			A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
-			Editcost(head, p);
+		if (Find_crash(curx, cury)) {
+			if(Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)) {
+				A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+				if(p->Cost == p->Total) return p;
+				queue_append(openhead, p);
+			}
+			else{
+				if(!Find_ifin(curx, cury, openhead) && Find_ifin(curx, cury, closehead)){
+					A_Star_Node* p = init_Node(curx, cury, current, lastdir, end, step);
+					Editcost(openhead, p);
+				}
+			}
 		}
 	}
 	return NULL;
 }
-
-Map* init_map(Rectangle obstacles[5], Coordinate oppoBeacons[3]) {
-	Map* map = (Map*)malloc(sizeof(Map));
-	for(uint8_t i = 0;i <= 255; i++) {
-		for(uint8_t j = 0;j <= 255; j++) {
-			//walls
-			if((i >= 38 && i <= 40) && ((j >= 38 && j <= 107) || (j >= 147 && j <= 216))){
-				map->map_icon[i][j] = 3;
-				continue;
-			}
-			if((i >= 214 && i <= 216) && ((j >= 38 && j <= 107) || (j >= 147 && j <= 216))){
-				map->map_icon[i][j] = 3;
-				continue;
-			}
-			if((j >= 38 && j <= 40) && ((i >= 38 && i <= 107) || (i >= 147 && i <= 216))){
-				map->map_icon[i][j] = 3;
-				continue;
-			}
-			if((j >= 214 && j <= 216) && ((i >= 38 && i <= 107) || (i >= 147 && i <= 216))){
-				map->map_icon[i][j] = 3;
-				continue;
-			}
-			// obstacles
-			for(uint8_t k = 0;k <= 4; k++){
-				if(i >= obstacles[k].coord1.x && j >= obstacles[k].coord1.y && i <= obstacles[k].coord2.x && j <= obstacles[k].coord2.y){
-					map->map_icon[i][j] = 3;
-					continue;
-				}
-			}
-			// oppoBeacons
-			for(uint8_t k = 0;k <= 2; k++){
-				uint16_t distance = (i - oppoBeacons[k].x)*(i - oppoBeacons[k].x)+(j - oppoBeacons[k].y)*(j - oppoBeacons[k].y);
-				if(distance <= 400){
-					map->map_icon[i][j] = 3;
-					continue;
-				}
-			}
-		}
-	}
-	return map;
-}
-
 
 A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
 	A_Star_Node* head = (A_Star_Node*)malloc(sizeof(A_Star_Node));
@@ -239,20 +253,18 @@ A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
 	END->father = NULL;
 	head->next = NULL;
 
-	Map* map = init_map(obstacles, oppoBeacons);
 	A_Star_Node* CurNode = NULL;
 	A_Star_Node* Flag = NULL;
-	int8_t lastdir = 0;     // left:-step up:-2*step right:step down:2*step
+	int8_t lastdir = 0;     		// left:-step up:-2*step right:step down:2*step
 	while(1){
-		CurNode = TopNode(head, map);
+		CurNode = TopNode(head, closehead, closetail);
 		if(CurNode->father != NULL) {
 			lastdir = dir(CurNode->father, CurNode);
 		}
 		list_append(closehead, closetail, CurNode);
-		Flag = Find_around_node(CurNode, lastdir, head, map, END, step);
+		Flag = Find_around_node(CurNode, lastdir, head, closehead, END, step);
 		if (Flag != NULL) {
 			free_queue(head);
-			free(map);
 			// closelist is not freed
 			break;
 		}
