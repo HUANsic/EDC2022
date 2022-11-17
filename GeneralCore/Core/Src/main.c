@@ -161,6 +161,15 @@ int main(void)
 	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
 
+	hmotor1.goalSpeed = 30;
+	hmotor2.goalSpeed = 30;
+	hmotor3.goalSpeed = 30;
+	hmotor4.goalSpeed = 0;
+	HAL_TIM_Base_Start_IT(&htim6);
+
+	HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, 1);
+	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, 1);
+	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1);
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -168,7 +177,6 @@ int main(void)
 	while (1)
 	{
 		/* USER CODE END WHILE */
-
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */
