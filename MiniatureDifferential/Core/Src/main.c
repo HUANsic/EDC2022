@@ -70,6 +70,11 @@ Motor_HandleTypeDef hmotor_left, hmotor_right;
 JY62_HandleTypeDef himu;
 XB_HandleTypeDef hxb;
 
+// game information 0
+const Rectangle gameBoarder[8] = {
+		// TODO add arena boarder information
+};
+
 // game information 1
 uint8_t gameStage;			// 0: pre-match(standby); 1: first half; 2: second half
 uint8_t gameStatus;			// 0: standby; 1: running
@@ -156,10 +161,7 @@ int main(void)
 	MX_USART2_UART_Init();
 	MX_USART1_UART_Init();
 	/* USER CODE BEGIN 2 */
-	RED_LED_BLINK(1);
-	HAL_Delay(500);
-	HUAN_MOTOR_LEFT_Init();
-	HUAN_MOTOR_RIGHT_Init();
+	HAL_Delay(1000);
 
 	RED_LED_BLINK(2);
 	HAL_Delay(500);
@@ -181,9 +183,11 @@ int main(void)
 
 	RED_LED_BLINK(5);
 	HAL_Delay(500);
-	hmotor_left.goalSpeed = 300;		// max ~8400 = 10rps unloaded
-	hmotor_right.goalSpeed = -300;
+	HUAN_MOTOR_LEFT_Init();
+	HUAN_MOTOR_RIGHT_Init();
 	HAL_TIM_Base_Start_IT(&htim1);		// for PID
+
+	HAL_Delay(1000);
 
 	/* USER CODE END 2 */
 
@@ -192,11 +196,6 @@ int main(void)
 	// uint8_t dc = 0;
 	while (1)
 	{
-		// display angle
-		HAL_UART_Transmit(&huart2, (uint8_t *)firstLine, sprintf(firstLine, "x: %f ", himu.theta_x), 10);
-		HAL_UART_Transmit(&huart2, (uint8_t *)secondLine, sprintf(secondLine, "y: %f ", himu.theta_y), 10);
-		HAL_UART_Transmit(&huart2, (uint8_t *)thirdLine, sprintf(thirdLine, "z: %f ", himu.theta_z), 10);
-
 		ssd1306_SetCursor(0, 0);
 		ssd1306_WriteString(firstLine, Font_6x8, White);
 		ssd1306_SetCursor(0, 8);

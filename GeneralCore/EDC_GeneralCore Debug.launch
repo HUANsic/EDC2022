@@ -30,7 +30,11 @@
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.external_loader_init" value="false"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.frequency" value="0"/>
     <booleanAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.halt_all_on_reset" value="false"/>
+<<<<<<< HEAD
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.log_file" value="D:\Code\EDC2022-main\EDC2022\GeneralCore\Debug\st-link_gdbserver_log.txt"/>
+=======
+    <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.log_file" value="C:\Users\abcde\Documents\ShutDown\Tsinghua\EDC2022\STM32Code\GeneralCore\Debug\st-link_gdbserver_log.txt"/>
+>>>>>>> fe3a36a3302971b41200876f62ef114e5832829b
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.low_power_debug" value="enable"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.max_halt_delay" value="2"/>
     <stringAttribute key="com.st.stm32cube.ide.mcu.debug.stlink.reset_strategy" value="connect_under_reset"/>
