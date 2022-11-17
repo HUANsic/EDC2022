@@ -60,8 +60,8 @@ all: main-build
 main-build: EDC_GeneralCore.elf secondary-outputs
 
 # Tool invocations
-EDC_GeneralCore.elf EDC_GeneralCore.map: $(OBJS) $(USER_OBJS) D:\Code\EDC2022-main\EDC2022\GeneralCore\STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "EDC_GeneralCore.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"D:\Code\EDC2022-main\EDC2022\GeneralCore\STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="EDC_GeneralCore.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+EDC_GeneralCore.elf EDC_GeneralCore.map: $(OBJS) $(USER_OBJS) C:\Users\abcde\Documents\ShutDown\Tsinghua\EDC2022\STM32Code\GeneralCore\STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "EDC_GeneralCore.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\abcde\Documents\ShutDown\Tsinghua\EDC2022\STM32Code\GeneralCore\STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="EDC_GeneralCore.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
