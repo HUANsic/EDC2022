@@ -36,6 +36,6 @@ int8_t dir(A_Star_Node* from, A_Star_Node* to);
 A_Star_Node* init_Node(uint8_t x, uint8_t y, A_Star_Node* f, int8_t lastdir, A_Star_Node* end, uint8_t step);
 
 // A Star search
-A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step);
+Path* A_Star(Coordinate* start, Coordinate* end, uint8_t step);
 
 #endif /* INC_ASTAR_UTIL_H_ */

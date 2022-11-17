@@ -6,6 +6,7 @@
  */
 
 #include "collab_util.h"
+#include "Astar_util.h"
 #include "math.h"
 #include "stdlib.h"
 
@@ -197,4 +198,9 @@ void chao_move(Path *path) {
 	}
 
 	}
+}
+
+Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end){
+	return A_star(start, end, 5);
+}
 }

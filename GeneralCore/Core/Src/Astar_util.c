@@ -283,7 +283,7 @@ A_Star_Node* Find_around_node(A_Star_Node* current, int8_t lastdir, A_Star_Node*
 	return NULL;
 }
 
-A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
+Path* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
 	A_Star_Node* openhead = (A_Star_Node*)malloc(sizeof(A_Star_Node));
 	A_Star_Node* closehead = NULL;
 	A_Star_Node* closetail = NULL;
@@ -321,12 +321,12 @@ A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step) {
 		}
 	}
 
-//	A_Star_Node* p = Flag;
-//	while (p != NULL) {
-//		printf("\n(x,y):{%d;%d}", p->x, p->y);
-//		p = p->father;
-//	}
-//	return Flag;
+	//	A_Star_Node* p = Flag;
+	//	while (p != NULL) {
+	//		printf("\n(x,y):{%d;%d}", p->x, p->y);
+	//		p = p->father;
+	//	}
+	//	return Flag;
 	 //we now get the path
 	 Coordinate Astar_path[8];
 	 Astar_path[7].x = Flag->x;
