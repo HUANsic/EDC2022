@@ -198,84 +198,84 @@ void chao_move(Path *path) {
 
 	}
 }
-
-// add by ming-bot
-// some A* utils
-void init_map(Map *map) {
-	// pass area
-	for (int i = 0; i < 255; i++) {
-		for (int j = 0; j < 255; j++) {
-			map->a[i][j] = 0;
-		}
-	}
-	// update abstacles
-	for (int i = 0; i < 5; i++) {
-		Coordinate a1 = obstacles[i].coord1;
-		Coordinate b2 = obstacles[i].coord2;
-		// default Upper left corner and lower right corner
-		for (int j = a1.x; j <= b2.x; j++) {
-			for (int k = a1.y; k <= b2.y; k++) {
-				map->a[j][k] = -1;
-			}
-		}
-	}
-	// update opponent charging station coordinate
-	for (int i = 0; i < 3; i++) {
-		map->a[oppoBeacons[i].x][oppoBeacons[i].y] = -1;
-	}
-}
-
-void init_queue(Queue *L) {
-	L->len = 0;
-}
-
-void copy_Node(Node *p1, Node *p2) {
-	p1->x = p2->x;
-	p1->y = p2->y;
-	p1->F = p2->F;
-	p1->C = p2->C;
-	p1->H = p2->H;
-	p1->father = p2->father;
-}
-
-void append(Queue *L, Node p) {
-	L->len++;
-	if (L->len >= MAXSIZE) {
-		printf("ERROR!");
-		return;
-	}
-	newp = (Node*) malloc(sizeof(Node));
-	for (int i = L->len - 2; i >= 0; i--) {
-		if (L->data[i].F < p.F) {
-			for (int j = i + 1; j < L->len; j++) {
-				copy_Node(newp, &(L->data[j]));
-				copy_Node(&(L->data[j]), p);
-				copy_Node(p, newp);
-			}
-		}
-	}
-}
-void del(Queue *L, int index) {
-	for (int i = index; i < L->len; i++) {
-		copy_Node(&(L->data[i]), &(L->data[i + 1]));
-	}
-	L->len--;
-}
-int getdex(Queue *L, node *p) {
-	for (int i = 0; i < L->len; i++) {
-		if (L->data[i].x == p->x && L->data[i].y == p->y)
-			return i;
-	}
-}
-void print_Map(Map *G) {
-	for (int i = 0; i < 255; i++) {
-		for (int j = 0; j < 255; j++)
-			printf("%d\t", G->a[i][j]);
-		printf("\n");
-	}
-}
-
-Node* startAstar(Coordinate start, Coordinate last) {
-	startnode = (Node*) malloc(sizeof(Node));
-
-}
+//
+//// add by ming-bot
+//// some A* utils
+//void init_map(Map *map) {
+//	// pass area
+//	for (int i = 0; i < 255; i++) {
+//		for (int j = 0; j < 255; j++) {
+//			map->a[i][j] = 0;
+//		}
+//	}
+//	// update abstacles
+//	for (int i = 0; i < 5; i++) {
+//		Coordinate a1 = obstacles[i].coord1;
+//		Coordinate b2 = obstacles[i].coord2;
+//		// default Upper left corner and lower right corner
+//		for (int j = a1.x; j <= b2.x; j++) {
+//			for (int k = a1.y; k <= b2.y; k++) {
+//				map->a[j][k] = -1;
+//			}
+//		}
+//	}
+//	// update opponent charging station coordinate
+//	for (int i = 0; i < 3; i++) {
+//		map->a[oppoBeacons[i].x][oppoBeacons[i].y] = -1;
+//	}
+//}
+//
+//void init_queue(Queue *L) {
+//	L->len = 0;
+//}
+//
+//void copy_Node(Node *p1, Node *p2) {
+//	p1->x = p2->x;
+//	p1->y = p2->y;
+//	p1->F = p2->F;
+//	p1->C = p2->C;
+//	p1->H = p2->H;
+//	p1->father = p2->father;
+//}
+//
+//void append(Queue *L, Node p) {
+//	L->len++;
+//	if (L->len >= MAXSIZE) {
+//		printf("ERROR!");
+//		return;
+//	}
+//	newp = (Node*) malloc(sizeof(Node));
+//	for (int i = L->len - 2; i >= 0; i--) {
+//		if (L->data[i].F < p.F) {
+//			for (int j = i + 1; j < L->len; j++) {
+//				copy_Node(newp, &(L->data[j]));
+//				copy_Node(&(L->data[j]), p);
+//				copy_Node(p, newp);
+//			}
+//		}
+//	}
+//}
+//void del(Queue *L, int index) {
+//	for (int i = index; i < L->len; i++) {
+//		copy_Node(&(L->data[i]), &(L->data[i + 1]));
+//	}
+//	L->len--;
+//}
+//int getdex(Queue *L, node *p) {
+//	for (int i = 0; i < L->len; i++) {
+//		if (L->data[i].x == p->x && L->data[i].y == p->y)
+//			return i;
+//	}
+//}
+//void print_Map(Map *G) {
+//	for (int i = 0; i < 255; i++) {
+//		for (int j = 0; j < 255; j++)
+//			printf("%d\t", G->a[i][j]);
+//		printf("\n");
+//	}
+//}
+//
+//Node* startAstar(Coordinate start, Coordinate last) {
+//	startnode = (Node*) malloc(sizeof(Node));
+//
+//}

@@ -28,7 +28,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/ssd1306.h ../Core/Inc/ssd1306_conf.h \
  ../Core/Inc/ssd1306_fonts.h ../Core/Inc/huansic_jy62lib.h \
  ../Core/Inc/huansic_types.h ../Core/Inc/huansic_motorlib.h \
- ../Core/Inc/huansic_xblib.h ../Core/Inc/huansic_malloc.h
+ ../Core/Inc/huansic_xblib.h ../Core/Inc/huansic_malloc.h \
+ ../Core/Inc/huansic_pathfinder.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -64,3 +65,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/huansic_motorlib.h:
 ../Core/Inc/huansic_xblib.h:
 ../Core/Inc/huansic_malloc.h:
+../Core/Inc/huansic_pathfinder.h:

@@ -70,6 +70,11 @@ Motor_HandleTypeDef hmotor_left, hmotor_right;
 JY62_HandleTypeDef himu;
 XB_HandleTypeDef hxb;
 
+// game information 0
+const Rectangle gameBoarder[8] = {
+		// TODO add arena boarder information
+};
+
 // game information 1
 uint8_t gameStage;			// 0: pre-match(standby); 1: first half; 2: second half
 uint8_t gameStatus;			// 0: standby; 1: running

@@ -14,7 +14,9 @@ typedef struct Node_t{
 	Coordinate *location;		// 4
 	struct Node_t *lastNode;	// 4
 	float distance;				// 4
-	uint8_t processed;			// 1 (4)
+	uint8_t processed;			// 1
+	uint8_t id;					// 1
+	uint8_t freeable;			// 1 (2)
 } Node;
 
 #endif /* INC_HUANSIC_PATHFINDER_H_ */
