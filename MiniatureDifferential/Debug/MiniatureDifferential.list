@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  000201e8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00011a6c  00000000  00000000  00020211  2**0
+ 12 .debug_info   00011b75  00000000  00000000  00020211  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002b01  00000000  00000000  00031c7d  2**0
+ 13 .debug_abbrev 00002b50  00000000  00000000  00031d86  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000011a0  00000000  00000000  00034780  2**3
+ 14 .debug_aranges 000011b0  00000000  00000000  000348d8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00001098  00000000  00000000  00035920  2**3
+ 15 .debug_ranges 000010a8  00000000  00000000  00035a88  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0000395a  00000000  00000000  000369b8  2**0
+ 16 .debug_macro  00003ab0  00000000  00000000  00036b30  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00014961  00000000  00000000  0003a312  2**0
+ 17 .debug_line   00014d2b  00000000  00000000  0003a5e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0008f991  00000000  00000000  0004ec73  2**0
+ 18 .debug_str    0008f9fe  00000000  00000000  0004f30b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000de604  2**0
+ 19 .comment      00000050  00000000  00000000  000ded09  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005b60  00000000  00000000  000de654  2**2
+ 20 .debug_frame  00005bb0  00000000  00000000  000ded5c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2060,9 +2060,9 @@ __weak void custom_order_free_fault(Order *ptr) {
 	...
 
 08001608 <huansic_order_new>:
-	uint8_t i;
-	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++)
 		orderBuffers[i].id = -1;
+	for (i = 0; i < 5; i++)
+		delivering[i] = &orderBuffers[i];		// give it some default value
 }
 
 Order* huansic_order_new(int8_t id) {
@@ -2181,7 +2181,7 @@ void huansic_order_delete(Order *ptr) {
  80016be:	b082      	sub	sp, #8
  80016c0:	af00      	add	r7, sp, #0
  80016c2:	6078      	str	r0, [r7, #4]
-	if(ptr->id == -1)
+	if (ptr->id == -1)
  80016c4:	687b      	ldr	r3, [r7, #4]
  80016c6:	691b      	ldr	r3, [r3, #16]
  80016c8:	f1b3 3fff 	cmp.w	r3, #4294967295

@@ -72,7 +72,14 @@ XB_HandleTypeDef hxb;
 
 // game information 0
 const Rectangle gameBoarder[8] = {
-		// TODO add arena boarder information
+		{ .coord1.x = 38, .coord1.y = 38, .coord2.x = 107, .coord2.y = 40 },
+		{ .coord1.x = 38, .coord1.y = 38, .coord2.x = 40, .coord2.y = 107 },
+		{ .coord1.x = 147, .coord1.y = 38, .coord2.x = 216, .coord2.y = 40 },
+		{ .coord1.x = 214, .coord1.y = 38, .coord2.x = 216, .coord2.y = 107 },
+		{ .coord1.x = 214, .coord1.y = 147, .coord2.x = 216, .coord2.y = 216 },
+		{ .coord1.x = 147, .coord1.y = 214, .coord2.x = 216, .coord2.y = 216 },
+		{ .coord1.x = 38, .coord1.y = 214, .coord2.x = 107, .coord2.y = 216 },
+		{ .coord1.x = 38, .coord1.y = 147, .coord2.x = 40, .coord2.y = 216 },
 };
 
 // game information 1
@@ -89,7 +96,6 @@ Order *delivering[5];		// package picked up but not yet delivered
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
-fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 double angleZ, omegaZ, accelY;		// turning speed and linear acceleration
 float myScore;				// current score returned by Master
 float myCharge;				// current charge returned by Master
@@ -99,7 +105,7 @@ uint32_t gameStageTimeLeft;		// in ms
 
 // OLED display buffer
 char firstLine[16], secondLine[16], thirdLine[16], fourthLine[16];		// 128 / 8 = 16
-/* USER CODE END PV */
+		/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);

@@ -9,6 +9,7 @@
 #define INC_HUANSIC_MALLOC_H_
 
 #include "huansic_types.h"
+#include <math.h>
 
 void huansic_path_malloc_init();
 

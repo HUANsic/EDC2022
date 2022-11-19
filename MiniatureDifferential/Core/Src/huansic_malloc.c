@@ -139,7 +139,7 @@ Order* huansic_order_findClosestDest(Coordinate *coord) {
 		if (delivering[i]->id == -1)		// if it is an empty order
 			continue;
 		currentDistance = powf(delivering[i]->destCoord.x - coord->x, 2)
-				+ powf(delivering[i]->destCoord.y - coord->y);
+				+ powf(delivering[i]->destCoord.y - coord->y, 2);
 		if (currentDistance < closestDistance) {
 			closestDistance = currentDistance;
 			retOrder = delivering[i];
@@ -161,7 +161,7 @@ Order* huansic_order_findClosestStart(Coordinate *coord) {
 			continue;
 
 		currentDistance = powf(orderBuffers[i].startCoord.x - coord->x, 2)
-				+ powf(orderBuffers[i].startCoord.y - coord->y);
+				+ powf(orderBuffers[i].startCoord.y - coord->y, 2);
 		if (currentDistance < closestDistance) {
 			closestDistance = currentDistance;
 			retOrder = &orderBuffers[i];
