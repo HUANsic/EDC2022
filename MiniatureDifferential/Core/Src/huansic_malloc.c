@@ -18,6 +18,8 @@
 Path pathBuffers[HUANSIC_PATH_PREMALLOC_SIZE];
 Order orderBuffers[HUANSIC_ORDER_PREMALLOC_SIZE];
 
+extern Order *delivering[5];
+
 __weak void custom_path_free_fault(Path *ptr) {
 
 }
@@ -95,6 +97,8 @@ void huansic_order_init() {
 	uint8_t i;
 	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++)
 		orderBuffers[i].id = -1;
+	for (i = 0; i < 5; i++)
+		delivering[i] = &orderBuffers[i];		// give it some default value
 }
 
 Order* huansic_order_new(int8_t id) {
@@ -121,8 +125,47 @@ Order* huansic_order_new(int8_t id) {
 }
 
 void huansic_order_delete(Order *ptr) {
-	if(ptr->id == -1)
+	if (ptr->id == -1)
 		custom_order_free_fault(ptr);
 	else
 		ptr->id = -1;		// simple as is
+}
+
+Order* huansic_order_findClosestDest(Coordinate *coord) {
+	Order *retOrder = 0;
+	float currentDistance, closestDistance = 1000000000000;
+	uint8_t i;
+	for (i = 0; i < 5; i++) {
+		if (delivering[i]->id == -1)		// if it is an empty order
+			continue;
+		currentDistance = powf(delivering[i]->destCoord.x - coord->x, 2)
+				+ powf(delivering[i]->destCoord.y - coord->y);
+		if (currentDistance < closestDistance) {
+			closestDistance = currentDistance;
+			retOrder = delivering[i];
+		}
+	}
+	return retOrder;
+}
+
+Order* huansic_order_findClosestStart(Coordinate *coord) {
+	Order *retOrder = 0;
+	float currentDistance, closestDistance = 1000000000000;
+	uint8_t i;
+	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++) {
+		if (orderBuffers[i].id == -1)		// if it is an empty order
+			continue;
+		if (&orderBuffers[i] == delivering[0] || &orderBuffers[i] == delivering[1]
+				|| &orderBuffers[i] == delivering[2] || &orderBuffers[i] == delivering[3]
+				|| &orderBuffers[i] == delivering[4])		// if it is in delivery list
+			continue;
+
+		currentDistance = powf(orderBuffers[i].startCoord.x - coord->x, 2)
+				+ powf(orderBuffers[i].startCoord.y - coord->y);
+		if (currentDistance < closestDistance) {
+			closestDistance = currentDistance;
+			retOrder = &orderBuffers[i];
+		}
+	}
+	return retOrder;
 }
