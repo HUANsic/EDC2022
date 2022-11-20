@@ -21,4 +21,6 @@ void huansic_xb_requestGameInfo(XB_HandleTypeDef *hxb);
 
 void huansic_xb_setBeacon(XB_HandleTypeDef *hxb);
 
+void huansic_xb_interact(XB_HandleTypeDef *hxb);
+
 #endif /* INC_HUANSIC_XBLIB_H_ */
