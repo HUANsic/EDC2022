@@ -1,17 +1,15 @@
+#pragma once
 /*
  * Astar_util.h
  *
- *  Created on: 2022å¹´11æœˆ13æ—¥
+ *  Created on: 2022Äê11ÔÂ13ÈÕ
  *      Author: Ming
  */
-
-#ifndef INC_ASTAR_UTIL_H_
-#define INC_ASTAR_UTIL_H_
-
 #include "huansic_types.h"
 #include "ming_malloc.h"
 #include "stdlib.h"
-#include "collab_util.h"
+#include "stdio.h"
+//#include "collab_util.h"
 
  // search if crash walls
 uint8_t Find_crash(uint16_t cor, uint8_t flag);
@@ -23,7 +21,6 @@ int8_t dir(uint16_t cor1, uint16_t cor2);
 uint8_t findend(uint16_t cur, uint16_t end, uint8_t step);
 // expand the queue
 uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* end, uint8_t step);
-// A Star search
-Path* A_Star(Coordinate* start, Coordinate* last, uint8_t step);
 
-#endif /* INC_ASTAR_UTIL_H_ */
+// A Star search
+void A_Star(Coordinate* start, Coordinate* last, uint8_t step);

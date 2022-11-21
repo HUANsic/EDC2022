@@ -1,3 +1,4 @@
+#pragma once
 /*
  * huansic_malloc.h
  *
@@ -10,23 +11,23 @@
 
 #include "huansic_types.h"
 
-// init the huansic_path_area
+ // init the huansic_path_area
 void huansic_path_malloc_init();
 // malloc
 Path* huansic_path_new();
 // free
-void huansic_path_delete(Path *ptr);
+void huansic_path_delete(Path* ptr);
 
-void huansic_path_cascade(Path *last, Path *next);
+void huansic_path_cascade(Path* last, Path* next);
 
-Path* huansic_path_break(Path *newTail);
+Path* huansic_path_break(Path* newTail);
 
 
 void huansic_order_init();
 
 Order* huansic_order_new(int8_t id);
 
-void huansic_order_delete(Order *ptr);
+void huansic_order_delete(Order* ptr);
 
 
 #endif /* INC_HUANSIC_MALLOC_H_ */

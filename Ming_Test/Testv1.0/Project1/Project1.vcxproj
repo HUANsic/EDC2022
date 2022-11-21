@@ -18,6 +18,16 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ming_malloc.h" />
+    <ClInclude Include="Astar_util.h" />
+    <ClInclude Include="huansic_types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ming_malloc.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="Astar_util.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -126,16 +136,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Astar_util.h" />
-    <ClInclude Include="..\..\huansic_types.h" />
-    <ClInclude Include="..\..\main.h" />
-    <ClInclude Include="..\..\ming_types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Astar_util.c" />
-    <ClCompile Include="..\..\main.c" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

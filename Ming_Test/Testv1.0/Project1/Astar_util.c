@@ -1,7 +1,7 @@
 /*
  * Astar_util.c
  *
- *  Created on: 2022å¹´11æœˆ13æ—¥
+ *  Created on: 2022Äê11ÔÂ13ÈÕ
  *      Author: Ming
  */
 
@@ -224,7 +224,7 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* en
 				{
 					editcost(index, &newnode);
 				}
-				if(findend(coordinateindex, end->cor, step))
+				if (findend(coordinateindex, end->cor, step))
 				{
 					uint16_t i = findin_queue(coordinateindex);
 					return i;
@@ -261,69 +261,69 @@ void A_Star(Coordinate* start, Coordinate* last, uint8_t step) {
 		}
 	}
 
-//	A_Star_Node* p = &openlist.buffer[Flag - 1];
-//	if (p->cor == end.cor)
-//	{
-//		printf("\n{%d ; %d}", last->x, last->y);
-//		while (p->fatherindex != 65535)
-//		{
-//			uint16_t x = openlist.buffer[p->fatherindex].cor / 256;
-//			uint16_t y = openlist.buffer[p->fatherindex].cor % 256;
-//			printf("\n{%d ; %d}", x, y);
-//			p = &openlist.buffer[p->fatherindex];
-//		}
-//	}
-//	else
-//	{
-//		printf("\n{%d ; %d}", last->x, last->y);
-//		printf("\n{%d ; %d}", p->cor / 256, p->cor % 256);
-//		while (p->fatherindex != 65535)
-//		{
-//			uint16_t x = openlist.buffer[p->fatherindex].cor / 256;
-//			uint16_t y = openlist.buffer[p->fatherindex].cor % 256;
-//			printf("\n{%d ; %d}", x, y);
-//			p = &openlist.buffer[p->fatherindex];
-//		}
-//	}
-	//we now get the path
-	Coordinate Astar_path[16];
-	Astar_path[15].x = last->x;
-	Astar_path[15].y = last->y;
-	uint8_t i = 14;
-
 	A_Star_Node* p = &openlist.buffer[Flag - 1];
-	if (p->cor != end.cor)
-	{
-		Astar_path[i].x = p->cor / 256;
-		Astar_path[i].y = p->cor % 256;
-		i--;
-	}
-	if(p->fatherindex != 65535) lastdir = dir(openlist.buffer[p->fatherindex].cor, p->cor);
-	while(p->fatherindex != 65535)
-	{
-		if(lastdir != dir(openlist.buffer[p->fatherindex].cor, p->cor))
+	if (p->cor == end.cor)
 		{
-			Astar_path[i].x = openlist.buffer[p->fatherindex].cor / 256;
-			Astar_path[i].y = openlist.buffer[p->fatherindex].cor % 256;
-			if(i == 1){
-				i = 0;
-				break; // TODO
+			printf("\n{%d ; %d}", last->x, last->y);
+			while (p->fatherindex != 65535)
+			{
+				uint16_t x = openlist.buffer[p->fatherindex].cor / 256;
+				uint16_t y = openlist.buffer[p->fatherindex].cor % 256;
+				printf("\n{%d ; %d}", x, y);
+				p = &openlist.buffer[p->fatherindex];
 			}
-			i = i - 1;
-			lastdir = dir(openlist.buffer[p->fatherindex].cor, p->cor);
 		}
-		p = &(openlist.buffer[p->fatherindex]);
-	}
-	Astar_path[i].x = p->cor / 256;
-	Astar_path[i].y = p->cor % 256;
-	Path* huanpathhead = jymm_pathfind_straight(&Astar_path[i], &Astar_path[i + 1]);
-	Path* op = huanpathhead;
-	Path* straightPath = NULL;
-	for (i = i + 1; i < 16; i++) {
-		straightPath = jymm_pathfind_straight(&Astar_path[i], &Astar_path[i + 1]);
-		huansic_path_cascade(op, straightPath);
-		op = straightPath;
-	}
+		else
+		{
+			printf("\n{%d ; %d}", last->x, last->y);
+			printf("\n{%d ; %d}", p->cor / 256, p->cor % 256);
+			while (p->fatherindex != 65535)
+			{
+				uint16_t x = openlist.buffer[p->fatherindex].cor / 256;
+				uint16_t y = openlist.buffer[p->fatherindex].cor % 256;
+				printf("\n{%d ; %d}", x, y);
+				p = &openlist.buffer[p->fatherindex];
+			}
+		}
+	//	//we now get the path
+	//Coordinate Astar_path[8];
+	//Astar_path[7].x = last->x;
+	//Astar_path[7].y = last->y;
+	//uint8_t i = 6;
+	//A_Star_Node* p = &openlist.buffer[Flag - 1];
+	//if (p->cor != end.cor)
+	//{
+	//	Astar_path[6].x = p->cor / 256;
+	//	Astar_path[6].y = p->cor % 256;
+	//	i--;
+	//	lastdir = dir(p->cor, end.cor);
+	//}
+	//else lastdir = dir(openlist.buffer[p->fatherindex].cor, p->cor);
+	//while (p->fatherindex != 65535)
+	//{
+	//	if (lastdir != dir(openlist.buffer[p->fatherindex].cor, p->cor))
+	//	{
+	//		Astar_path[i].x = openlist.buffer[p->fatherindex].cor / 256;
+	//		Astar_path[i].y = openlist.buffer[p->fatherindex].cor % 256;
+	//		if (i == 1) {
+	//			i = 0;
+	//			break;
+	//		}
+	//		i = i - 1;
+	//		lastdir = dir(openlist.buffer[p->fatherindex].cor, p->cor);
+	//	}
+	//	p = &(openlist.buffer[p->fatherindex]);
+	//}
+	//Astar_path[i].x = p->cor / 256;
+	//Astar_path[i].y = p->cor % 256;
+	//Path* huanpathhead = jymm_pathfind_straight(&Astar_path[i], &Astar_path[i + 1]);
+	//Path* op = huanpathhead;
+	//Path* straightPath = NULL;
+	//for (i = i + 1; i < 7; i++) {
+	//	straightPath = jymm_pathfind_straight(&Astar_path[i], &Astar_path[i + 1]);
+	//	huansic_path_cascade(op, straightPath);
+	//	op = straightPath;
+	//}
 
-	return huanpathhead;
+	//return huanpathhead;
 }
