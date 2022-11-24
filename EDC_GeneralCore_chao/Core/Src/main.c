@@ -166,6 +166,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+  //Motor init
 	HUAN_MOTOR1_Init();
 	HUAN_MOTOR2_Init();
 	HUAN_MOTOR3_Init();
@@ -177,6 +178,7 @@ int main(void)
 	// tick per rotor rev = 54 (calculated)
 	// reduction ratio = 20 (given)
 
+	//Set PID timer
 	HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
 
