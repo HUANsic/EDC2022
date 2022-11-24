@@ -72,15 +72,8 @@ typedef struct {
 
 typedef struct Path_t{
 	Coordinate start, end;		// 4 + 4
-	float speed;				// 4
-	float radius, omega;		// 4 + 4
 	struct Path_t *nextPath;	// 4
-	enum Type{
-		ignore = 0,
-		linear = 1,
-		angular = 2
-	} type;						// 1
-	uint8_t referenceCount;		// 1
+	uint8_t referenceCount;		// 1 （4）
 } Path;
 
 #endif /* INC_HUANSIC_TYPES_H_ */

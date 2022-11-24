@@ -51,8 +51,6 @@ Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
 	Path *straightPath = huansic_path_new();
 	straightPath->start = *start;
 	straightPath->end = *end;
-	straightPath->type = linear;
-	straightPath->speed = PATH_DEFAULT_LINEAR_SPEED;
 	return straightPath;
 }
 
@@ -61,141 +59,63 @@ void chao_move(Path *path) {
 	float diffAngle;
 	int8_t isClockwise;
 
-	switch (path->type) {
-	case ignore:
-		break;
-	case linear: {
-		uint8_t targetX = path->end.x;
-		uint8_t targetY = path->end.y;
+	uint8_t targetX = path->end.x;
+	uint8_t targetY = path->end.y;
 
-		uint8_t currentX = myCoord.x;
-		uint8_t currentY = myCoord.y;
+	uint8_t currentX = myCoord.x;
+	uint8_t currentY = myCoord.y;
 
-		while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
-				&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
+	while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
+			&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
 
-			if (currentX == targetX) {
-				if (currentY < targetY) {
-					currentAngle = M_PI / 2;
-				} else {
-					currentAngle = -M_PI / 2;
-				}
-			} else if (targetY >= currentY) {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+		if (currentX == targetX) {
+			if (currentY < targetY) {
+				currentAngle = M_PI / 2;
 			} else {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = -M_PI
-							+ atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+				currentAngle = -M_PI / 2;
 			}
-
-			if (max(currentAngle, angleZ) - min(currentAngle, angleZ)
-					> 2 * M_PI - (max(currentAngle, angleZ) - min(currentAngle, angleZ))) {
-				diffAngle = 2 * M_PI - max(currentAngle, angleZ) + min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = 1;
-				} else {
-					isClockwise = -1;
-				}
+		} else if (targetY >= currentY) {
+			if (targetX > currentX) {
+				currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 			} else {
-				diffAngle = max(currentAngle, angleZ) - min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = -1;
-				} else {
-					isClockwise = 1;
-				}
+				currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
 			}
-			if (diffAngle < PATH_THRESH_ANGLE) {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM + isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM - isClockwise * k * diffAngle;
+		} else {
+			if (targetX > currentX) {
+				currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 			} else {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = isClockwise * k * diffAngle;
+				currentAngle = -M_PI
+						+ atan((float) (targetY - currentY) / (targetX - currentX));
 			}
 		}
-		break;
-	}
 
-	case angular: {
-		uint8_t targetX = path->end.x;
-		uint8_t targetY = path->end.y;
-
-		uint8_t currentX = myCoord.x;
-		uint8_t currentY = myCoord.y;
-
-		while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
-				&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
-			float currentAngle;
-
-			if (currentX == targetX) {
-				if (currentY < targetY) {
-					currentAngle = M_PI / 2;
-				} else {
-					currentAngle = -M_PI / 2;
-				}
-			} else if (targetY >= currentY) {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+		if (max(currentAngle, angleZ) - min(currentAngle, angleZ)
+				> 2 * M_PI - (max(currentAngle, angleZ) - min(currentAngle, angleZ))) {
+			diffAngle = 2 * M_PI - max(currentAngle, angleZ) + min(currentAngle, angleZ);
+			if (currentAngle > angleZ) {
+				isClockwise = 1;
 			} else {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = -M_PI
-							+ atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+				isClockwise = -1;
 			}
-
-			float diffAngle;
-			int8_t isClockwise;
-			if (max(currentAngle, angleZ)
-					- min(currentAngle, angleZ)
-					> 2 * M_PI
-							- (max(currentAngle, angleZ)
-									- min(currentAngle, angleZ))) {
-				diffAngle = 2 * M_PI - max(currentAngle, angleZ)
-						+ min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = 1;
-				} else {
-					isClockwise = -1;
-				}
+		} else {
+			diffAngle = max(currentAngle, angleZ) - min(currentAngle, angleZ);
+			if (currentAngle > angleZ) {
+				isClockwise = -1;
 			} else {
-				diffAngle = max(currentAngle, angleZ)
-						- min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = -1;
-				} else {
-					isClockwise = 1;
-				}
-			}
-			if (diffAngle < PATH_THRESH_ANGLE) {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM + isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM - isClockwise * k * diffAngle;
-			} else {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = isClockwise * k * diffAngle;
+				isClockwise = 1;
 			}
 		}
-		break;
-	}
-
+		if (diffAngle < PATH_THRESH_ANGLE) {
+			uint8_t k = 10;
+			hmotor_left.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
+					* MOTOR_REV_PER_CM + isClockwise * k * diffAngle;
+			hmotor_right.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
+					* MOTOR_REV_PER_CM - isClockwise * k * diffAngle;
+		} else {
+			uint8_t k = 10;
+			hmotor_left.goalSpeed = isClockwise * k * diffAngle;
+			hmotor_right.goalSpeed = isClockwise * k * diffAngle;
+		}
 	}
 }
 //

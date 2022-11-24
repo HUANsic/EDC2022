@@ -8,33 +8,25 @@
 #include "huansic_pathfinder.h"
 
 /* constant anchors */
-const Coordinate outterCoords[12] = {
+const Coordinate outterCoords[8] = {
 		{ .x = 35, .y = 35 },
-		{ .x = 110, .y = 35 },
-		{ .x = 114, .y = 35 },
+		{ .x = 12714, .y = 35 },
 		{ .x = 219, .y = 35 },
-		{ .x = 219, .y = 110 },
-		{ .x = 219, .y = 144 },
+		{ .x = 219, .y = 127 },
 		{ .x = 219, .y = 219 },
-		{ .x = 144, .y = 219 },
-		{ .x = 110, .y = 219 },
+		{ .x = 127, .y = 219 },
 		{ .x = 35, .y = 219 },
-		{ .x = 35, .y = 144 },
-		{ .x = 35, .y = 110 }
+		{ .x = 35, .y = 127 }
 };
 
-const Coordinate innerCoords[8] = {
-		{ .x = 110, .y = 43 },
-		{ .x = 144, .y = 43 },
-		{ .x = 211, .y = 110 },
-		{ .x = 211, .y = 144 },
-		{ .x = 144, .y = 211 },
-		{ .x = 110, .y = 211 },
-		{ .x = 43, .y = 144 },
-		{ .x = 43, .y = 110 }
+const Coordinate innerCoords[4] = {
+		{ .x = 127, .y = 43 },
+		{ .x = 211, .y = 127 },
+		{ .x = 127, .y = 211 },
+		{ .x = 43, .y = 127 }
 };
 
-const Node outterNodes[12] = {
+const Node outterNodes[8] = {
 		{ .freeable = 0, .id = 0, .location = &outterCoords[0] },
 		{ .freeable = 0, .id = 1, .location = &outterCoords[1] },
 		{ .freeable = 0, .id = 2, .location = &outterCoords[2] },
@@ -42,32 +34,22 @@ const Node outterNodes[12] = {
 		{ .freeable = 0, .id = 4, .location = &outterCoords[4] },
 		{ .freeable = 0, .id = 5, .location = &outterCoords[5] },
 		{ .freeable = 0, .id = 6, .location = &outterCoords[6] },
-		{ .freeable = 0, .id = 7, .location = &outterCoords[7] },
-		{ .freeable = 0, .id = 8, .location = &outterCoords[8] },
-		{ .freeable = 0, .id = 9, .location = &outterCoords[9] },
-		{ .freeable = 0, .id = 10, .location = &outterCoords[10] },
-		{ .freeable = 0, .id = 11, .location = &outterCoords[11] }
+		{ .freeable = 0, .id = 7, .location = &outterCoords[7] }
 };
 
-const Node innerNodes[8] = {
+const Node innerNodes[4] = {
 		{ .freeable = 0, .id = 12, .location = &innerCoords[0] },
 		{ .freeable = 0, .id = 13, .location = &innerCoords[1] },
 		{ .freeable = 0, .id = 14, .location = &innerCoords[2] },
-		{ .freeable = 0, .id = 15, .location = &innerCoords[3] },
-		{ .freeable = 0, .id = 16, .location = &innerCoords[4] },
-		{ .freeable = 0, .id = 17, .location = &innerCoords[5] },
-		{ .freeable = 0, .id = 18, .location = &innerCoords[6] },
-		{ .freeable = 0, .id = 19, .location = &innerCoords[7] }
+		{ .freeable = 0, .id = 15, .location = &innerCoords[3] }
 };
 
 /* the map / connection matrix */
-// naming convention: byte_bit[][]
-uint16_t outter_outter[12];				// 12 x 12
-uint8_t outter_inner[12];				// 12 x 8
-uint8_t outter_obstacle[12][3];			// 12 x 20
-uint8_t inner_inner[8];					// 8 x 8
-uint8_t inner_obstacle[8][3];			// 8 x 20
-uint8_t obstacle_obstacle[20][3];		// 20 x 20
+float outter_outter[8][8], outter_inner[8][4], outter_obstacle[8][20], inner_inner[4][4],
+		inner_obstacle[4][20], obstacle_obstacle[20][20];
+// 8x8+8x4+8x20+4x4+4x20+20x20=256+16+80+400=752
+float start_all[32], dest_all[32];
+float start_end;
 
 /* external variables */
 extern const Rectangle gameBoarder[8];
@@ -86,49 +68,7 @@ void updateMap() {
 }
 
 void initConnectionMap() {
-	uint8_t i;
-	// outter_outter
-	outter_outter[0] = 0x0707;
-	outter_outter[1] = 0x0B00;
-	outter_outter[2] = 0x0D00;
-	outter_outter[3] = 0x0EE0;
-	outter_outter[4] = 0x0160;
-	outter_outter[5] = 0x01A0;
-	outter_outter[6] = 0x01DC;
-	outter_outter[7] = 0x002C;
-	outter_outter[8] = 0x0038;
-	outter_outter[9] = 0x083B;
-	outter_outter[10] = 0x0805;
-	outter_outter[11] = 0x0806;
 
-	// outter_inner
-	for (i = 0; i < 12; i++)
-		outter_inner[i] = 0x00;
-
-	// outter_obstacle
-	for (i = 0; i < 12; i++) {
-		outter_obstacle[i][0] = 0x00;
-		outter_obstacle[i][1] = 0x00;
-		outter_obstacle[i][2] = 0x00;
-	}
-
-	// inner_inner
-	for (i = 0; i < 8; i++)
-		inner_inner[i] = 0x00;
-
-	// inner_obstacle
-	for (i = 0; i < 8; i++) {
-		inner_obstacle[i][0] = 0x00;
-		inner_obstacle[i][1] = 0x00;
-		inner_obstacle[i][2] = 0x00;
-	}
-
-	// obstacle_obstacle
-	for (i = 0; i < 8; i++) {
-		obstacle_obstacle[i][0] = 0x00;
-		obstacle_obstacle[i][1] = 0x00;
-		obstacle_obstacle[i][2] = 0x00;
-	}
 }
 
 uint8_t findCollision(Node *start, Node *end) {

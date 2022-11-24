@@ -31,6 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define HUANSIC_DEBUG 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -123,6 +124,7 @@ static void HUAN_MOTOR_LEFT_Init(void);
 static void HUAN_MOTOR_RIGHT_Init(void);
 static void HUAN_IMU_Init(void);
 static void HUAN_ZIGBEE_Init(void);
+void HUAN_OLED_PRINT_INFO(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -199,26 +201,31 @@ int main(void)
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	// uint8_t dc = 0;
 	while (1)
 	{
-		ssd1306_SetCursor(0, 0);
-		ssd1306_WriteString(firstLine, Font_6x8, White);
-		ssd1306_SetCursor(0, 8);
-		ssd1306_WriteString(secondLine, Font_6x8, White);
-		ssd1306_SetCursor(0, 16);
-		ssd1306_WriteString(thirdLine, Font_6x8, White);
-		ssd1306_UpdateScreen();
+		while(!gameStatus){		// if the game is not running
 
-		// GREEN_LED_TOGGLE;
-		HAL_Delay(100);
+		}
 
-		// pathfind
+		while (gameStage == 0) {		// pre-match
+			if (!gameStatus)	// if the game stopped
+				break;
+			// do some initialization
 
-		// evaluate, find best path
+			// find angle offset
+		}
 
-		// move
+		while (gameStage == 1){			// first-half
+			if (!gameStatus)	// if the game stopped
+				break;
 
+		}
+
+		while (gameStage == 2){			// second-half
+			if (!gameStatus)	// if the game stopped
+				break;
+
+		}
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -661,6 +668,22 @@ static void HUAN_ZIGBEE_Init(void) {
 	hxb.uartPort = &huart2;
 	huansic_xb_init(&hxb);
 }
+
+#if HUANSIC_DEBUG
+void HUAN_OLED_PRINT_INFO(void) {
+	ssd1306_SetCursor(0, 0);
+	ssd1306_WriteString(firstLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 8);
+	ssd1306_WriteString(secondLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 16);
+	ssd1306_WriteString(thirdLine, Font_6x8, White);
+	ssd1306_UpdateScreen();
+}
+#else
+void HUAN_OLED_PRINT_INFO(void) {
+
+}
+#endif
 
 /* USER CODE END 4 */
 

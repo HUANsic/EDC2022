@@ -1,2 +1,2 @@
 ../Core/Src/collab_util.c:50:7:jymm_pathfind_straight	24	static
-../Core/Src/collab_util.c:59:6:chao_move	72	static
+../Core/Src/collab_util.c:57:6:chao_move	48	static
