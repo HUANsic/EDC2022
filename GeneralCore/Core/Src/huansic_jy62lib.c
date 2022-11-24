@@ -58,11 +58,11 @@ void huansic_jy62_decodePackage(JY62_HandleTypeDef *hjy62) {
 	int16_t temp;
 	if (hjy62->buffer[1] == 0x51) {		// acceleration
 		temp = (hjy62->buffer[3] << 8) | hjy62->buffer[2];
-		hjy62->accel_x = temp / 32768.0 * 16.0;
+		hjy62->accel_x = temp / 32768.0 * 16.0 * 9.81;
 		temp = (hjy62->buffer[5] << 8) | hjy62->buffer[4];
-		hjy62->accel_y = temp / 32768.0 * 16.0;
+		hjy62->accel_y = temp / 32768.0 * 16.0 * 9.81;
 		temp = (hjy62->buffer[7] << 8) | hjy62->buffer[6];
-		hjy62->accel_z = temp / 32768.0 * 16.0;
+		hjy62->accel_z = temp / 32768.0 * 16.0 * 9.81;
 	} else if (hjy62->buffer[1] == 0x52) {		// angular speed
 		temp = (hjy62->buffer[3] << 8) | hjy62->buffer[2];
 		hjy62->omega_x = temp / 32768.0 * 2000.0 / 180.0 * M_PI;

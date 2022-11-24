@@ -52,8 +52,6 @@ Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
 	Path *straightPath = huansic_path_new();
 	straightPath->start = *start;
 	straightPath->end = *end;
-	straightPath->type = linear;
-	straightPath->speed = PATH_DEFAULT_LINEAR_SPEED;
 	return straightPath;
 }
 
