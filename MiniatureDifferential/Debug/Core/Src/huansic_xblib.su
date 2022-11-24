@@ -1,6 +1,7 @@
-../Core/Src/huansic_xblib.c:33:13:custom_order_new_failed	16	static
-../Core/Src/huansic_xblib.c:37:6:huansic_xb_init	16	static
-../Core/Src/huansic_xblib.c:42:9:huansic_xb_decodeHeader	16	static
-../Core/Src/huansic_xblib.c:61:6:huansic_xb_decodeBody	40	static
-../Core/Src/huansic_xblib.c:274:6:huansic_xb_requestGameInfo	24	static
-../Core/Src/huansic_xblib.c:279:6:huansic_xb_setBeacon	24	static
+../Core/Src/huansic_xblib.c:31:13:custom_order_new_failed	16	static
+../Core/Src/huansic_xblib.c:35:6:huansic_xb_init	16	static
+../Core/Src/huansic_xblib.c:40:9:huansic_xb_decodeHeader	16	static
+../Core/Src/huansic_xblib.c:276:6:huansic_xb_decodeBody	40	static
+../Core/Src/huansic_xblib.c:502:6:huansic_xb_requestGameInfo	24	static
+../Core/Src/huansic_xblib.c:507:6:huansic_xb_setBeacon	24	static
+../Core/Src/huansic_xblib.c:512:6:huansic_xb_interact	24	static

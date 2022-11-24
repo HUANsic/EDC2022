@@ -10,10 +10,11 @@
 
 #include "huansic_types.h"
 
+// init the huansic_path_area
 void huansic_path_malloc_init();
-
+// malloc
 Path* huansic_path_new();
-
+// free
 void huansic_path_delete(Path *ptr);
 
 void huansic_path_cascade(Path *last, Path *next);
