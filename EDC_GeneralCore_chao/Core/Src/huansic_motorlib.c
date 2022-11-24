@@ -55,7 +55,7 @@ void huansic_motor_init(Motor_HandleTypeDef *hmotor) {
 }
 
 void huansic_motor_pid(Motor_HandleTypeDef *hmotor) {
-	int16_t diffTick = (0x0FFFF & hmotor->counter->Instance->CNT) - hmotor->lastTick;
+	int16_t diffTick = (int16_t)(0x0FFFF & hmotor->counter->Instance->CNT) - (int16_t)hmotor->lastTick;
 
 	hmotor->lastTick = hmotor->counter->Instance->CNT;
 
