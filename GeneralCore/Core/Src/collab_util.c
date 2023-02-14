@@ -44,6 +44,7 @@ extern double angleZ, omegaZ, accelY;	// turning speed and linear acceleration
 extern float myScore;				// current score returned by Master
 extern float myCharge;				// current charge returned by Master
 extern Motor_HandleTypeDef hmotor_left, hmotor_right;
+extern Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
@@ -60,145 +61,75 @@ void chao_move(Path *path) {
 	float diffAngle;
 	int8_t isClockwise;
 
-	switch (path->type) {
-	case ignore:
-		break;
-	case linear: {
-		uint8_t targetX = path->end.x;
-		uint8_t targetY = path->end.y;
+	uint8_t targetX = path->end.x;
+	uint8_t targetY = path->end.y;
 
-		uint8_t currentX = myCoord.x;
-		uint8_t currentY = myCoord.y;
+	uint8_t currentX = myCoord.x;
+	uint8_t currentY = myCoord.y;
 
-		while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
-				&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
+	while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
+			&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
 
-			if (currentX == targetX) {
-				if (currentY < targetY) {
-					currentAngle = M_PI / 2;
-				} else {
-					currentAngle = -M_PI / 2;
-				}
-			} else if (targetY >= currentY) {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+		if (currentX == targetX) {
+			if (currentY < targetY) {
+				currentAngle = M_PI / 2;
 			} else {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = -M_PI
-							+ atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+				currentAngle = -M_PI / 2;
 			}
-
-			if (max(currentAngle, angleZ) - min(currentAngle, angleZ)
-					> 2 * M_PI - (max(currentAngle, angleZ) - min(currentAngle, angleZ))) {
-				diffAngle = 2 * M_PI - max(currentAngle, angleZ) + min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = 1;
-				} else {
-					isClockwise = -1;
-				}
+		} else if (targetY >= currentY) {
+			if (targetX > currentX) {
+				currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 			} else {
-				diffAngle = max(currentAngle, angleZ) - min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = -1;
-				} else {
-					isClockwise = 1;
-				}
+				currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
 			}
-			if (diffAngle < PATH_THRESH_ANGLE) {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM + isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM - isClockwise * k * diffAngle;
+		} else {
+			if (targetX > currentX) {
+				currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
 			} else {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = isClockwise * k * diffAngle;
+				currentAngle = -M_PI
+						+ atan((float) (targetY - currentY) / (targetX - currentX));
 			}
 		}
-		break;
-	}
 
-	case angular: {
-		uint8_t targetX = path->end.x;
-		uint8_t targetY = path->end.y;
-
-		uint8_t currentX = myCoord.x;
-		uint8_t currentY = myCoord.y;
-
-		while (!(abs(currentX - targetX) < PATH_MAX_TOLERANCE
-				&& abs(currentY - targetY) < PATH_MAX_TOLERANCE)) {
-			float currentAngle;
-
-			if (currentX == targetX) {
-				if (currentY < targetY) {
-					currentAngle = M_PI / 2;
-				} else {
-					currentAngle = -M_PI / 2;
-				}
-			} else if (targetY >= currentY) {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = M_PI + atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+		if (max(currentAngle, angleZ) - min(currentAngle, angleZ)
+				> 2 * M_PI - (max(currentAngle, angleZ) - min(currentAngle, angleZ))) {
+			diffAngle = 2 * M_PI - max(currentAngle, angleZ) + min(currentAngle, angleZ);
+			if (currentAngle > angleZ) {
+				isClockwise = 1;
 			} else {
-				if (targetX > currentX) {
-					currentAngle = atan((float) (targetY - currentY) / (targetX - currentX));
-				} else {
-					currentAngle = -M_PI
-							+ atan((float) (targetY - currentY) / (targetX - currentX));
-				}
+				isClockwise = -1;
 			}
-
-			float diffAngle;
-			int8_t isClockwise;
-			if (max(currentAngle, angleZ)
-					- min(currentAngle, angleZ)
-					> 2 * M_PI
-							- (max(currentAngle, angleZ)
-									- min(currentAngle, angleZ))) {
-				diffAngle = 2 * M_PI - max(currentAngle, angleZ)
-						+ min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = 1;
-				} else {
-					isClockwise = -1;
-				}
+		} else {
+			diffAngle = max(currentAngle, angleZ) - min(currentAngle, angleZ);
+			if (currentAngle > angleZ) {
+				isClockwise = -1;
 			} else {
-				diffAngle = max(currentAngle, angleZ)
-						- min(currentAngle, angleZ);
-				if (currentAngle > angleZ) {
-					isClockwise = -1;
-				} else {
-					isClockwise = 1;
-				}
-			}
-			if (diffAngle < PATH_THRESH_ANGLE) {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM + isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
-						* MOTOR_REV_PER_CM - isClockwise * k * diffAngle;
-			} else {
-				uint8_t k = 10;
-				hmotor_left.goalSpeed = isClockwise * k * diffAngle;
-				hmotor_right.goalSpeed = isClockwise * k * diffAngle;
+				isClockwise = 1;
 			}
 		}
-		break;
+		if (diffAngle < PATH_THRESH_ANGLE) {
+			uint8_t k = 10;
+			hmotor_left.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
+					* MOTOR_REV_PER_CM + isClockwise * k * diffAngle;
+			hmotor_right.goalSpeed = PATH_DEFAULT_LINEAR_SPEED
+					* MOTOR_REV_PER_CM - isClockwise * k * diffAngle;
+		} else {
+			uint8_t k = 10;
+			hmotor_left.goalSpeed = isClockwise * k * diffAngle;
+			hmotor_right.goalSpeed = isClockwise * k * diffAngle;
+		}
 	}
+}
 
-	}
+//0 - 360 degree, 0 degree front, clockwise
+void chao_move_angle(float _angle, float speed){
+	float angle_arc = (_angle / 180) * M_PI;
+	cmotor_lf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_rf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
+	cmotor_lb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
+	cmotor_rb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
 }
 
 Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end){
 	return A_star(start, end, 5);
-}
 }
