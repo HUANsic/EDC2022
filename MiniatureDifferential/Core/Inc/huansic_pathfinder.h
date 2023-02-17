@@ -19,4 +19,10 @@ typedef struct Node_t{
 	uint8_t freeable;			// 1 (2)
 } Node;
 
+typedef struct Path_t{
+	Coordinate start, end;		// 4 + 4
+	struct Path_t *nextPath;	// 4
+	uint8_t referenceCount;		// 1 （4）
+} Path;
+
 #endif /* INC_HUANSIC_PATHFINDER_H_ */

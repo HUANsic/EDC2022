@@ -28,28 +28,53 @@ extern float myCharge;				// current charge returned by Master
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
 
+// manual control mode variables
+extern float goalSpeedLeft, goalSpeedRight;
+
 __weak void custom_order_new_failed(int16_t id) {
 
 }
 
+void huansic_xb_align(XB_HandleTypeDef *hxb) {
+	uint8_t temp;
+	while (HAL_UART_Receive(hxb->uartPort, &temp, 1, 5) == HAL_OK)
+		;		// wait until there's been no data for at least 5ms (idle state)
+}
+
 void huansic_xb_init(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = 6;		// header length
+	huansic_xb_align(hxb);
 	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
 }
 
 uint8_t huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
+	uint8_t checksum;
+	uint8_t temp1, temp2, temp3, temp4, temp0;
 	// check header
-	if (hxb->buffer[0] != 0x55 || hxb->buffer[1] != 0xAA)
+	if (hxb->buffer[0] != 0x55 || hxb->buffer[1] != 0xAA) {
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_13);
+		huansic_xb_align(hxb);
 		return 0;
+	}
 
 	// checksum
-	if (hxb->buffer[5]
-			!= (hxb->buffer[0] ^ hxb->buffer[1] ^ hxb->buffer[2] ^ hxb->buffer[3] ^ hxb->buffer[4]))
+	checksum = hxb->buffer[0] ^ hxb->buffer[1] ^ hxb->buffer[2] ^ hxb->buffer[3] ^ hxb->buffer[4];
+	if (hxb->buffer[5] != checksum) {
+		temp0 = hxb->buffer[0];
+		temp1 = hxb->buffer[1];
+		temp2 = hxb->buffer[2];
+		temp3 = hxb->buffer[3];
+		temp4 = hxb->buffer[4];
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
 		return 0;
+	}
 
 	// get and check packet ID
-	if (hxb->buffer[2] != 0x01 && hxb->buffer[2] != 0x05)
+	if (!((hxb->buffer[2] == 0x01) || (hxb->buffer[2] == 0x05) || (hxb->buffer[2] == 0xF0))) {
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
 		return 0;
+	}
+
 	hxb->nextPackageID = hxb->buffer[2];
 
 	// read next package length
@@ -491,6 +516,28 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			temp32 |= hxb->buffer[index + 15];
 			tempOrder->reward = *(float*) &temp32;
 		}
+	} else {
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_13);
+	}
+
+	// set up next DMA
+	hxb->nextPackageLength = 6;		// header length
+	hxb->nextPackageID = 0x00;		// the next one is header
+	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
+}
+
+void huansic_xb_decodeRemote(XB_HandleTypeDef *hxb) {
+	int16_t linear, angular;
+	if (hxb->buffer[0] == 0x01) {		// mode 1
+		// hxb->buffer[1-4] is the frame count, can be used to count lost packages
+		linear = hxb->buffer[5];// range from -4096 to 4096 -> map to -4096 to 4096 on both wheels
+		linear <<= 8;
+		linear |= hxb->buffer[6];
+		angular = hxb->buffer[7];// range from -4096 to 4096 -> map to -4096 to 4096 on left wheel and 4096 to -4096 on right wheel
+		angular <<= 8;
+		angular |= hxb->buffer[8];
+		goalSpeedLeft = linear + angular;
+		goalSpeedRight = linear - angular;
 	}
 
 	// set up next DMA

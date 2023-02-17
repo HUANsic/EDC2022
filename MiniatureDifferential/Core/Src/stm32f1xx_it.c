@@ -62,6 +62,13 @@ extern DMA_HandleTypeDef hdma_usart2_rx;
 extern Motor_HandleTypeDef hmotor_left, hmotor_right;
 extern JY62_HandleTypeDef himu;
 extern XB_HandleTypeDef hxb;
+extern uint8_t useRemoteControl, gameStatus;
+extern uint32_t lastRemoteSignalTimeStamp, lastMasterPackageTimeStamp;
+extern float goalSpeedLeft, goalSpeedRight;
+
+// manual control mode variables
+uint32_t lastRemoteSignalTimeStamp, lastMasterPackageTimeStamp;
+float goalSpeedLeft, goalSpeedRight;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -222,17 +229,27 @@ void DMA1_Channel5_IRQHandler(void)
 void DMA1_Channel6_IRQHandler(void)
 {
 	/* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
-	if (hxb.nextPackageID == 0x00) {
-		huansic_xb_decodeHeader(&hxb);
-		HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
-	} else {
-		huansic_xb_decodeBody(&hxb);
-		HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
-	}
+
 	/* USER CODE END DMA1_Channel6_IRQn 0 */
 	HAL_DMA_IRQHandler(&hdma_usart2_rx);
 	/* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+	if (hxb.nextPackageID == 0x00) {
+		hxb.lastUpdated = HAL_GetTick();
+		huansic_xb_decodeHeader(&hxb);
+		HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
+	}
+	else if (hxb.nextPackageID == 0x01 || hxb.nextPackageID == 0x05) {	// from master
+		hxb.lastUpdated = HAL_GetTick();
+		huansic_xb_decodeBody(&hxb);
+		HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
+	} else if (hxb.nextPackageID == 0xF0) {		// from remote
+		hxb.lastUpdated = HAL_GetTick();
+		useRemoteControl = 1;
+		huansic_xb_decodeRemote(&hxb);
+		lastRemoteSignalTimeStamp = hxb.lastUpdated;
+	} else {
 
+	}
 	/* USER CODE END DMA1_Channel6_IRQn 1 */
 }
 
@@ -242,8 +259,26 @@ void DMA1_Channel6_IRQHandler(void)
 void TIM1_UP_IRQHandler(void)
 {
 	/* USER CODE BEGIN TIM1_UP_IRQn 0 */
+	if (useRemoteControl) {
+		if (HAL_GetTick() - lastRemoteSignalTimeStamp > 200) {	// heart beat protection
+			useRemoteControl = 0;
+			hmotor_left.goalSpeed = 0;
+			hmotor_right.goalSpeed = 0;
+		} else {
+			hmotor_left.goalSpeed = goalSpeedLeft;
+			hmotor_right.goalSpeed = goalSpeedRight;
+		}
+	} else if (gameStatus) {
+		if (HAL_GetTick() - lastMasterPackageTimeStamp > 200) {	// heart beat protection
+			gameStatus = 0;
+			hmotor_left.goalSpeed = 0;
+			hmotor_right.goalSpeed = 0;
+		}
+	}
+
 	huansic_motor_pid(&hmotor_left);
 	huansic_motor_pid(&hmotor_right);
+
 	/* USER CODE END TIM1_UP_IRQn 0 */
 	HAL_TIM_IRQHandler(&htim1);
 	/* USER CODE BEGIN TIM1_UP_IRQn 1 */

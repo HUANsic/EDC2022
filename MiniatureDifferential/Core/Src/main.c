@@ -106,7 +106,10 @@ uint32_t gameStageTimeLeft;		// in ms
 
 // OLED display buffer
 char firstLine[16], secondLine[16], thirdLine[16], fourthLine[16];		// 128 / 8 = 16
-		/* USER CODE END PV */
+
+// manual control mode flag
+uint8_t useRemoteControl;
+/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -169,61 +172,91 @@ int main(void)
 	MX_USART2_UART_Init();
 	MX_USART1_UART_Init();
 	/* USER CODE BEGIN 2 */
-	HAL_Delay(1000);
+	useRemoteControl = 0;
+	gameStatus = 0;
 
-	RED_LED_BLINK(2);
-	HAL_Delay(500);
-	HUAN_IMU_Init();
-
-	RED_LED_BLINK(3);
-	HAL_Delay(500);
-	HUAN_ZIGBEE_Init();
-
-	RED_LED_BLINK(4);
-	HAL_Delay(500);
-	ssd1306_Init();
-
+	BLUE_LED_ON;		// blink white for 500ms to indicate start up success
+	GREEN_LED_ON;
 	RED_LED_ON;
-	HAL_Delay(1000);
-	huansic_jy62_resetAngle(&himu);		// reset Z angle
-	HAL_Delay(1000);
-	RED_LED_OFF;
-
-	RED_LED_BLINK(5);
 	HAL_Delay(500);
+	GREEN_LED_OFF;
+	BLUE_LED_OFF;
+
+	// RED_LED_ON;
+	HUAN_IMU_Init();
+	HAL_Delay(10);
+	HUAN_ZIGBEE_Init();
+	HAL_Delay(10);
+	ssd1306_Init();
+	HAL_Delay(10);
+	huansic_jy62_resetAngle(&himu);		// reset Z angle
+	HAL_Delay(10);
 	HUAN_MOTOR_LEFT_Init();
 	HUAN_MOTOR_RIGHT_Init();
+	HAL_Delay(10);
 	HAL_TIM_Base_Start_IT(&htim1);		// for PID
-
-	HAL_Delay(1000);
+	HAL_Delay(10);
+	RED_LED_OFF;		// initialization done
+	sprintf(firstLine, "Good");
+	ssd1306_WriteString(firstLine, Font_6x8, White);
+	ssd1306_UpdateScreen();
+	// BLUE_LED_ON;		// ready for operation
 
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	while (1)
-	{
-		while(!gameStatus){		// if the game is not running
+	uint8_t i = 0, j = 0;
+	while (1) {
+		j++;
+		while (!gameStatus || useRemoteControl) {
+			sprintf(firstLine, "Good %3d %3d", i++, j);
+			// if the game is not running (or in remote mode)
+			if (useRemoteControl)
+				sprintf(secondLine, "Remote!");
+			else
+				sprintf(secondLine, "No Remote!");
+			sprintf(thirdLine, "%lx", hxb.lastUpdated);
 
+			ssd1306_SetCursor(0, 0);
+			ssd1306_WriteString(firstLine, Font_6x8, White);
+			ssd1306_SetCursor(0, 8);
+			ssd1306_WriteString(secondLine, Font_6x8, White);
+			ssd1306_SetCursor(0, 16);
+			ssd1306_WriteString(thirdLine, Font_6x8, White);
+			ssd1306_SetCursor(0, 24);
+			ssd1306_WriteString(fourthLine, Font_6x8, White);
+			ssd1306_UpdateScreen();
+			HAL_Delay(200);
 		}
 
+		GREEN_LED_ON;
 		while (gameStage == 0) {		// pre-match
-			if (!gameStatus)	// if the game stopped
+			if (!gameStatus || useRemoteControl) {	// if the game stopped or remote kicks in
+				GREEN_LED_OFF;
+				BLUE_LED_ON;
 				break;
+			}
 			// do some initialization
 
 			// find angle offset
 		}
 
-		while (gameStage == 1){			// first-half
-			if (!gameStatus)	// if the game stopped
+		while (gameStage == 1) {			// first-half
+			if (!gameStatus || useRemoteControl) {	// if the game stopped or remote kicks in
+				GREEN_LED_OFF;
+				BLUE_LED_ON;
 				break;
+			}
 
 		}
 
-		while (gameStage == 2){			// second-half
-			if (!gameStatus)	// if the game stopped
+		while (gameStage == 2) {			// second-half
+			if (!gameStatus || useRemoteControl) {	// if the game stopped or remote kicks in
+				GREEN_LED_OFF;
+				BLUE_LED_ON;
 				break;
+			}
 
 		}
 		/* USER CODE END WHILE */
