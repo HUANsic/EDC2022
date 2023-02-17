@@ -11,7 +11,7 @@
 #include "stm32f1xx_hal.h"
 
 typedef struct {
-	uint16_t x, y;		// 2 + 2
+	int16_t x, y;		// 2 + 2
 } Coordinate;			// = 4
 
 typedef struct {
@@ -66,15 +66,14 @@ typedef struct {
 	uint8_t nextPackageID;			// 0x00: next is header; others: check ID
 	uint8_t nextPackageLength;		// length of next DMA receive
 
-	// uint8_t buffer[max(1 + 4 + 4 + 8 + 4 + (1 + 5 * 28) + 28, 1 + (1 + 5 * 16) + 4 + 2 * (1 + (3 * 8))];
-	// uint8_t buffer[max(190, 136)];
-	uint8_t buffer[192];	// put at the end to prevent block alignment issues
+	// max is 126
+	uint8_t buffer[130];	// put at the end to prevent block alignment issues
 } XB_HandleTypeDef;
 
 typedef struct Path_t{
 	Coordinate start, end;		// 4 + 4
 	struct Path_t *nextPath;	// 4
-	uint8_t referenceCount;		// 1
-} Path;							// = 13
+	uint8_t referenceCount;		// 1 （4）
+} Path;
 
 #endif /* INC_HUANSIC_TYPES_H_ */

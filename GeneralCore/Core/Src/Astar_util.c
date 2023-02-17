@@ -235,7 +235,7 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* en
 	return 0;
 }
 
-void A_Star(Coordinate* start, Coordinate* last, uint8_t step) {
+Path* A_Star_main(Coordinate* start, Coordinate* last, uint8_t step) {
 	A_Star_Node begin;
 	A_Star_Node end;
 	begin.cor = (start->x) * 256 + start->y;

@@ -21,11 +21,29 @@ Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end);
 
 // convert Path to PWM/Duty Cycle/Motor Speed
 void chao_move(Path *path);
-
+void chao_move_angle(float _angle, float speed);
 // decide where to go
 // void name_get_destination();
 
 // Kalman filter
 // void ming_coord_kalman_filter();
+
+//// add by ming-bot
+//// some A* utils
+//// init map (contain obstacles, beacon or something else)
+//void init_map(Map* map);
+//// init priority queue
+//void init_queue(Queue* L);
+//// copy Node
+//void copy_Node(Node* p1, Node* p2);
+//// append Node p in prority queue
+//void append(Queue* L, Node p);
+//// delet index
+//void del(Queue* L, int index);
+//int getdex(Queue* L, node* p);
+//// print map for debug
+//void print_Map(Map* G);
+//// A* main body
+//Node* startAstar(Coordinate start, Coordinate last);
 
 #endif /* INC_COLLAB_UTIL_H_ */

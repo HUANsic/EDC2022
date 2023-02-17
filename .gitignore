@@ -1,0 +1,9 @@
+language.settings.xml
+makefile
+*.prefs
+*.o
+*.elf
+*.list
+*.map
+*.d
+*.su

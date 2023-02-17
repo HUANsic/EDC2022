@@ -59,7 +59,7 @@ extern TIM_HandleTypeDef htim6;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 /* USER CODE BEGIN EV */
-extern Motor_HandleTypeDef hmotor1, hmotor2, hmotor3, hmotor4;
+extern Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 extern JY62_HandleTypeDef himu;
 extern XB_HandleTypeDef hxb;
 
@@ -240,10 +240,10 @@ void DMA1_Channel6_IRQHandler(void)
 void TIM6_IRQHandler(void)
 {
 	/* USER CODE BEGIN TIM6_IRQn 0 */
-	huansic_motor_pid(&hmotor1);
-	huansic_motor_pid(&hmotor2);
-	huansic_motor_pid(&hmotor3);
-	huansic_motor_pid(&hmotor4);
+	huansic_motor_pid(&cmotor_lf);
+	huansic_motor_pid(&cmotor_rf);
+	huansic_motor_pid(&cmotor_lb);
+	huansic_motor_pid(&cmotor_rb);
 	/* USER CODE END TIM6_IRQn 0 */
 	HAL_TIM_IRQHandler(&htim6);
 	/* USER CODE BEGIN TIM6_IRQn 1 */
