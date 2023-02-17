@@ -1,4 +1,5 @@
 "./Core/Src/Astar_util.o"
+"./Core/Src/MatFun.o"
 "./Core/Src/collab_util.o"
 "./Core/Src/huansic_jy62lib.o"
 "./Core/Src/huansic_malloc.o"

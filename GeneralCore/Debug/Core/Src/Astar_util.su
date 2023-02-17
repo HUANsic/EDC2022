@@ -3,4 +3,4 @@
 ../Core/Src/Astar_util.c:75:8:dir	24	static
 ../Core/Src/Astar_util.c:83:9:findend	24	static
 ../Core/Src/Astar_util.c:96:10:Find_around_node	120	static
-../Core/Src/Astar_util.c:238:7:A_Star_main	136	static
+../Core/Src/Astar_util.c:239:7:A_Star_main	136	static

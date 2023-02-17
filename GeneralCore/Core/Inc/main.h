@@ -35,6 +35,7 @@ extern "C" {
 #include "huansic_jy62lib.h"
 #include "huansic_motorlib.h"
 #include "huansic_xblib.h"
+#include "Astar_util.h"
 
 /* USER CODE END Includes */
 
