@@ -9,7 +9,6 @@
 #define INC_COLLAB_UTIL_H_
 
 #include "huansic_types.h"
-#include "MatFun.h"
 
 // evaluation; decide which path is better by analyzing the cost
 float xiao_calculateCost(Path *path);

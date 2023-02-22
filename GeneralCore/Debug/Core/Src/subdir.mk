@@ -6,7 +6,6 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/Src/Astar_util.c \
-../Core/Src/MatFun.c \
 ../Core/Src/collab_util.c \
 ../Core/Src/huansic_jy62lib.c \
 ../Core/Src/huansic_malloc.c \
@@ -14,6 +13,7 @@ C_SRCS += \
 ../Core/Src/huansic_xblib.c \
 ../Core/Src/main.c \
 ../Core/Src/ming_malloc.c \
+../Core/Src/positionpid.c \
 ../Core/Src/ssd1306.c \
 ../Core/Src/ssd1306_fonts.c \
 ../Core/Src/stm32f1xx_hal_msp.c \
@@ -24,7 +24,6 @@ C_SRCS += \
 
 OBJS += \
 ./Core/Src/Astar_util.o \
-./Core/Src/MatFun.o \
 ./Core/Src/collab_util.o \
 ./Core/Src/huansic_jy62lib.o \
 ./Core/Src/huansic_malloc.o \
@@ -32,6 +31,7 @@ OBJS += \
 ./Core/Src/huansic_xblib.o \
 ./Core/Src/main.o \
 ./Core/Src/ming_malloc.o \
+./Core/Src/positionpid.o \
 ./Core/Src/ssd1306.o \
 ./Core/Src/ssd1306_fonts.o \
 ./Core/Src/stm32f1xx_hal_msp.o \
@@ -42,7 +42,6 @@ OBJS += \
 
 C_DEPS += \
 ./Core/Src/Astar_util.d \
-./Core/Src/MatFun.d \
 ./Core/Src/collab_util.d \
 ./Core/Src/huansic_jy62lib.d \
 ./Core/Src/huansic_malloc.d \
@@ -50,6 +49,7 @@ C_DEPS += \
 ./Core/Src/huansic_xblib.d \
 ./Core/Src/main.d \
 ./Core/Src/ming_malloc.d \
+./Core/Src/positionpid.d \
 ./Core/Src/ssd1306.d \
 ./Core/Src/ssd1306_fonts.d \
 ./Core/Src/stm32f1xx_hal_msp.d \
@@ -66,7 +66,7 @@ Core/Src/%.o Core/Src/%.su: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/Astar_util.d ./Core/Src/Astar_util.o ./Core/Src/Astar_util.su ./Core/Src/MatFun.d ./Core/Src/MatFun.o ./Core/Src/MatFun.su ./Core/Src/collab_util.d ./Core/Src/collab_util.o ./Core/Src/collab_util.su ./Core/Src/huansic_jy62lib.d ./Core/Src/huansic_jy62lib.o ./Core/Src/huansic_jy62lib.su ./Core/Src/huansic_malloc.d ./Core/Src/huansic_malloc.o ./Core/Src/huansic_malloc.su ./Core/Src/huansic_motorlib.d ./Core/Src/huansic_motorlib.o ./Core/Src/huansic_motorlib.su ./Core/Src/huansic_xblib.d ./Core/Src/huansic_xblib.o ./Core/Src/huansic_xblib.su ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/ming_malloc.d ./Core/Src/ming_malloc.o ./Core/Src/ming_malloc.su ./Core/Src/ssd1306.d ./Core/Src/ssd1306.o ./Core/Src/ssd1306.su ./Core/Src/ssd1306_fonts.d ./Core/Src/ssd1306_fonts.o ./Core/Src/ssd1306_fonts.su ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su
+	-$(RM) ./Core/Src/Astar_util.d ./Core/Src/Astar_util.o ./Core/Src/Astar_util.su ./Core/Src/collab_util.d ./Core/Src/collab_util.o ./Core/Src/collab_util.su ./Core/Src/huansic_jy62lib.d ./Core/Src/huansic_jy62lib.o ./Core/Src/huansic_jy62lib.su ./Core/Src/huansic_malloc.d ./Core/Src/huansic_malloc.o ./Core/Src/huansic_malloc.su ./Core/Src/huansic_motorlib.d ./Core/Src/huansic_motorlib.o ./Core/Src/huansic_motorlib.su ./Core/Src/huansic_xblib.d ./Core/Src/huansic_xblib.o ./Core/Src/huansic_xblib.su ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/ming_malloc.d ./Core/Src/ming_malloc.o ./Core/Src/ming_malloc.su ./Core/Src/positionpid.d ./Core/Src/positionpid.o ./Core/Src/positionpid.su ./Core/Src/ssd1306.d ./Core/Src/ssd1306.o ./Core/Src/ssd1306.su ./Core/Src/ssd1306_fonts.d ./Core/Src/ssd1306_fonts.o ./Core/Src/ssd1306_fonts.su ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su
 
 .PHONY: clean-Core-2f-Src
 

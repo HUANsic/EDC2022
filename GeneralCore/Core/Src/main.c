@@ -87,8 +87,11 @@ Order *delivering[5];		// package picked up but not yet delivered
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
+
 fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
-double angleZ, omegaZ, accelY;		// turning speed and linear acceleration
+float angleZ;
+double omegaZ, accelY;		// turning speed and linear acceleration
+float initangleZ;                  // init angleZ
 float myScore;				// current score returned by Master
 float myCharge;				// current charge returned by Master
 
@@ -180,10 +183,18 @@ int main(void)
 
 	//Set PID timer
 	HAL_TIM_Base_Start_IT(&htim6);
+	initangleZ = himu.theta_z;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	myCoord.x = 0;
+	myCoord.y = 0;
+	Coordinate goal;
+	goal.x = 10;
+	goal.y = 0;
+	uint8_t isArrived = 0;
+	uint32_t isUpdate = himu.lastUpdated;
     while (1) {
 
 //		HAL_Delay(2000);
@@ -197,6 +208,9 @@ int main(void)
 //
 //		HAL_Delay(2000);
 //		chao_move_angle(90, 4000); // 向左
+    	isUpdate = himu.lastUpdated;
+//    	isArrived = GotoDestination(goal);
+//    	if (isArrived == 1) break;
 
 		while(!gameStatus){		// if the game is not running
 //	    	LED1_ON;

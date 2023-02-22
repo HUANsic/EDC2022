@@ -137,7 +137,3 @@ Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end){
 	return A_Star_main(start, end, 5);
 }
 
-void ming_coord_kalman_filter()
-{
-
-}

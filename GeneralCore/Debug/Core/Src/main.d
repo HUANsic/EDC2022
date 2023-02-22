@@ -30,7 +30,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/huansic_types.h ../Core/Inc/huansic_motorlib.h \
  ../Core/Inc/huansic_xblib.h ../Core/Inc/huansic_malloc.h \
  ../Core/Inc/Astar_util.h ../Core/Inc/ming_malloc.h \
- ../Core/Inc/collab_util.h ../Core/Inc/MatFun.h ../Core/Inc/collab_util.h
+ ../Core/Inc/collab_util.h ../Core/Inc/positionpid.h \
+ ../Core/Inc/collab_util.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -69,5 +70,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/Astar_util.h:
 ../Core/Inc/ming_malloc.h:
 ../Core/Inc/collab_util.h:
-../Core/Inc/MatFun.h:
+../Core/Inc/positionpid.h:
 ../Core/Inc/collab_util.h:

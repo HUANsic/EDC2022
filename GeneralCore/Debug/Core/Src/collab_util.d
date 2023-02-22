@@ -26,7 +26,7 @@ Core/Src/collab_util.o: ../Core/Src/collab_util.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/MatFun.h ../Core/Inc/Astar_util.h ../Core/Inc/ming_malloc.h \
+ ../Core/Inc/Astar_util.h ../Core/Inc/ming_malloc.h \
  ../Core/Inc/huansic_malloc.h ../Core/Inc/collab_util.h
 ../Core/Inc/collab_util.h:
 ../Core/Inc/huansic_types.h:
@@ -56,7 +56,6 @@ Core/Src/collab_util.o: ../Core/Src/collab_util.c \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
-../Core/Inc/MatFun.h:
 ../Core/Inc/Astar_util.h:
 ../Core/Inc/ming_malloc.h:
 ../Core/Inc/huansic_malloc.h:
