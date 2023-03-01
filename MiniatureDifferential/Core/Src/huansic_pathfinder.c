@@ -10,7 +10,7 @@
 /* constant anchors */
 const Coordinate outterCoords[8] = {
 		{ .x = 35, .y = 35 },
-		{ .x = 12714, .y = 35 },
+		{ .x = 127, .y = 35 },
 		{ .x = 219, .y = 35 },
 		{ .x = 219, .y = 127 },
 		{ .x = 219, .y = 219 },
