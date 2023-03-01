@@ -9,6 +9,7 @@
 #define INC_MING_MALLOC_H_
 
 #include "stm32f1xx_hal.h"
+#include "huansic_malloc.h"
 
 #define QUEUE_SIZE 256
 #define LIST_SIZE 256

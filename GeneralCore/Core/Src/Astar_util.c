@@ -96,12 +96,13 @@ uint8_t findend(uint16_t cur, uint16_t end, uint8_t step)
 uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* end, uint8_t step) {
 	uint16_t x = openlist.buffer[currentindex].cor / 256;
 	uint16_t y = openlist.buffer[currentindex].cor % 256;
+	uint8_t obstacleflag = 1;//负责检测采取何种程度的避障
 	// left
 	if (x >= step) {
 		uint16_t curx = x - step;
 		uint16_t cury = y;
 		uint16_t coordinateindex = curx * 256 + cury;
-		if (Find_crash(coordinateindex, 1)) {
+		if (Find_crash(coordinateindex, obstacleflag)) {
 			//not in close_list
 			if (!findin_list(coordinateindex))
 			{
@@ -135,7 +136,7 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* en
 		uint16_t curx = x + step;
 		uint16_t cury = y;
 		uint16_t coordinateindex = curx * 256 + cury;
-		if (Find_crash(coordinateindex, 1)) {
+		if (Find_crash(coordinateindex, obstacleflag)) {
 			//not in close_list
 			if (!findin_list(coordinateindex))
 			{
@@ -169,7 +170,7 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* en
 		uint16_t curx = x;
 		uint16_t cury = y - step;
 		uint16_t coordinateindex = curx * 256 + cury;
-		if (Find_crash(coordinateindex, 1)) {
+		if (Find_crash(coordinateindex, obstacleflag)) {
 			//not in close_list
 			if (!findin_list(coordinateindex))
 			{
@@ -203,7 +204,7 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* en
 		uint16_t curx = x;
 		uint16_t cury = y + step;
 		uint16_t coordinateindex = curx * 256 + cury;
-		if (Find_crash(coordinateindex, 1)) {
+		if (Find_crash(coordinateindex, obstacleflag)) {
 			//not in close_list
 			if (!findin_list(coordinateindex))
 			{
