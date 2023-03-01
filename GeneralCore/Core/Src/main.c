@@ -142,7 +142,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-    HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -156,18 +156,18 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_DMA_Init();
-	MX_I2C1_Init();
-	MX_TIM1_Init();
-	MX_TIM2_Init();
-	MX_TIM3_Init();
-	MX_TIM4_Init();
-	MX_TIM5_Init();
-	MX_TIM8_Init();
-	MX_USART2_UART_Init();
-	MX_USART3_UART_Init();
-    MX_TIM6_Init();
+  MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_I2C1_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
+  MX_TIM8_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
     //Motor init
 	HUAN_MOTOR1_Init();
@@ -181,9 +181,10 @@ int main(void)
 	// tick per rotor rev = 54 (calculated)
 	// reduction ratio = 20 (given)
 
-	//Set PID timer
+	//Set PID timer after data stables
+	HAL_Delay(20);
 	HAL_TIM_Base_Start_IT(&htim6);
-	initangleZ = himu.theta_z;
+	initangleZ = himu.theta[2];
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -198,16 +199,16 @@ int main(void)
     while (1) {
 
 //		HAL_Delay(2000);
-//		chao_move_angle(180, 4000); // 向前
+//		chao_move_angle(180, 4000); // �?��?
 //
 //		HAL_Delay(2000);
-//		chao_move_angle(270, 4000); // 向右
+//		chao_move_angle(270, 4000); // �?��?�
 //
 //		HAL_Delay(2000);
-//		chao_move_angle(0, 4000); // 向后
+//		chao_move_angle(0, 4000); // �?��?�
 //
 //		HAL_Delay(2000);
-//		chao_move_angle(90, 4000); // 向左
+//		chao_move_angle(90, 4000); // �?�左
     	isUpdate = himu.lastUpdated;
 //    	isArrived = GotoDestination(goal);
 //    	if (isArrived == 1) break;
@@ -339,7 +340,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 50 * 72 - 1;
+  htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -427,12 +428,12 @@ static void MX_TIM2_Init(void)
   htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC1Filter = 0;
-  sConfig.IC2Polarity = TIM_ICPOLARITY_FALLING;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC2Filter = 0;
@@ -476,12 +477,12 @@ static void MX_TIM3_Init(void)
   htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC1Filter = 0;
-  sConfig.IC2Polarity = TIM_ICPOLARITY_FALLING;
+  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC2Filter = 0;
@@ -525,7 +526,7 @@ static void MX_TIM4_Init(void)
   htim4.Init.Period = 65535;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -574,7 +575,7 @@ static void MX_TIM5_Init(void)
   htim5.Init.Period = 65535;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+  sConfig.EncoderMode = TIM_ENCODERMODE_TI1;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
@@ -660,7 +661,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 50 * 72 - 1;
+  htim8.Init.Period = 65535;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -891,7 +892,7 @@ static void HUAN_MOTOR4_Init(void) {
 }
 
 static void HUAN_IMU_Init(void) {
-	himu.uartPort = &huart3;
+	himu.huart = &huart3;
 	huansic_jy62_init(&himu);
 }
 
@@ -900,6 +901,27 @@ static void HUAN_ZIGBEE_Init(void) {
 	huansic_xb_init(&hxb);
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if (himu.huart == huart) {
+		if (himu.pending_alignment)
+			huansic_jy62_isr(&himu);
+		else
+			huansic_jy62_dma_isr(&himu);
+	} /*else if(){
+
+	} */
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+	if (himu.huart == huart) {
+		if (himu.pending_alignment)
+			huansic_jy62_error(&himu);
+		else
+			huansic_jy62_dma_error(&himu);
+	} /*else if(){
+
+	}*/
+}
 /* USER CODE END 4 */
 
 /**

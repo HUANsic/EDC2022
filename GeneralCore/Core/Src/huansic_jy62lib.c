@@ -1,88 +1,246 @@
 /*
- * huansic_jy62lib.c
+ * huansic_jy62_it.c
  *
- *  Created on: Sep 28, 2022
+ *  Created on: Jan 24, 2023
  *      Author: Zonghuan Wu
  */
 
-#include "huansic_jy62lib.h"
+/*
+ *
+ #ifdef HUANSIC_JY62_DEBUG
+ himu->counter++;
+ HAL_GPIO_WritePin(himu->port, himu->pin, himu->counter & (1 << 5));
+ #endif
+ *
+ */
+#include <huansic_jy62lib.h>
 
-#define JY62_MESSAGE_LENGTH	11
+#define	HUANSIC_JY62_HEADER		0x55
+#define	HUANSIC_JY62_ACCEL		0x51
+#define	HUANSIC_JY62_OMEGA		0x52
+#define	HUANSIC_JY62_THETA		0x53
 
-uint8_t initAngle_pack[3] = { 0xFF, 0xAA, 0x52 };
-uint8_t calibrateAcce_pack[3] = { 0xFF, 0xAA, 0x67 };
-uint8_t setBaud115200_pack[3] = { 0xFF, 0xAA, 0x63 };
-uint8_t setBaud9600_pack[3] = { 0xFF, 0xAA, 0x64 };
-uint8_t setHorizontal_pack[3] = { 0xFF, 0xAA, 0x65 };
-uint8_t setVertical_pack[3] = { 0xFF, 0xAA, 0x66 };
-uint8_t sleepAndAwake_pack[3] = { 0xFF, 0xAA, 0x60 };
+uint8_t JY62_RESET_Z_ANGLE[] = { 0xFF, 0xAA, 0x52 };
+uint8_t JY62_BAUD_115200[] = { 0xFF, 0xAA, 0x63 };
+uint8_t JY62_BAUD_9600[] = { 0xFF, 0xAA, 0x64 };
 
-void huansic_jy62_init(JY62_HandleTypeDef *hjy62) {
-	if(!hjy62) return;
-	if(!hjy62->uartPort) return;
+// private function prototypes
+static inline void __huansic_jy62_decode_accel(JY62_HandleTypeDef *himu, uint8_t location);
+static inline void __huansic_jy62_decode_omega(JY62_HandleTypeDef *himu, uint8_t location);
+static inline void __huansic_jy62_decode_theta(JY62_HandleTypeDef *himu, uint8_t location);
+static inline void __huansic_jy62_decode_temp(JY62_HandleTypeDef *himu, uint8_t location);
 
-	huansic_jy62_resetAngle(hjy62);
+/*
+ * 		Initializes the port of the IMU.
+ * 		@param	himu	jy62 pending initialization
+ * 		@retval	enum IMU_STATUS
+ */
+enum IMU_STATUS huansic_jy62_init(JY62_HandleTypeDef *himu) {
+	// perform some necessary checks
+	if (!himu)
+		return IMU_ERROR;
 
-	hjy62->accel_x = 0;
-	hjy62->accel_y = 0;
-	hjy62->accel_z = 0;
-	hjy62->omega_x = 0;
-	hjy62->omega_y = 0;
-	hjy62->omega_z = 0;
-	hjy62->theta_x = 0;
-	hjy62->theta_y = 0;
-	hjy62->theta_z = 0;
+	if (!himu->huart)
+		return IMU_ERROR;
 
-	hjy62->lastUpdated = HAL_GetTick();
+#ifdef HUANSIC_JY62_RATE_20HZ
+#if (HUANSIC_JY62_BAUD != 9600)
+	HAL_UART_Transmit(himu->huart, JY62_BAUD_9600, 3, 10);
+	HAL_UART_DeInit(himu->huart);
+	himu->huart->Init.BaudRate = 9600;
+	HAL_UART_Init(himu->huart);
+	HAL_Delay(10);
+#endif
+#endif
 
-	HAL_UART_Receive_DMA(hjy62->uartPort, hjy62->buffer, JY62_MESSAGE_LENGTH);
+#ifdef HUANSIC_JY62_RATE_100HZ
+#if HUANSIC_JY62_BAUD != 115200
+	HAL_UART_Transmit(himu->huart, JY62_BAUD_115200, 3, 10);
+	HAL_UART_DeInit(himu->huart);
+	himu->huart->Init.BaudRate = 115200;
+	HAL_UART_Init(himu->huart);
+	HAL_Delay(10);
+#endif
+#endif
+
+	HAL_Delay(3);
+
+	// reset z-axis angle
+	HAL_UART_Transmit(himu->huart, JY62_RESET_Z_ANGLE, 3, 10);
+
+// instead, just use DMA
+	himu->pending_alignment = 0;
+	HAL_UART_Receive_DMA(himu->huart, &himu->buffer[0], 33);
+	himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+
+#ifdef HUANSIC_JY62_DEBUG
+	himu->counter = 0;
+#endif
+
+	return IMU_OK;
 }
 
-void huansic_jy62_resetAngle(JY62_HandleTypeDef *hjy62) {
-	HAL_UART_Transmit(hjy62->uartPort, initAngle_pack, 3, HAL_MAX_DELAY);
-}
+/*
+ * 		Handles the dma interrupts.
+ * 		@param	himu	jy62 whose port has sent out the interrupt signal
+ * 		@retval	enum IMU_STATUS
+ */
+enum IMU_STATUS huansic_jy62_dma_isr(JY62_HandleTypeDef *himu) {
+	if (!himu)
+		return IMU_ERROR;
 
-void huansic_jy62_decodePackage(JY62_HandleTypeDef *hjy62) {
-	// package header
-	if (hjy62->buffer[0] != 0x55)
-		return;
+	uint8_t temp8, i, i11;
 
-	// checksum
-	uint8_t sum = hjy62->buffer[0] + hjy62->buffer[1] + hjy62->buffer[2] + hjy62->buffer[3]
-			+ hjy62->buffer[4] + hjy62->buffer[5] + hjy62->buffer[6] + hjy62->buffer[7]
-			+ hjy62->buffer[8] + hjy62->buffer[9];
-	if (hjy62->buffer[10] != sum)
-		return;
+	for (i = 0, i11 = 0; i < 3; i++, i11 += 11) {
+		if (himu->buffer[0 + i11] != HUANSIC_JY62_HEADER) {		// header mis-aligned
+			himu->pending_alignment = 1;		// enter aligning mode if not already
+			HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);		// check next byte
+			if (i) {
+				__huansic_jy62_decode_temp(himu, i - 1);
+				himu->lastUpdated = HAL_GetTick();		// record if there has been a valid one
+			}
+			return IMU_HEADER_ERROR;
+		} else {
+			// check sum
+			temp8 = himu->buffer[0 + i11];
+			temp8 += himu->buffer[1 + i11];
+			temp8 += himu->buffer[2 + i11];
+			temp8 += himu->buffer[3 + i11];
+			temp8 += himu->buffer[4 + i11];
+			temp8 += himu->buffer[5 + i11];
+			temp8 += himu->buffer[6 + i11];
+			temp8 += himu->buffer[7 + i11];
+			temp8 += himu->buffer[8 + i11];
+			temp8 += himu->buffer[9 + i11];
 
-	// decoding
-	int16_t temp;
-	if (hjy62->buffer[1] == 0x51) {		// acceleration
-		temp = (hjy62->buffer[3] << 8) | hjy62->buffer[2];
-		hjy62->accel_x = temp / 32768.0 * 16.0 * 9.81;
-		temp = (hjy62->buffer[5] << 8) | hjy62->buffer[4];
-		hjy62->accel_y = temp / 32768.0 * 16.0 * 9.81;
-		temp = (hjy62->buffer[7] << 8) | hjy62->buffer[6];
-		hjy62->accel_z = temp / 32768.0 * 16.0 * 9.81;
-	} else if (hjy62->buffer[1] == 0x52) {		// angular speed
-		temp = (hjy62->buffer[3] << 8) | hjy62->buffer[2];
-		hjy62->omega_x = temp / 32768.0 * 2000.0 / 180.0 * M_PI;
-		temp = (hjy62->buffer[5] << 8) | hjy62->buffer[4];
-		hjy62->omega_y = temp / 32768.0 * 2000.0 / 180.0 * M_PI;
-		temp = (hjy62->buffer[7] << 8) | hjy62->buffer[6];
-		hjy62->omega_z = temp / 32768.0 * 2000.0 / 180.0 * M_PI;
-	} else if (hjy62->buffer[1] == 0x53) {		// angle
-		temp = (hjy62->buffer[3] << 8) | hjy62->buffer[2];
-		hjy62->theta_x = temp / 32768.0 * M_PI;
-		temp = (hjy62->buffer[5] << 8) | hjy62->buffer[4];
-		hjy62->theta_y = temp / 32768.0 * M_PI;
-		temp = (hjy62->buffer[7] << 8) | hjy62->buffer[6];
-		hjy62->theta_z = temp / 32768.0 * M_PI;
+			if (temp8 != himu->buffer[10 + i11]) {		// check
+				himu->pending_alignment = 1;		// enter aligning mode if not already
+				HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);		// check next byte
+				if (i) {
+					__huansic_jy62_decode_temp(himu, i - 1);
+					himu->lastUpdated = HAL_GetTick();		// record if there has been a valid one
+				}
+				return IMU_SUM_ERROR;
+			}
+
+			if (himu->buffer[1 + i11] == HUANSIC_JY62_ACCEL) 		// then decode
+				__huansic_jy62_decode_accel(himu, i);
+			else if (himu->buffer[1 + i11] == HUANSIC_JY62_OMEGA)
+				__huansic_jy62_decode_omega(himu, i);
+			else if (himu->buffer[1 + i11] == HUANSIC_JY62_THETA)
+				__huansic_jy62_decode_theta(himu, i);
+			else {
+				himu->pending_alignment = 1;		// enter aligning mode if not already
+				HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);		// check next byte
+				if (i) {
+					__huansic_jy62_decode_temp(himu, i - 1);
+					himu->lastUpdated = HAL_GetTick();		// record if there has been a valid one
+				}
+				return IMU_PID_ERROR;
+			}
+		}
+
 	}
 
-	// record current time
-	hjy62->lastUpdated = HAL_GetTick();
+	// it should only reach this point if the package is fully valid
+	himu->lastUpdated = HAL_GetTick();
+	__huansic_jy62_decode_temp(himu, 2);
+	// start to receive the next package
+	HAL_UART_Receive_DMA(himu->huart, &himu->buffer[0], 33);
+	himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+
+#ifdef HUANSIC_JY62_DEBUG
+	himu->counter++;
+	HAL_GPIO_WritePin(himu->port, himu->pin, himu->counter & (1 << 5));
+#endif
+
+	return IMU_OK;
 }
 
-void huansic_jy62_setDMA(JY62_HandleTypeDef *hjy62) {
-	HAL_UART_Receive_DMA(hjy62->uartPort, hjy62->buffer, JY62_MESSAGE_LENGTH);
+/*
+ * 		Handles the interrupts.
+ * 		@param	himu	jy62 whose port has sent out the interrupt signal
+ * 		@retval	enum IMU_STATUS
+ */
+enum IMU_STATUS huansic_jy62_isr(JY62_HandleTypeDef *himu) {
+	if (!himu)
+		return IMU_ERROR;
+
+	if (himu->buffer[0] != HUANSIC_JY62_HEADER) {		// header mis-aligned
+		himu->pending_alignment = 1;		// enter aligning mode if not already
+		HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);		// check next byte
+		return IMU_HEADER_ERROR;
+	} else {
+		// header just aligned
+		himu->pending_alignment = 0;
+		HAL_UART_Receive_DMA(himu->huart, &himu->buffer[1], 32);		// receive the rest
+		himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+		return IMU_OK;
+	}
+}
+
+/*
+ * 		Handles the dma errors.
+ * 		@param	himu	jy62 whose port has sent out the error
+ * 		@retval	enum IMU_STATUS
+ */
+void huansic_jy62_dma_error(JY62_HandleTypeDef *himu){
+	// nothing much to do with error
+	himu->pending_alignment = 1;
+	HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);
+}
+
+/*
+ * 		Handles the errors.
+ * 		@param	himu	jy62 whose port has sent out the error
+ * 		@retval	enum IMU_STATUS
+ */
+void huansic_jy62_error(JY62_HandleTypeDef *himu){
+	// nothing much to do with error
+	himu->pending_alignment = 1;
+	HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);
+}
+
+/***************	functions used by the library; not visible to users		***************/
+
+static inline void __huansic_jy62_decode_accel(JY62_HandleTypeDef *himu, uint8_t location) {
+	int16_t temp;
+	uint8_t i;
+	for (i = 0; i < 3; i++) {
+		temp = himu->buffer[2 + 2 * i + location * 11];
+		temp <<= 8;
+		temp |= himu->buffer[3 + 2 * i + location * 11];
+		himu->accel[i] = (float) temp * 16 * 9.8 / 32768;
+	}
+}
+
+static inline void __huansic_jy62_decode_omega(JY62_HandleTypeDef *himu, uint8_t location) {
+	int16_t temp;
+	uint8_t i;
+	for (i = 0; i < 3; i++) {
+		temp = himu->buffer[2 + 2 * i + location * 11];
+		temp <<= 8;
+		temp |= himu->buffer[3 + 2 * i + location * 11];
+		himu->accel[i] = (float) temp * 2000 / 32768;
+	}
+}
+
+static inline void __huansic_jy62_decode_theta(JY62_HandleTypeDef *himu, uint8_t location) {
+	int16_t temp;
+	uint8_t i;
+	for (i = 0; i < 3; i++) {
+		temp = himu->buffer[2 + 2 * i + location * 11];
+		temp <<= 8;
+		temp |= himu->buffer[3 + 2 * i + location * 11];
+		himu->accel[i] = (float) temp * 180 / 32768;
+	}
+}
+
+static inline void __huansic_jy62_decode_temp(JY62_HandleTypeDef *himu, uint8_t location) {
+	int16_t temp;
+
+	temp = himu->buffer[8 + location * 11];
+	temp <<= 8;
+	temp |= himu->buffer[9 + location * 11];
+	himu->temperature = (float) temp / 340 + 36.53;
 }

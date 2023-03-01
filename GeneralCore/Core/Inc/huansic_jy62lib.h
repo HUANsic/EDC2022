@@ -11,12 +11,39 @@
 #include <math.h>
 #include "huansic_types.h"
 
-void huansic_jy62_init(JY62_HandleTypeDef *hjy62);
+/*
+ * 		Initializes the port of the IMU.
+ * 		@param	himu	jy62 pending initialization
+ * 		@retval	enum IMU_STATUS
+ */
+enum IMU_STATUS huansic_jy62_init(JY62_HandleTypeDef *himu);
 
-void huansic_jy62_resetAngle(JY62_HandleTypeDef *hjy62);
+/*
+ * 		Handles the dma interrupts.
+ * 		@param	himu	jy62 whose port has sent out the interrupt signal
+ * 		@retval	enum IMU_STATUS
+ */
+enum IMU_STATUS huansic_jy62_dma_isr(JY62_HandleTypeDef *himu);
 
-void huansic_jy62_decodePackage(JY62_HandleTypeDef *hjy62);
+/*
+ * 		Handles the interrupts.
+ * 		@param	himu	jy62 whose port has sent out the interrupt signal
+ * 		@retval	enum IMU_STATUS
+ */
+enum IMU_STATUS huansic_jy62_isr(JY62_HandleTypeDef *himu);
 
-void huansic_jy62_setDMA(JY62_HandleTypeDef *hjy62);
+/*
+ * 		Handles the dma errors.
+ * 		@param	himu	jy62 whose port has sent out the error
+ * 		@retval	enum IMU_STATUS
+ */
+void huansic_jy62_dma_error(JY62_HandleTypeDef *himu);
+
+/*
+ * 		Handles the errors.
+ * 		@param	himu	jy62 whose port has sent out the error
+ * 		@retval	enum IMU_STATUS
+ */
+void huansic_jy62_error(JY62_HandleTypeDef *himu);
 
 #endif /* INC_HUANSIC_JY62LIB_H_ */

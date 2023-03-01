@@ -10,6 +10,37 @@
 
 #include "stm32f1xx_hal.h"
 
+enum IMU_STATUS
+{
+	IMU_OK = HAL_OK,
+	IMU_ERROR = HAL_ERROR,
+	IMU_BUSY = HAL_BUSY,
+	IMU_TIMEOUT = HAL_TIMEOUT,
+	IMU_SUM_ERROR,
+	IMU_HEADER_ERROR,
+	IMU_PID_ERROR
+};
+
+enum IMU_STATE {
+	IMU_STATE_HDR = 0,
+	IMU_STATE_PID,
+	IMU_STATE_XLO,
+	IMU_STATE_XHI,
+	IMU_STATE_YLO,
+	IMU_STATE_YHI,
+	IMU_STATE_ZLO,
+	IMU_STATE_ZHI,
+	IMU_STATE_TLO,
+	IMU_STATE_THI,
+	IMU_STATE_SUM
+};
+
+enum IMU_AXIS {
+	IMU_AXIS_X = 0,
+	IMU_AXIS_Y,
+	IMU_AXIS_Z
+};
+
 typedef struct {
 	int16_t x, y;		// 2 + 2
 } Coordinate;			// = 4
@@ -45,16 +76,42 @@ typedef struct {
 	float goalSpeed;				// 4
 } Motor_HandleTypeDef;
 
+/*		// deprecated
+ typedef struct {
+ UART_HandleTypeDef *huart;
+
+ float accel[3];		// 4 + 4 + 4
+ float omega[3];		// 4 + 4 + 4
+ float theta[3];		// 4 + 4 + 4
+ float temperature;		// 4
+
+ uint32_t lastUpdated;	// 4
+ uint8_t buffer[10];
+ uint8_t newChar;
+ enum IMU_STATE state;
+ } JY62_HandeleTypeDef;
+ */
+
 typedef struct {
-	UART_HandleTypeDef *uartPort;
+	UART_HandleTypeDef *huart;
+	DMA_HandleTypeDef *hdma;
 
-	float accel_x, accel_y, accel_z;	// 4 + 4 + 4
-	float omega_x, omega_y, omega_z;	// 4 + 4 + 4
-	float theta_x, theta_y, theta_z;	// 4 + 4 + 4
+	float accel[3];		// 4 + 4 + 4
+	float omega[3];		// 4 + 4 + 4
+	float theta[3];		// 4 + 4 + 4
+	float temperature;		// 4
 
-	uint32_t lastUpdated;				// 4
+	uint32_t lastUpdated;	// 4
 
-	uint8_t buffer[11];		// put at the end to prevent block alignment issues
+	uint8_t buffer[33];
+	uint8_t pending_alignment;
+
+#ifdef HUANSIC_JY62_DEBUG
+	GPIO_TypeDef *port;
+	uint16_t pin;
+	uint8_t counter;
+#endif
+
 } JY62_HandleTypeDef;
 
 typedef struct {

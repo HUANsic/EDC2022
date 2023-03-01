@@ -53,7 +53,7 @@ uint8_t GotoDestination(Coordinate Destination)
 		}
 		// 方向确定，调整转角
 		while (1) {
-			float rotation_angle = initangleZ - himu.theta_z;
+			float rotation_angle = initangleZ - himu.theta[3];
 			if(rotation_angle < 1) break;
 			else
 			{
