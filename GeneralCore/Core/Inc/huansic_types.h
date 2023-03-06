@@ -67,6 +67,7 @@ typedef struct {
 	uint32_t pos_channel, neg_channel;		// (4 + 4) TIM_CHANNEL_n
 	float kp, ki, kd;		// 4 + 4 + 4
 	float dt;		// (4) Feedback Control Period; used to perform the calculation
+	uint8_t encoderInverted;
 	// uint16_t maxCount;			// divider used to normalize the error; just assume it is 16 bit
 	// uint16_t timerPeriod;		// multiplier used to convert the normalized output into timer output; get this from 'timer'
 	uint16_t lastTick;				// 2 (4)

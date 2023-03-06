@@ -54,10 +54,21 @@ void huansic_motor_init(Motor_HandleTypeDef *hmotor) {
 		HAL_TIM_PWM_Start(hmotor->negTimer, hmotor->neg_channel);
 }
 
-void huansic_motor_pid(Motor_HandleTypeDef *hmotor) {
-	int16_t diffTick = (0x0FFFF & hmotor->counter->Instance->CNT) - hmotor->lastTick;
+void huansic_motor_invert(Motor_HandleTypeDef *hmotor) {
+	TIM_HandleTypeDef *temp = hmotor->negTimer;
+	hmotor->negTimer = hmotor->posTimer;
+	hmotor->posTimer = temp;
 
-	hmotor->lastTick = hmotor->counter->Instance->CNT;
+	hmotor->encoderInverted = !(hmotor->encoderInverted);
+}
+
+void huansic_motor_pid(Motor_HandleTypeDef *hmotor) {
+	int16_t newTick = 0x0FFFF & hmotor->counter->Instance->CNT;
+	if (hmotor->encoderInverted)
+		newTick = -newTick;
+	int16_t diffTick = newTick - hmotor->lastTick;
+
+	hmotor->lastTick = newTick;
 
 	hmotor->lastSpeed = (float) diffTick / hmotor->dt;
 	//hmotor->last5Speed = (4.0 * hmotor->last5Speed + hmotor->lastSpeed) / 5.0;

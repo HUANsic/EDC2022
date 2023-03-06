@@ -13,6 +13,8 @@
 
 void huansic_motor_init(Motor_HandleTypeDef *hmotor);
 
+void huansic_motor_invert(Motor_HandleTypeDef *hmotor);
+
 void huansic_motor_pid(Motor_HandleTypeDef *hmotor);
 
 #endif /* INC_HUANSIC_MOTORLIB_H_ */
