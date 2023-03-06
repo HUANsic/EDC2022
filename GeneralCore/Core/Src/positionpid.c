@@ -57,11 +57,11 @@ uint8_t GotoDestination(Coordinate Destination)
 			if(rotation_angle < 1) break;
 			else
 			{
-				cmotor_lf.goalSpeed = 500 * rotation_angle;
-				cmotor_lb.goalSpeed = 500 * rotation_angle;
-				cmotor_rf.goalSpeed = -500 * rotation_angle;
-				cmotor_rb.goalSpeed = -500 * rotation_angle;
-				HAL_Delay(500);
+				cmotor_lf.goalSpeed = -1 * rotation_angle;
+				cmotor_lb.goalSpeed = -1 * rotation_angle;
+				cmotor_rf.goalSpeed = 1 * rotation_angle;
+				cmotor_rb.goalSpeed = 1 * rotation_angle;
+				HAL_Delay(10);
 			}
 		}
 		// 前进
@@ -69,7 +69,11 @@ uint8_t GotoDestination(Coordinate Destination)
 //		cmotor_rf.goalSpeed = velocity * cos(move_angle) + velocity * sin(move_angle);
 //		cmotor_lb.goalSpeed = velocity * cos(move_angle) + velocity * sin(move_angle);
 //		cmotor_rb.goalSpeed = velocity * cos(move_angle) - velocity * sin(move_angle);
-//		HAL_Delay(500);
+//		uint16_t time = 500;
+//		HAL_Delay(time);
+//		myCoord.x = myCoord.x + velocity * time * cos(move_angle);
+//		myCoord.y = myCoord.y + velocity * time * sin(move_angle);
+//		return 0;
 	}
 	return 1;
 }

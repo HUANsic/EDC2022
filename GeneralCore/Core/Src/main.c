@@ -189,32 +189,33 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	myCoord.x = 0;
-	myCoord.y = 0;
-	Coordinate goal;
-	goal.x = 10;
-	goal.y = 0;
-	uint8_t isArrived = 0;
-	uint32_t isUpdate = himu.lastUpdated;
+//	myCoord.x = 0;
+//	myCoord.y = 0;
+//	Coordinate goal;
+//	goal.x = 10;
+//	goal.y = 0;
+//	uint8_t isArrived = 0;
+	uint16_t lf_speed = 0;
     while (1) {
 
-//		HAL_Delay(2000);
-//		chao_move_angle(180, 4000); // �?��?
-//
-//		HAL_Delay(2000);
-//		chao_move_angle(270, 4000); // �?��?�
-//
-//		HAL_Delay(2000);
-//		chao_move_angle(0, 4000); // �?��?�
-//
-//		HAL_Delay(2000);
-//		chao_move_angle(90, 4000); // �?�左
-    	isUpdate = himu.lastUpdated;
-//    	isArrived = GotoDestination(goal);
+		HAL_Delay(1000);
+		chao_move_angle(180, 1000);
+		lf_speed = cmotor_lf.lastSpeed;
+
+		HAL_Delay(1000);
+		chao_move_angle(270, 1000);
+
+		HAL_Delay(1000);
+		chao_move_angle(0, 1000);
+
+		HAL_Delay(1000);
+		chao_move_angle(90, 1000);
+
+//    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
 
 		while(!gameStatus){		// if the game is not running
-//	    	LED1_ON;
+	    	LED1_ON;
 			break;
 		}
 
