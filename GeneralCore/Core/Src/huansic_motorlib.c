@@ -54,14 +54,6 @@ void huansic_motor_init(Motor_HandleTypeDef *hmotor) {
 		HAL_TIM_PWM_Start(hmotor->negTimer, hmotor->neg_channel);
 }
 
-void huansic_motor_invert(Motor_HandleTypeDef *hmotor) {
-	TIM_HandleTypeDef *temp = hmotor->negTimer;
-	hmotor->negTimer = hmotor->posTimer;
-	hmotor->posTimer = temp;
-
-	hmotor->encoderInverted = !(hmotor->encoderInverted);
-}
-
 void huansic_motor_pid(Motor_HandleTypeDef *hmotor) {
 	int16_t newTick = 0x0FFFF & hmotor->counter->Instance->CNT;
 	if (hmotor->encoderInverted)
