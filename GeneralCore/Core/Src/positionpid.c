@@ -57,10 +57,10 @@ uint8_t GotoDestination(Coordinate Destination)
 			if(rotation_angle < 1) break;
 			else
 			{
-				cmotor_lf.goalSpeed = -1 * rotation_angle;
-				cmotor_lb.goalSpeed = -1 * rotation_angle;
-				cmotor_rf.goalSpeed = 1 * rotation_angle;
-				cmotor_rb.goalSpeed = 1 * rotation_angle;
+				cmotor_lf.goalSpeed = -50 * rotation_angle;
+				cmotor_lb.goalSpeed = -50 * rotation_angle;
+				cmotor_rf.goalSpeed = 50 * rotation_angle;
+				cmotor_rb.goalSpeed = 50 * rotation_angle;
 				HAL_Delay(10);
 			}
 		}
@@ -73,7 +73,7 @@ uint8_t GotoDestination(Coordinate Destination)
 //		HAL_Delay(time);
 //		myCoord.x = myCoord.x + velocity * time * cos(move_angle);
 //		myCoord.y = myCoord.y + velocity * time * sin(move_angle);
-//		return 0;
+		return 0;
 	}
 	return 1;
 }

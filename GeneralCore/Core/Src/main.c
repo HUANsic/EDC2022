@@ -142,7 +142,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -189,18 +189,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//	myCoord.x = 0;
-//	myCoord.y = 0;
-//	Coordinate goal;
-//	goal.x = 10;
-//	goal.y = 0;
-//	uint8_t isArrived = 0;
-	uint16_t lf_speed = 0;
+	myCoord.x = 0;
+	myCoord.y = 0;
+	Coordinate goal;
+	goal.x = 10;
+	goal.y = 0;
+	uint8_t isArrived = 0;
     while (1) {
 
 		HAL_Delay(1000);
 		chao_move_angle(180, 1000);
-		lf_speed = cmotor_lf.lastSpeed;
 
 		HAL_Delay(1000);
 		chao_move_angle(270, 1000);
@@ -844,9 +842,11 @@ static void HUAN_MOTOR1_Init(void) {
 	cmotor_lf.counter = &htim2;
 	cmotor_lf.dt = 0.05;
 	cmotor_lf.posTimer = &htim1;
-	cmotor_lf.pos_channel = TIM_CHANNEL_4;
+//	cmotor_lf.pos_channel = TIM_CHANNEL_4;
+	cmotor_lf.pos_channel = TIM_CHANNEL_3;
 	cmotor_lf.negTimer = &htim1;
-	cmotor_lf.neg_channel = TIM_CHANNEL_3;
+//	cmotor_lf.neg_channel = TIM_CHANNEL_3;
+	cmotor_lf.neg_channel = TIM_CHANNEL_4;
 	cmotor_lf.kp = 0.0003;
 	cmotor_lf.ki = 0.00002;
 	cmotor_lf.kd = 0.00006;
@@ -870,9 +870,11 @@ static void HUAN_MOTOR3_Init(void) {
 	cmotor_lb.counter = &htim3;
 	cmotor_lb.dt = 0.05;
 	cmotor_lb.posTimer = &htim8;
-	cmotor_lb.pos_channel = TIM_CHANNEL_4;
+//	cmotor_lb.pos_channel = TIM_CHANNEL_4;
+	cmotor_lb.pos_channel = TIM_CHANNEL_3;
 	cmotor_lb.negTimer = &htim8;
-	cmotor_lb.neg_channel = TIM_CHANNEL_3;
+//	cmotor_lb.neg_channel = TIM_CHANNEL_3;
+	cmotor_lb.neg_channel = TIM_CHANNEL_4;
 	cmotor_lb.kp = 0.0003;
 	cmotor_lb.ki = 0.00002;
 	cmotor_lb.kd = 0.00006;
