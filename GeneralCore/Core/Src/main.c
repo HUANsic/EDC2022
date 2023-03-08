@@ -217,7 +217,9 @@ int main(void)
     	uint16_t angle = round(himu.theta[2]);
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
-			ssd1306_DrawArc(0,0,20,initAngle, angle, White);
+			ssd1306_DrawArc(20, 20, 30, initAngle, angle, White);
+			ssd1306_UpdateScreen();
+			HAL_Delay(1000);
 			break;
 		}
 
