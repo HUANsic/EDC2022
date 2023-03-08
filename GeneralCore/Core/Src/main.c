@@ -170,12 +170,15 @@ int main(void)
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
     //Motor init
+	cmotor_lf.encoderInverted = 1;
+	cmotor_lb.encoderInverted = 1;
 	HUAN_MOTOR1_Init();
 	HUAN_MOTOR2_Init();
 	HUAN_MOTOR3_Init();
 	HUAN_MOTOR4_Init();
 	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
+	ssd1306_Init();
 
 	// tick per motor rev = 1080 (measured)
 	// tick per rotor rev = 54 (calculated)
@@ -184,8 +187,8 @@ int main(void)
 	//Set PID timer after data stables
 	HAL_Delay(20);
 	HAL_TIM_Base_Start_IT(&htim6);
-	huansic_motor_invert(&cmotor_lf);
-	huansic_motor_invert(&cmotor_lb);
+
+	ssd1306_SetDisplayOn(1);
 
 	initangleZ = himu.theta[2];
   /* USER CODE END 2 */
@@ -198,21 +201,23 @@ int main(void)
 	goal.x = 10;
 	goal.y = 0;
 	uint8_t isArrived = 0;
+	uint16_t initAngle = round(initangleZ);
     while (1) {
-		HAL_Delay(2000);
-		chao_move_angle(0, 2000);
-		HAL_Delay(2000);
-		chao_move_angle(270, 2000);
-		HAL_Delay(2000);
-		chao_move_angle(180, 2000);
-		HAL_Delay(2000);
-		chao_move_angle(90, 2000);
+//		HAL_Delay(1000);
+//		chao_move_angle(0, 1000);
+//		HAL_Delay(1000);
+//		chao_move_angle(270, 1000);
+//		HAL_Delay(1000);
+//		chao_move_angle(180, 1000);
+//		HAL_Delay(1000);
+//		chao_move_angle(90, 1000);
 
 //    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
-
+    	uint16_t angle = round(himu.theta[2]);
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
+			ssd1306_DrawArc(0,0,20,initAngle, angle, White);
 			break;
 		}
 
@@ -841,11 +846,11 @@ static void HUAN_MOTOR1_Init(void) {
 	cmotor_lf.counter = &htim2;
 	cmotor_lf.dt = 0.05;
 	cmotor_lf.posTimer = &htim1;
-//	cmotor_lf.pos_channel = TIM_CHANNEL_4;
-	cmotor_lf.pos_channel = TIM_CHANNEL_3;
+	cmotor_lf.pos_channel = TIM_CHANNEL_4;
+//	cmotor_lf.pos_channel = TIM_CHANNEL_3;
 	cmotor_lf.negTimer = &htim1;
-//	cmotor_lf.neg_channel = TIM_CHANNEL_3;
-	cmotor_lf.neg_channel = TIM_CHANNEL_4;
+	cmotor_lf.neg_channel = TIM_CHANNEL_3;
+//	cmotor_lf.neg_channel = TIM_CHANNEL_4;
 	cmotor_lf.encoderInverted = 1;
 	cmotor_lf.kp = 0.0003;
 	cmotor_lf.ki = 0.00002;
@@ -871,11 +876,11 @@ static void HUAN_MOTOR3_Init(void) {
 	cmotor_lb.counter = &htim3;
 	cmotor_lb.dt = 0.05;
 	cmotor_lb.posTimer = &htim8;
-//	cmotor_lb.pos_channel = TIM_CHANNEL_4;
-	cmotor_lb.pos_channel = TIM_CHANNEL_3;
+	cmotor_lb.pos_channel = TIM_CHANNEL_4;
+//	cmotor_lb.pos_channel = TIM_CHANNEL_3;
 	cmotor_lb.negTimer = &htim8;
-//	cmotor_lb.neg_channel = TIM_CHANNEL_3;
-	cmotor_lb.neg_channel = TIM_CHANNEL_4;
+	cmotor_lb.neg_channel = TIM_CHANNEL_3;
+//	cmotor_lb.neg_channel = TIM_CHANNEL_4;
 	cmotor_lb.encoderInverted = 1;
 	cmotor_lb.kp = 0.0003;
 	cmotor_lb.ki = 0.00002;
