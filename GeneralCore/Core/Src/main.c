@@ -93,6 +93,7 @@ fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 float angleZ;
 double omegaZ, accelY;		// turning speed and linear acceleration
 float initangleZ;                  // init angleZ
+float rotation_angle;
 float myScore;				// current score returned by Master
 float myCharge;				// current charge returned by Master
 
@@ -179,7 +180,6 @@ int main(void)
 	HUAN_MOTOR4_Init();
 	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
-	ssd1306_Init();
 
 	// tick per motor rev = 1080 (measured)
 	// tick per rotor rev = 54 (calculated)
@@ -200,7 +200,6 @@ int main(void)
 	goal.x = 10;
 	goal.y = 0;
 	uint8_t isArrived = 0;
-	float angleZ = 0.0;
 
     while (1) {
 //		HAL_Delay(1000);
@@ -212,18 +211,18 @@ int main(void)
 //		HAL_Delay(1000);
 //		chao_move_angle(90, 2000);
 
-    	angleZ = himu.theta[2] - initangleZ;
-    	while(angleZ < -180)
+//    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
+//    	if (isArrived == 1) break;
+    	rotation_angle = himu.theta[2] - initangleZ;
+    	while(rotation_angle < -180)
     	{
-    		angleZ += 360;
+    		rotation_angle += 360;
     	}
-    	while(angleZ > 180)
+    	while(rotation_angle > 180)
     	{
-    		angleZ -= 360;
+    		rotation_angle -= 360;
     	}
 
-    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
-    	if (isArrived == 1) break;
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
 			HAL_Delay(100);

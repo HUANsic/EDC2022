@@ -1,4 +1,4 @@
-/*
+ /*
  * positionpid.c
  *
  *  Created on: 2023年2月20日
@@ -12,6 +12,7 @@ extern Coordinate myCoord;
 #define PATH_PID_TOLERANCE 1
 #define velocity -3000
 extern float initangleZ;
+extern float rotation_angle;
 extern Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 extern JY62_HandleTypeDef himu;
 
@@ -52,16 +53,18 @@ uint8_t GotoDestination(Coordinate Destination)
 				move_angle = M_PI + atan((float)(x_error)/(y_error));
 		}
 		// 方向确定，调整转角
+		uint8_t k_p = 50;
+		uint8_t k_i = 2;
 		while (1) {
-			float rotation_angle = initangleZ - himu.theta[3];
-			if(rotation_angle < 1) break;
+			rotation_angle = himu.theta[2] - initangleZ;
+			if(rotation_angle < 5) break;
 			else
 			{
-				cmotor_lf.goalSpeed = -50 * rotation_angle;
-				cmotor_lb.goalSpeed = -50 * rotation_angle;
-				cmotor_rf.goalSpeed = 50 * rotation_angle;
-				cmotor_rb.goalSpeed = 50 * rotation_angle;
-				HAL_Delay(10);
+				cmotor_lf.goalSpeed = k_p * rotation_angle - k_i * himu.omega[2];
+				cmotor_lb.goalSpeed = k_p * rotation_angle - k_i * himu.omega[2];
+				cmotor_rf.goalSpeed = -k_p * rotation_angle + k_i * himu.omega[2];
+				cmotor_rb.goalSpeed = -k_p * rotation_angle + k_i * himu.omega[2];
+				HAL_Delay(50);
 			}
 		}
 		// 前进
