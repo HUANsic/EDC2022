@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "collab_util.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -188,8 +189,6 @@ int main(void)
 	HAL_Delay(20);
 	HAL_TIM_Base_Start_IT(&htim6);
 
-	ssd1306_SetDisplayOn(1);
-
 	initangleZ = himu.theta[2];
   /* USER CODE END 2 */
 
@@ -201,25 +200,33 @@ int main(void)
 	goal.x = 10;
 	goal.y = 0;
 	uint8_t isArrived = 0;
-	uint16_t initAngle = round(initangleZ);
+	float angleZ = 0.0;
+
     while (1) {
 //		HAL_Delay(1000);
-//		chao_move_angle(0, 1000);
+//		chao_move_angle(0, 2000);
 //		HAL_Delay(1000);
-//		chao_move_angle(270, 1000);
+//		chao_move_angle(270, 2000);
 //		HAL_Delay(1000);
-//		chao_move_angle(180, 1000);
+//		chao_move_angle(180, 2000);
 //		HAL_Delay(1000);
-//		chao_move_angle(90, 1000);
+//		chao_move_angle(90, 2000);
 
-//    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
-//    	if (isArrived == 1) break;
-    	uint16_t angle = round(himu.theta[2]);
+    	angleZ = himu.theta[2] - initangleZ;
+    	while(angleZ < -180)
+    	{
+    		angleZ += 360;
+    	}
+    	while(angleZ > 180)
+    	{
+    		angleZ -= 360;
+    	}
+
+    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
+    	if (isArrived == 1) break;
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
-			ssd1306_DrawArc(20, 20, 30, initAngle, angle, White);
-			ssd1306_UpdateScreen();
-			HAL_Delay(1000);
+			HAL_Delay(100);
 			break;
 		}
 

@@ -14,9 +14,9 @@
 ../Core/Src/ssd1306.c:330:14:ssd1306_DegToRad	16	static
 ../Core/Src/ssd1306.c:334:17:ssd1306_NormalizeTo0_360	24	static
 ../Core/Src/ssd1306.c:351:6:ssd1306_DrawArc	56	static
-../Core/Src/ssd1306.c:388:6:ssd1306_DrawCircle	40	static
-../Core/Src/ssd1306.c:433:6:ssd1306_DrawRectangle	32	static
-../Core/Src/ssd1306.c:444:6:ssd1306_DrawBitmap	24	static
-../Core/Src/ssd1306.c:466:6:ssd1306_SetContrast	24	static
-../Core/Src/ssd1306.c:472:6:ssd1306_SetDisplayOn	24	static
-../Core/Src/ssd1306.c:484:9:ssd1306_GetDisplayOn	4	static
+../Core/Src/ssd1306.c:389:6:ssd1306_DrawCircle	40	static
+../Core/Src/ssd1306.c:434:6:ssd1306_DrawRectangle	32	static
+../Core/Src/ssd1306.c:445:6:ssd1306_DrawBitmap	24	static
+../Core/Src/ssd1306.c:467:6:ssd1306_SetContrast	24	static
+../Core/Src/ssd1306.c:473:6:ssd1306_SetDisplayOn	24	static
+../Core/Src/ssd1306.c:485:9:ssd1306_GetDisplayOn	4	static

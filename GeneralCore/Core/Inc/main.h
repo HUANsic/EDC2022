@@ -37,6 +37,7 @@ extern "C" {
 #include "huansic_xblib.h"
 #include "Astar_util.h"
 #include "positionpid.h"
+#include "ssd1306_fonts.h"
 
 /* USER CODE END Includes */
 

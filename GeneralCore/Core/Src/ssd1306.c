@@ -380,6 +380,7 @@ void ssd1306_DrawArc(uint8_t x, uint8_t y, uint8_t radius, uint16_t start_angle,
         xp2 = x + (int8_t)(sin(rad)*radius);
         yp2 = y + (int8_t)(cos(rad)*radius);
         ssd1306_Line(xp1,yp1,xp2,yp2,color);
+        ssd1306_UpdateScreen();
     }
 
     return;
