@@ -250,7 +250,7 @@ Path* A_Star_main(Coordinate* start, Coordinate* last, uint8_t step) {
 	int8_t lastdir = 0;     		// left:-step up:-2*step right:step down:2*step
 	while (1) {
 		curindex = queue_top();
-		if (curindex == 65525)
+		if (curindex == 65535)
 			return NULL;
 		if (openlist.buffer[curindex].fatherindex != 65535) {
 			lastdir = dir(openlist.buffer[openlist.buffer[curindex].fatherindex].cor, openlist.buffer[curindex].cor);
@@ -262,30 +262,6 @@ Path* A_Star_main(Coordinate* start, Coordinate* last, uint8_t step) {
 		}
 	}
 
-//	A_Star_Node* p = &openlist.buffer[Flag - 1];
-//	if (p->cor == end.cor)
-//	{
-//		printf("\n{%d ; %d}", last->x, last->y);
-//		while (p->fatherindex != 65535)
-//		{
-//			uint16_t x = openlist.buffer[p->fatherindex].cor / 256;
-//			uint16_t y = openlist.buffer[p->fatherindex].cor % 256;
-//			printf("\n{%d ; %d}", x, y);
-//			p = &openlist.buffer[p->fatherindex];
-//		}
-//	}
-//	else
-//	{
-//		printf("\n{%d ; %d}", last->x, last->y);
-//		printf("\n{%d ; %d}", p->cor / 256, p->cor % 256);
-//		while (p->fatherindex != 65535)
-//		{
-//			uint16_t x = openlist.buffer[p->fatherindex].cor / 256;
-//			uint16_t y = openlist.buffer[p->fatherindex].cor % 256;
-//			printf("\n{%d ; %d}", x, y);
-//			p = &openlist.buffer[p->fatherindex];
-//		}
-//	}
 	//we now get the path
 	Coordinate Astar_path[16];
 	Astar_path[15].x = last->x;

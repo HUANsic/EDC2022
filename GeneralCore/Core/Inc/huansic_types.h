@@ -130,7 +130,7 @@ typedef struct {
 
 typedef struct Path_t{
 	Coordinate start, end;		// 4 + 4
-	struct Path_t *nextPath;	// 4
+	struct Path_t* nextPath;	// 4
 	uint8_t referenceCount;		// 1 （4）
 } Path;
 

@@ -90,7 +90,7 @@ uint16_t findin_queue(uint16_t c)
 	uint16_t i;
 	for (i = 0; i < openlist.Length; i++)
 	{
-		if (openlist.buffer[i + openlist.Head].cor == c) return i + openlist.Head + 1;
+		if (openlist.buffer[i + openlist.Head].cor == c) return i + openlist.Head;
 	}
 	return 0;
 }

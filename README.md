@@ -41,3 +41,19 @@ A_Star_Node* A_Star(Coordinate* start, Coordinate* end, uint8_t step);
 TODO1：暂不知道消耗的内存如何，速度在我电脑上模拟没什么问题。
 
 TODO2：如果step选定下，按理说只能搜到以step为分辨率的点，如果非要修改的话，可以修改认为达到终点的条件（目前是按照坐标严格到达写的， 需要调参。
+
+
+
+---
+
+2023/3/8
+
+1.错误：A*代码中调用huansic_path_cascade，具体在last->nextPath = next;这一步时，进入了HardFault_Handler的异常处理死循环。
+
+原因未知。。。（按理是对的呀，debug模式下看一个是struct path_t\*类型一个是path\*。。。
+
+解决方案：实在不行就把整个指针改成数组的index，已经弄静态了，指针也可有可无说实话。
+
+
+
+2.**带边边的板子带不动电机，不知道是不是我有什么步没做好 ):**

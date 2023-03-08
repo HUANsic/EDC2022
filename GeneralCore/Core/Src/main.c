@@ -144,6 +144,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
 	HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -200,16 +201,17 @@ int main(void)
 	goal.x = 10;
 	goal.y = 0;
 	uint8_t isArrived = 0;
+	Path* Nowpath = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
 
     while (1) {
-//		HAL_Delay(1000);
-//		chao_move_angle(0, 2000);
-//		HAL_Delay(1000);
-//		chao_move_angle(270, 2000);
-//		HAL_Delay(1000);
-//		chao_move_angle(180, 2000);
-//		HAL_Delay(1000);
-//		chao_move_angle(90, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(0, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(270, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(180, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(90, 2000);
 
 //    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
