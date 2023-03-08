@@ -7,3 +7,4 @@ makefile
 *.map
 *.d
 *.su
+*/Debug/*

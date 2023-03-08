@@ -218,9 +218,9 @@ static inline void __huansic_jy62_decode_omega(JY62_HandleTypeDef *himu, uint8_t
 	int16_t temp;
 	uint8_t i;
 	for (i = 0; i < 3; i++) {
-		temp = himu->buffer[4 + 2 * i + location * 11];
+		temp = himu->buffer[2 + 2 * i + location * 11];
 		temp <<= 8;
-		temp |= himu->buffer[5 + 2 * i + location * 11];
+		temp |= himu->buffer[3 + 2 * i + location * 11];
 		himu->omega[i] = (float) temp * 2000 / 32768;
 	}
 }
@@ -229,9 +229,9 @@ static inline void __huansic_jy62_decode_theta(JY62_HandleTypeDef *himu, uint8_t
 	int16_t temp;
 	uint8_t i;
 	for (i = 0; i < 3; i++) {
-		temp = himu->buffer[6 + 2 * i + location * 11];
+		temp = himu->buffer[2 + 2 * i + location * 11];
 		temp <<= 8;
-		temp |= himu->buffer[7 + 2 * i + location * 11];
+		temp |= himu->buffer[3 + 2 * i + location * 11];
 		himu->theta[i] = (float) temp * 180 / 32768;
 	}
 }
