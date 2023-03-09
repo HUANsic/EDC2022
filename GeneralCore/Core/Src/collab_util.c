@@ -49,11 +49,10 @@ extern Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
 
-//some kaleman filter var
-extern
-
 Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
-	Path* straightPath = huansic_path_new();
+	Path *straightPath = huansic_path_new();
+	if (!straightPath)
+		return straightPath;
 	straightPath->start = *start;
 	straightPath->end = *end;
 	return straightPath;
@@ -125,7 +124,7 @@ void chao_move(Path *path) {
 }
 
 //0 - 360 degree, 0 degree front, clockwise
-void chao_move_angle(float _angle, float speed){
+void chao_move_angle(float _angle, float speed) {
 	float angle_arc = (_angle / 180) * M_PI;
 	cmotor_lf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
 	cmotor_rf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
@@ -133,7 +132,7 @@ void chao_move_angle(float _angle, float speed){
 	cmotor_rb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
 }
 
-Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end){
+Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end) {
 	return A_Star_main(start, end, 5);
 }
 
