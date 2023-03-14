@@ -24,6 +24,6 @@ uint8_t findend(uint16_t cur, uint16_t end, uint8_t step);
 // expand the queue
 uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* end, uint8_t step);
 // A Star search
-Path* A_Star_main(Coordinate* start, Coordinate* last, uint8_t step);
+uint8_t A_Star_main(Coordinate* start, Coordinate* last, uint8_t step);
 
 #endif /* INC_ASTAR_UTIL_H_ */

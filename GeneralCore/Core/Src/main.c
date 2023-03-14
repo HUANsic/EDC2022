@@ -145,7 +145,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 
-	HAL_Init();
+ 	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -200,18 +200,18 @@ int main(void)
 	Coordinate goal;
 	goal.x = 10;
 	goal.y = 0;
-	uint8_t isArrived = 0;
-	Path* Nowpath = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
+//	uint8_t isFind_road = A_Star_main(&myCoord, &goal, 5);
 
     while (1) {
-		HAL_Delay(1000);
-		chao_move_angle(0, 2000);
-		HAL_Delay(1000);
-		chao_move_angle(270, 2000);
-		HAL_Delay(1000);
-		chao_move_angle(180, 2000);
-		HAL_Delay(1000);
-		chao_move_angle(90, 2000);
+    	// test code to ensure the motor can work
+//		HAL_Delay(1000);
+//		chao_move_angle(0, 2000);
+//		HAL_Delay(1000);
+//		chao_move_angle(90, 2000);
+//		HAL_Delay(1000);
+//		chao_move_angle(180, 2000);
+//		HAL_Delay(1000);
+//		chao_move_angle(270, 2000);
 
 //    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
@@ -227,7 +227,6 @@ int main(void)
 
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
-			HAL_Delay(100);
 			break;
 		}
 

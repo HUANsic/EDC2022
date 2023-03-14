@@ -8,6 +8,7 @@
 
 Queue openlist;
 List closelist;
+Lane pathlane;
 
 void Queue_init(void)
 {
@@ -20,6 +21,11 @@ void List_init(void)
 	closelist.Head = 0;
 	closelist.Tail = 0;
 	closelist.Length = 0;
+}
+
+void Lane_init(void){
+	pathlane.Head = 0;
+	pathlane.Length = 0;
 }
 
 uint8_t queue_append(A_Star_Node* node)
@@ -109,4 +115,16 @@ void editcost(uint16_t index, A_Star_Node* node)
 {
 	if (openlist.buffer[index].total > node->total)
 		openlist.buffer[index] = *node;
+}
+
+uint8_t Insert_inLane(Coordinate* head_coor, uint8_t head_index)
+{
+	if(!head_coor) return 0;
+	pathlane.Head = 0;
+	pathlane.Length = 16 - head_index;
+	for(uint8_t i = head_index; i < 16; i++)
+	{
+		pathlane.buffer[pathlane.Head + i - head_index] = *(head_coor + i);
+	}
+	return 1;
 }
