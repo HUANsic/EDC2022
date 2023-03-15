@@ -93,12 +93,13 @@ fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 float angleZ;
 double omegaZ, accelY;		// turning speed and linear acceleration
 float initangleZ;                  // init angleZ
-float rotation_angle;
 float myScore;				// current score returned by Master
 float myCharge;				// current charge returned by Master
 
 // interchange information 1
 uint32_t gameStageTimeLeft;		// in ms
+// OLED display buffer
+char firstLine[16], secondLine[16], thirdLine[16], fourthLine[16];		// 128 / 8 = 16
 
 /* USER CODE END PV */
 
@@ -171,6 +172,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_TIM6_Init();
+  ssd1306_Init();
   /* USER CODE BEGIN 2 */
     //Motor init
 	cmotor_lf.encoderInverted = 1;
@@ -195,11 +197,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	myCoord.x = 0;
-	myCoord.y = 0;
 	Coordinate goal;
 	goal.x = 10;
 	goal.y = 0;
+	sprintf(firstLine, "Good");
+	ssd1306_WriteString(firstLine, Font_6x8, White);
+	ssd1306_UpdateScreen();
 //	uint8_t isFind_road = A_Star_main(&myCoord, &goal, 5);
 
     while (1) {
@@ -215,15 +218,7 @@ int main(void)
 
 //    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
-    	rotation_angle = himu.theta[2] - initangleZ;
-    	while(rotation_angle < -180)
-    	{
-    		rotation_angle += 360;
-    	}
-    	while(rotation_angle > 180)
-    	{
-    		rotation_angle -= 360;
-    	}
+    	rotation_angle = initangleZ - himu.theta[2];
 
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;

@@ -301,7 +301,9 @@ uint8_t A_Star_main(Coordinate *start, Coordinate *last, uint8_t step) {
 	}
 	Astar_path[i].x = p->cor / 256;
 	Astar_path[i].y = p->cor % 256;
-	uint8_t Laneis_OK =Insert_inLane(&Astar_path, i);
+
+
+	uint8_t Laneis_OK = Insert_inLane(&Astar_path, i);
 
 	return Laneis_OK;
 }
