@@ -16,10 +16,10 @@
 
 uint8_t GotoDestination(Coordinate Destination);
 
-float Angle_normalization(float raw_angle);
+float Angle_normalization(float angle);
 
 float CalSpeed(int16_t x, int16_t y);
 
-void Position_P(Coordinate cur, Coordinate goal);
+void Position_P(Coordinate *cur, Coordinate *goal);
 
 #endif /* INC_POSITIONPID_H_ */

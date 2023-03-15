@@ -20,8 +20,9 @@ uint8_t GotoDestination(Coordinate Destination)
 
 }
 
-float Angle_normalization(float raw_angle)
+float Angle_normalization(float angle)
 {
+	float raw_angle = angle;
 	while(raw_angle < 0)
 	{
 		raw_angle += 360;
@@ -37,7 +38,7 @@ float CalSpeed(int16_t x, int16_t y)
 {
 	float kp = 20.0;
 
-	uint16_t Speed = kp * (abs(x) + abs(y));
+	float Speed = kp * (abs(x) + abs(y));
 	if(Speed > MAX_SPEED)
 	{
 		Speed = MAX_SPEED;
@@ -49,10 +50,10 @@ float CalSpeed(int16_t x, int16_t y)
 	return Speed;
 }
 
-void Position_P(Coordinate cur, Coordinate goal)
+void Position_P(Coordinate* cur, Coordinate* goal)
 {
-	int16_t x_error = goal.x - cur.x;
-	int16_t y_error = goal.y - cur.y;
+	int16_t x_error = goal->x - cur->x;
+	int16_t y_error = goal->y - cur->y;
 	float kp = 20;
 	if (y_error == 0)
 	{
