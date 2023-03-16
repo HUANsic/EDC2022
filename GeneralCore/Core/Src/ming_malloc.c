@@ -96,7 +96,21 @@ uint16_t findin_queue(uint16_t c)
 	uint16_t i;
 	for (i = 0; i < openlist.Length; i++)
 	{
-		if (openlist.buffer[i + openlist.Head].cor == c) return i + openlist.Head;
+		if (openlist.buffer[i + openlist.Head].cor == c) return (i + openlist.Head);
+	}
+	return 0;
+}
+
+uint16_t findendin_queue(uint16_t c)
+{
+	uint16_t i;
+	uint16_t x1 = c / 256;
+	uint16_t y1 = c % 256;
+	for (i = 0; i < openlist.Length; i++)
+	{
+		uint16_t x = openlist.buffer[i + openlist.Head].cor / 256;
+		uint16_t y = openlist.buffer[i + openlist.Head].cor % 256;
+		if (abs(x - x1) < 5 && abs(y - y1) < 5) return (i + openlist.Head);
 	}
 	return 0;
 }
@@ -114,10 +128,14 @@ uint8_t findin_list(uint16_t c)
 void editcost(uint16_t index, A_Star_Node* node)
 {
 	if (openlist.buffer[index].total > node->total)
-		openlist.buffer[index] = *node;
+	{
+		openlist.buffer[index].total = node->total;
+		openlist.buffer[index].cost = node->cost;
+		openlist.buffer[index].fatherindex = node->fatherindex;
+	}
 }
 
-uint8_t Insert_inLane(Coordinate* head_coor, uint8_t head_index)
+uint8_t Insert_inLane(Coordinate *head_coor, uint8_t head_index)
 {
 	if(!head_coor) return 0;
 	pathlane.Head = 0;

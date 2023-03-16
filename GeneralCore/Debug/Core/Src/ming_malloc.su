@@ -5,6 +5,7 @@
 ../Core/Src/ming_malloc.c:66:9:list_append	16	static
 ../Core/Src/ming_malloc.c:81:10:queue_top	4	static
 ../Core/Src/ming_malloc.c:94:10:findin_queue	24	static
-../Core/Src/ming_malloc.c:104:9:findin_list	24	static
-../Core/Src/ming_malloc.c:114:6:editcost	16	static
-../Core/Src/ming_malloc.c:120:9:Insert_inLane	24	static
+../Core/Src/ming_malloc.c:104:10:findendin_queue	32	static
+../Core/Src/ming_malloc.c:118:9:findin_list	24	static
+../Core/Src/ming_malloc.c:128:6:editcost	16	static
+../Core/Src/ming_malloc.c:138:9:Insert_inLane	24	static

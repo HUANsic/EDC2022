@@ -88,6 +88,8 @@ Order *delivering[5];		// package picked up but not yet delivered
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
+Coordinate EstiCoord;       // predict coordinate
+uint8_t CoordinateUpdate;   // 0 is not Update, 1 is Update
 
 fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 float angleZ;
@@ -197,13 +199,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	Coordinate goal;
-	goal.x = 10;
-	goal.y = 0;
 	sprintf(firstLine, "Good");
 	ssd1306_WriteString(firstLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
-//	uint8_t isFind_road = A_Star_main(&myCoord, &goal, 5);
+	myCoord.x = 45;
+	myCoord.y = 45;
+	Coordinate goal;
+	goal.x = 210;
+	goal.y = 210;
+	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
 
     while (1) {
     	// test code to ensure the motor can work
@@ -218,8 +222,6 @@ int main(void)
 
 //    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
-    	rotation_angle = initangleZ - himu.theta[2];
-
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
 			break;
