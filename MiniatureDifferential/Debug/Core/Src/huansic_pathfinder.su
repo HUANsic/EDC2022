@@ -1,4 +1,0 @@
-../Core/Src/huansic_pathfinder.c:65:6:updateMap	4	static
-../Core/Src/huansic_pathfinder.c:70:6:initConnectionMap	4	static
-../Core/Src/huansic_pathfinder.c:74:9:findCollision	40	static
-../Core/Src/huansic_pathfinder.c:181:9:tryEdge	4	static

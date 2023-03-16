@@ -71,12 +71,13 @@ void initConnectionMap() {
 
 }
 
+/*
 uint8_t findCollision(Node *start, Node *end) {
 	Rectangle *currentBox;
 	float temp;
 	uint8_t i;
 
-	/* test boarders */
+	/* test boarders /
 	for (i = 0; i < 8; i++) {
 		currentBox = &gameBoarder[i];
 		// left edge
@@ -125,7 +126,7 @@ uint8_t findCollision(Node *start, Node *end) {
 		}
 	}
 
-	/* test obstacles */
+	/* test obstacles /
 	for (i = 0; i < 5; i++) {
 		currentBox = &obstacles[i];
 		// left edge
@@ -177,6 +178,7 @@ uint8_t findCollision(Node *start, Node *end) {
 	// if no collision at all, return 0
 	return 0;
 }
+*/
 
 uint8_t tryEdge() {
 

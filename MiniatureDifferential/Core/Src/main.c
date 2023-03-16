@@ -73,14 +73,14 @@ XB_HandleTypeDef hxb;
 
 // game information 0
 const Rectangle gameBoarder[8] = {
-		{ .coord1.x = 38, .coord1.y = 38, .coord2.x = 107, .coord2.y = 40 },
-		{ .coord1.x = 38, .coord1.y = 38, .coord2.x = 40, .coord2.y = 107 },
-		{ .coord1.x = 147, .coord1.y = 38, .coord2.x = 216, .coord2.y = 40 },
-		{ .coord1.x = 214, .coord1.y = 38, .coord2.x = 216, .coord2.y = 107 },
-		{ .coord1.x = 214, .coord1.y = 147, .coord2.x = 216, .coord2.y = 216 },
-		{ .coord1.x = 147, .coord1.y = 214, .coord2.x = 216, .coord2.y = 216 },
-		{ .coord1.x = 38, .coord1.y = 214, .coord2.x = 107, .coord2.y = 216 },
-		{ .coord1.x = 38, .coord1.y = 147, .coord2.x = 40, .coord2.y = 216 },
+		{ .x1 = 38, .y1 = 38, .x2 = 107, .y2 = 40 },
+		{ .x1 = 38, .y1 = 38, .x2 = 40, .y2 = 107 },
+		{ .x1 = 147, .y1 = 38, .x2 = 216, .y2 = 40 },
+		{ .x1 = 214, .y1 = 38, .x2 = 216, .y2 = 107 },
+		{ .x1 = 214, .y1 = 147, .x2 = 216, .y2 = 216 },
+		{ .x1 = 147, .y1 = 214, .x2 = 216, .y2 = 216 },
+		{ .x1 = 38, .y1 = 214, .x2 = 107, .y2 = 216 },
+		{ .x1 = 38, .y1 = 147, .x2 = 40, .y2 = 216 }
 };
 
 // game information 1

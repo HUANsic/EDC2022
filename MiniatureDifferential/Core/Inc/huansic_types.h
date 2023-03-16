@@ -22,8 +22,12 @@ typedef struct {
 	float reward;							// 4
 } Order;									// = 24
 
+/*
+ typedef struct {
+ Coordinate coord1, coord2;				// 4 + 4
+ } Rectangle;								// = 8
+ */
 typedef struct {
-	Coordinate coord1, coord2;				// 4 + 4
-} Rectangle;								// = 8
-
+	uint8_t x1, x2, y1, y2;
+} Rectangle;
 #endif /* INC_HUANSIC_TYPES_H_ */
