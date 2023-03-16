@@ -20,7 +20,6 @@ Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end);
 Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end);
 
 // convert Path to PWM/Duty Cycle/Motor Speed
-void chao_move(Path *path);
 void chao_move_angle(float _angle, float speed);
 // decide where to go
 // void name_get_destination();

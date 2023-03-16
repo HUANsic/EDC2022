@@ -4,9 +4,9 @@
 ../Core/Src/huansic_malloc.c:39:7:huansic_path_new	16	static
 ../Core/Src/huansic_malloc.c:53:6:huansic_path_delete	24	static
 ../Core/Src/huansic_malloc.c:70:6:huansic_path_cascade	16	static
-../Core/Src/huansic_malloc.c:85:7:huansic_path_break	24	static
-../Core/Src/huansic_malloc.c:97:6:huansic_order_init	16	static
-../Core/Src/huansic_malloc.c:105:8:huansic_order_new	24	static
-../Core/Src/huansic_malloc.c:128:6:huansic_order_delete	16	static
-../Core/Src/huansic_malloc.c:135:8:huansic_order_findClosestDest	40	static
-../Core/Src/huansic_malloc.c:152:8:huansic_order_findClosestStart	40	static
+../Core/Src/huansic_malloc.c:84:7:huansic_path_break	24	static
+../Core/Src/huansic_malloc.c:96:6:huansic_order_init	16	static
+../Core/Src/huansic_malloc.c:104:8:huansic_order_new	24	static
+../Core/Src/huansic_malloc.c:127:6:huansic_order_delete	16	static
+../Core/Src/huansic_malloc.c:134:8:huansic_order_findClosestDest	40	static
+../Core/Src/huansic_malloc.c:151:8:huansic_order_findClosestStart	40	static

@@ -13,7 +13,7 @@
 
 #define QUEUE_SIZE 256
 #define LIST_SIZE 256
-
+#define LANE_SIZE 32
 
 #pragma pack (2)
  // A* Node
@@ -40,10 +40,19 @@ typedef struct
 	uint16_t Length;                  // 2
 	uint16_t buffer[LIST_SIZE];       // LIST_SIZE * 2
 }List;                                // LIST_SIZE * 2 + 6
+
+typedef struct
+{
+	uint16_t Head;                    // 2
+	uint16_t Length;                  // 2
+	Coordinate buffer[LANE_SIZE];     // 4 * LANE_SIZE
+}Lane;                                // 4 * LANE_SIZE + 4
+
 #pragma pack ()
 
 void Queue_init(void);
 void List_init(void);
+void Lane_init(void);
 
 uint8_t queue_append(A_Star_Node* node);
 uint8_t list_append(uint16_t c);
@@ -53,5 +62,8 @@ uint16_t findin_queue(uint16_t c);
 uint8_t findin_list(uint16_t c);
 
 void editcost(uint16_t index, A_Star_Node* node);
+
+// Lane part
+uint8_t Insert_inLane(Coordinate* head_coor, uint8_t head_index);
 
 #endif /* INC_MING_MALLOC_H_ */

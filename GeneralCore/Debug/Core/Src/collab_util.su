@@ -1,4 +1,4 @@
-../Core/Src/collab_util.c:55:14:jymm_pathfind_straight	24	static
-../Core/Src/collab_util.c:62:6:chao_move	48	static
-../Core/Src/collab_util.c:128:6:chao_move_angle	40	static
-../Core/Src/collab_util.c:136:14:mingyan_pathfind_avoidObstacle	16	static
+../Core/Src/collab_util.c:52:7:jymm_pathfind_straight	24	static
+../Core/Src/collab_util.c:61:6:chao_move	48	static
+../Core/Src/collab_util.c:127:6:chao_move_angle	40	static
+../Core/Src/collab_util.c:135:7:mingyan_pathfind_avoidObstacle	16	static
