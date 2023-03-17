@@ -14,12 +14,15 @@
 #include "stm32f1xx_hal.h"
 #include "huansic_types.h"
 
-void Cal_Battery_Coord();
+void Cal_Battery_Coord(void);
 
-void Get_packet();
+void Get_packet(void);
 
-void Send_packet();
+void Send_packet(void);
 
-void go_Charge();
+void go_Charge(void);
+
+Coordinate Get_nearest_consumer(void);
+Coordinate Get_nearest_Beacon(void);
 
 #endif /* INC_TASK_H_ */

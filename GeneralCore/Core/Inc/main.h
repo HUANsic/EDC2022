@@ -34,10 +34,12 @@ extern "C" {
 #include "ssd1306.h"
 #include "huansic_jy62lib.h"
 #include "huansic_motorlib.h"
-#include "huansic_xblib.h"
+//#include "huansic_xblib.h"
+#include "zigbee_edc24.h"
 #include "Astar_util.h"
 #include "positionpid.h"
 #include "stdio.h"
+#include "task.h"
 
 /* USER CODE END Includes */
 

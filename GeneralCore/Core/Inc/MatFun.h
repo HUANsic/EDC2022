@@ -10,7 +10,7 @@
 
 #pragma once
 //申请最大矩阵内存
-#define MATSIZE 50
+#define MATSIZE 20
 //结构体
  typedef struct Matrix_t
 {
@@ -18,7 +18,7 @@
 	float data[MATSIZE];
 } Matrix;
 
-void InitMatrix(Matrix *matrix, int col, int row,int value);		//初始化矩阵
+void InitMatrix(Matrix *matrix, int col, int row, int value);		//初始化矩阵
 void ValueMatrix(Matrix *matrix, float *array);				//给一个矩阵赋值
 int SizeMatrix(Matrix *matrix);								//获得一个矩阵的大小
 void CopyMatrix(Matrix *matrix_A, Matrix *matrix_B);		//复制一个矩阵的值

@@ -114,13 +114,13 @@ uint8_t CheckCoord(void)
 
 float Get_v_x(void)
 {
-	float v_x = (cmotor_rf.goalSpeed - cmotor_lf.goalSpeed + cmotor_lb.goalSpeed - cmotor_rb.goalSpeed) * 50.0 / 4000;
+	float v_x = (cmotor_rf.last5Speed - cmotor_lf.last5Speed + cmotor_lb.last5Speed - cmotor_rb.last5Speed) * 50.0 / 4000;
 	return v_x;
 }
 
 float Get_v_y(void)
 {
-	float v_y = (cmotor_rf.goalSpeed + cmotor_lf.goalSpeed + cmotor_lb.goalSpeed + cmotor_rb.goalSpeed) * 60.0 / 4000;
+	float v_y = (cmotor_rf.last5Speed + cmotor_lf.last5Speed + cmotor_lb.last5Speed + cmotor_rb.last5Speed) * 60.0 / 4000;
 	return v_y;
 }
 

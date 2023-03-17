@@ -11,8 +11,9 @@ extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
 extern Coordinate allyBeacons[3];
 extern Rectangle obstacles[5];
+Order_edc24 delivering[5];
 
-void go_Charge()
+void go_Charge(void)
 {
 	// TODO:可以排个序
 	for(uint8_t i = 0; i < 3; i++)
@@ -22,7 +23,7 @@ void go_Charge()
 	}
 }
 
-void Cal_Battery_Coord()
+void Cal_Battery_Coord(void)
 {
 	uint8_t seted = 0;
 	if(Find_crash(32552, 2))
@@ -74,12 +75,49 @@ void Cal_Battery_Coord()
 	}
 }
 
-void Get_packet()
+void Get_packet(void)
 {
 
 }
 
-void Send_packet()
+void Send_packet(void)
 {
 
+}
+
+Coordinate Get_nearest_consumer(void)
+{
+	uint8_t total = getOrderNum();
+	int16_t mindis = 512;
+	int16_t distance;
+	uint8_t minindex = 0;
+	for(uint8_t i = 0;i < total; i++)
+	{
+		delivering[i] = getOneOrder(i);
+		distance = abs(myCoord.x - delivering[i].desPos.x) + abs(myCoord.y - delivering[i].desPos.y);
+		if(distance < mindis){
+			mindis = distance;
+			minindex = i;
+		}
+	}
+	Coordinate nearest = delivering[minindex].desPos;
+	return nearest;
+
+}
+
+Coordinate Get_nearest_Beacon(void){
+	int16_t mindis = 512;
+	int16_t distance;
+	uint8_t minindex = 0;
+	for(uint8_t i = 0;i < 3;i++)
+	{
+
+		distance = abs(myCoord.x - allyBeacons[i].x) + abs(myCoord.y - allyBeacons[i].y);
+		if(distance < mindis){
+			mindis = distance;
+			minindex = i;
+		}
+	}
+	Coordinate nearest = allyBeacons[minindex];
+	return nearest;
 }

@@ -9,6 +9,8 @@
 Queue openlist;
 List closelist;
 Lane pathlane;
+Order_list orders;
+extern Coordinate myCoord;
 
 void Queue_init(void)
 {
@@ -145,4 +147,48 @@ uint8_t Insert_inLane(Coordinate *head_coor, uint8_t head_index)
 		pathlane.buffer[pathlane.Head + i - head_index] = *(head_coor + i);
 	}
 	return 1;
+}
+
+void order_list_init(void)
+{
+	orders.length = 0;
+	orders.new = 0;
+}
+
+void order_append(Order_edc24 an_order)
+{
+	if(!(an_order.depPos.x == orders.buffer[orders.new].x && an_order.depPos.y == orders.buffer[orders.new].y))
+	{
+		orders.buffer[orders.length].x = an_order.depPos.x;
+		orders.buffer[orders.length].y = an_order.depPos.y;
+		orders.new = orders.length;
+		orders.length += 1;
+	}
+}
+
+Coordinate Get_nearest_order(void)
+{
+	if(orders.length == 0)
+		return myCoord;
+	uint8_t i;
+	int16_t mindis = 512;
+	uint8_t minindex = 0;
+	for(i=0;i < orders.length; i++)
+	{
+		int16_t distance = abs(orders.buffer[i].x - myCoord.x) + abs(orders.buffer[i].y - myCoord.y);
+		if(distance < mindis)
+		{
+			mindis = distance;
+			minindex = i;
+		}
+	}
+	Coordinate nearest = orders.buffer[minindex];
+
+	for(i=minindex + 1; i < orders.length; i++)
+	{
+		orders.buffer[i - 1] = orders.buffer[i];
+	}
+
+	orders.length -= 1;
+	return nearest;
 }
