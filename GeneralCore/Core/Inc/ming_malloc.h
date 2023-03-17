@@ -10,9 +10,10 @@
 
 #include "stm32f1xx_hal.h"
 #include "huansic_malloc.h"
+#include "zigbee_edc24.h"
 
-#define QUEUE_SIZE 256
-#define LIST_SIZE 256
+#define QUEUE_SIZE 2048
+#define LIST_SIZE 2048
 #define LANE_SIZE 32
 
 #pragma pack (2)
@@ -48,6 +49,13 @@ typedef struct
 	Coordinate buffer[LANE_SIZE];     // 4 * LANE_SIZE
 }Lane;                                // 4 * LANE_SIZE + 4
 
+typedef struct
+{
+	uint8_t length;
+	uint8_t new;
+	Coordinate buffer[60];
+}Order_list;
+
 #pragma pack ()
 
 void Queue_init(void);
@@ -59,11 +67,17 @@ uint8_t list_append(uint16_t c);
 
 uint16_t queue_top();
 uint16_t findin_queue(uint16_t c);
+uint16_t findendin_queue(uint16_t c);
 uint8_t findin_list(uint16_t c);
 
 void editcost(uint16_t index, A_Star_Node* node);
 
 // Lane part
-uint8_t Insert_inLane(Coordinate* head_coor, uint8_t head_index);
+uint8_t Insert_inLane(Coordinate *head_coor, uint8_t head_index);
+
+//order list
+void order_list_init(void);
+void order_append(Order_edc24 an_order);
+Coordinate Get_nearest_order(void);
 
 #endif /* INC_MING_MALLOC_H_ */

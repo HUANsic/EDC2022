@@ -63,7 +63,7 @@ void huansic_motor_pid(Motor_HandleTypeDef *hmotor) {
 	hmotor->lastTick = newTick;
 
 	hmotor->lastSpeed = (float) diffTick / hmotor->dt;
-	//hmotor->last5Speed = (4.0 * hmotor->last5Speed + hmotor->lastSpeed) / 5.0;
+	hmotor->last5Speed = (4.0 * hmotor->last5Speed + hmotor->lastSpeed) / 5.0;
 
 	// Derivative
 	float dError = hmotor->lastError - (hmotor->goalSpeed - hmotor->lastSpeed);

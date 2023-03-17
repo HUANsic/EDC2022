@@ -27,7 +27,7 @@ Core/Src/Astar_util.o: ../Core/Src/Astar_util.c ../Core/Inc/Astar_util.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../Core/Inc/ming_malloc.h ../Core/Inc/huansic_malloc.h \
- ../Core/Inc/collab_util.h
+ ../Core/Inc/zigbee_edc24.h ../Core/Inc/collab_util.h
 ../Core/Inc/Astar_util.h:
 ../Core/Inc/huansic_types.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
@@ -58,4 +58,5 @@ Core/Src/Astar_util.o: ../Core/Src/Astar_util.c ../Core/Inc/Astar_util.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
 ../Core/Inc/ming_malloc.h:
 ../Core/Inc/huansic_malloc.h:
+../Core/Inc/zigbee_edc24.h:
 ../Core/Inc/collab_util.h:

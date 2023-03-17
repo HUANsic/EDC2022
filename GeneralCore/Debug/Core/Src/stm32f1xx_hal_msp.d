@@ -30,7 +30,8 @@ Core/Src/stm32f1xx_hal_msp.o: ../Core/Src/stm32f1xx_hal_msp.c \
  ../Core/Inc/huansic_types.h ../Core/Inc/huansic_motorlib.h \
  ../Core/Inc/huansic_xblib.h ../Core/Inc/huansic_malloc.h \
  ../Core/Inc/Astar_util.h ../Core/Inc/ming_malloc.h \
- ../Core/Inc/collab_util.h ../Core/Inc/positionpid.h
+ ../Core/Inc/zigbee_edc24.h ../Core/Inc/collab_util.h \
+ ../Core/Inc/positionpid.h ../Core/Inc/task.h ../Core/Inc/main.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -68,5 +69,8 @@ Core/Src/stm32f1xx_hal_msp.o: ../Core/Src/stm32f1xx_hal_msp.c \
 ../Core/Inc/huansic_malloc.h:
 ../Core/Inc/Astar_util.h:
 ../Core/Inc/ming_malloc.h:
+../Core/Inc/zigbee_edc24.h:
 ../Core/Inc/collab_util.h:
 ../Core/Inc/positionpid.h:
+../Core/Inc/task.h:
+../Core/Inc/main.h:

@@ -43,7 +43,6 @@ extern fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 extern double angleZ, omegaZ, accelY;	// turning speed and linear acceleration
 extern float myScore;				// current score returned by Master
 extern float myCharge;				// current charge returned by Master
-extern Motor_HandleTypeDef hmotor_left, hmotor_right;
 extern Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 
 // interchange information 1
@@ -61,13 +60,13 @@ Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
 //0 - 360 degree, 0 degree front, clockwise
 void chao_move_angle(float _angle, float speed) {
 	float angle_arc = (_angle / 180) * M_PI;
-	cmotor_lf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
-	cmotor_rf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
-	cmotor_lb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
-	cmotor_rb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_lf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
+	cmotor_rf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_lb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_rb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
 }
 
-Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end) {
+uint8_t mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end) {
 	return A_Star_main(start, end, 5);
 }
 

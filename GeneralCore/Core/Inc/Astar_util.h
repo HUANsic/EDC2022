@@ -22,7 +22,7 @@ int8_t dir(uint16_t cor1, uint16_t cor2);
 // find the end
 uint8_t findend(uint16_t cur, uint16_t end, uint8_t step);
 // expand the queue
-uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* end, uint8_t step);
+void Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node* end, uint8_t step);
 // A Star search
 uint8_t A_Star_main(Coordinate* start, Coordinate* last, uint8_t step);
 

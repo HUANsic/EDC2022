@@ -68,7 +68,7 @@ enum IMU_STATUS huansic_jy62_init(JY62_HandleTypeDef *himu) {
 	// reset z-axis angle
 	HAL_UART_Transmit(himu->huart, JY62_RESET_Z_ANGLE, 3, 10);
 
-// instead, just use DMA
+	// instead, just use DMA
 	himu->pending_alignment = 0;
 	HAL_UART_Receive_DMA(himu->huart, &himu->buffer[0], 33);
 	himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt

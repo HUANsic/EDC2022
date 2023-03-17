@@ -89,14 +89,14 @@ uint8_t findend(uint16_t cur, uint16_t end, uint8_t step)
 	uint16_t x2 = end / 256;
 	uint16_t y2 = end % 256;
 	if (abs(x2 - x1) < step && abs(y2 - y1) < step)
-			{
+	{
 		return 1;
 	}
 	else
 		return 0;
 }
 
-uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *end, uint8_t step) {
+void Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *end, uint8_t step) {
 	uint16_t x = openlist.buffer[currentindex].cor / 256;
 	uint16_t y = openlist.buffer[currentindex].cor % 256;
 	uint8_t obstacleflag = 1;		//负责检测采取何种程度的避障
@@ -126,11 +126,6 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *en
 				else	//in open_list
 				{
 					editcost(index, &newnode);
-				}
-				if (findend(coordinateindex, end->cor, step))
-						{
-					uint16_t i = findin_queue(coordinateindex);
-					return i;
 				}
 			}
 		}
@@ -162,11 +157,6 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *en
 				{
 					editcost(index, &newnode);
 				}
-				if (findend(coordinateindex, end->cor, step))
-						{
-					uint16_t i = findin_queue(coordinateindex);
-					return i;
-				}
 			}
 		}
 	}
@@ -196,11 +186,6 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *en
 				else	//in open_list
 				{
 					editcost(index, &newnode);
-				}
-				if (findend(coordinateindex, end->cor, step))
-						{
-					uint16_t i = findin_queue(coordinateindex);
-					return i;
 				}
 			}
 		}
@@ -232,15 +217,9 @@ uint16_t Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *en
 				{
 					editcost(index, &newnode);
 				}
-				if (findend(coordinateindex, end->cor, step))
-						{
-					uint16_t i = findin_queue(coordinateindex);
-					return i;
-				}
 			}
 		}
 	}
-	return 0;
 }
 
 uint8_t A_Star_main(Coordinate *start, Coordinate *last, uint8_t step) {
@@ -249,25 +228,27 @@ uint8_t A_Star_main(Coordinate *start, Coordinate *last, uint8_t step) {
 	begin.cor = (start->x) * 256 + start->y;
 	end.cor = (last->x) * 256 + last->y;
 	begin.cost = 0;
-	begin.total = cal_H(begin.cor, end.cor);
+	begin.total = 0;
 	begin.fatherindex = 65535;
 	queue_append(&begin);
 	uint16_t curindex = 0;
-	uint8_t Flag = 0;
+	uint16_t Flag = 0;
 	int8_t lastdir = 0;     		// left:-step up:-2*step right:step down:2*step
 	while (1) {
 		curindex = queue_top();
 		if (curindex == 65535)
-			return NULL;
+			return 0;
 		if (openlist.buffer[curindex].fatherindex != 65535) {
 			lastdir = dir(openlist.buffer[openlist.buffer[curindex].fatherindex].cor,
 					openlist.buffer[curindex].cor);
 		}
 		list_append(openlist.buffer[curindex].cor);
-		Flag = Find_around_node(curindex, lastdir, &end, step);
-		if (Flag != 0) {
+		if(findend(openlist.buffer[curindex].cor, end.cor, step))
+		{
+			Flag = curindex;
 			break;
 		}
+		Find_around_node(curindex, lastdir, &end, step);
 	}
 
 	//we now get the path
@@ -287,12 +268,12 @@ uint8_t A_Star_main(Coordinate *start, Coordinate *last, uint8_t step) {
 	while (p->fatherindex != 65535) {
 		if (lastdir != dir(openlist.buffer[p->fatherindex].cor, p->cor))
 		{
-			Astar_path[i].x = openlist.buffer[p->fatherindex].cor / 256;
-			Astar_path[i].y = openlist.buffer[p->fatherindex].cor % 256;
+			Astar_path[i].x = p->cor / 256;
+			Astar_path[i].y = p->cor % 256;
 			if (i == 1) {
 				i = 0;
 				p = &(openlist.buffer[p->fatherindex]);
-				break; // TODO
+				break;
 			}
 			i = i - 1;
 			lastdir = dir(openlist.buffer[p->fatherindex].cor, p->cor);
@@ -302,8 +283,8 @@ uint8_t A_Star_main(Coordinate *start, Coordinate *last, uint8_t step) {
 	Astar_path[i].x = p->cor / 256;
 	Astar_path[i].y = p->cor % 256;
 
-
-	uint8_t Laneis_OK = Insert_inLane(&Astar_path, i);
+	Lane_init();
+	uint8_t Laneis_OK = Insert_inLane(&Astar_path[0], i);
 
 	return Laneis_OK;
 }

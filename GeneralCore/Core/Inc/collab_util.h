@@ -14,10 +14,8 @@
 float xiao_calculateCost(Path *path);
 
 // find a path between two points (with lines and arcs)
-Path* shang_pathfind_ignoreObstacle_verticle(Coordinate *start, Coordinate *end);
-Path* shang_pathfind_ignoreObstacle_horizontal(Coordinate *start, Coordinate *end);
 Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end);
-Path* mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end);
+uint8_t mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end);
 
 // convert Path to PWM/Duty Cycle/Motor Speed
 void chao_move_angle(float _angle, float speed);
