@@ -21,6 +21,17 @@ enum IMU_STATUS
 	IMU_PID_ERROR
 };
 
+enum XB_STATUS
+{
+	XB_OK = HAL_OK,
+	XB_ERROR = HAL_ERROR,
+	XB_BUSY = HAL_BUSY,
+	XB_TIMEOUT = HAL_TIMEOUT,
+	XB_SUM_ERROR,
+	XB_HEADER_ERROR,
+	XB_ID_ERROR
+};
+
 enum IMU_STATE {
 	IMU_STATE_HDR = 0,
 	IMU_STATE_PID,
@@ -116,7 +127,8 @@ typedef struct {
 } JY62_HandleTypeDef;
 
 typedef struct {
-	UART_HandleTypeDef *uartPort;
+	UART_HandleTypeDef *huart;
+	DMA_HandleTypeDef *hdma;
 
 	uint32_t lastUpdated;
 
@@ -126,6 +138,9 @@ typedef struct {
 
 	// max is 126
 	uint8_t buffer[130];	// put at the end to prevent block alignment issues
+
+	uint8_t pending_alignment;
+	uint8_t lastByte;
 } XB_HandleTypeDef;
 
 typedef struct Path_t{

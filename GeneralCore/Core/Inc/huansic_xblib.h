@@ -13,12 +13,20 @@
 
 void huansic_xb_init(XB_HandleTypeDef *hxb);
 
-uint8_t huansic_xb_decodeHeader(XB_HandleTypeDef *hxb);
+enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb);
 
-void huansic_xb_decodeBody(XB_HandleTypeDef *hxb);
+enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb);
 
 void huansic_xb_requestGameInfo(XB_HandleTypeDef *hxb);
 
 void huansic_xb_setBeacon(XB_HandleTypeDef *hxb);
+
+void huansic_xb_dma_error(XB_HandleTypeDef *hxb);
+
+void huansic_xb_it_error(XB_HandleTypeDef *hxb);
+
+enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb);
+
+enum XB_STATUS huansic_xb_dma_isr(XB_HandleTypeDef *hxb);
 
 #endif /* INC_HUANSIC_XBLIB_H_ */
