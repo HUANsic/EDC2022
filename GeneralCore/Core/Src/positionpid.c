@@ -7,10 +7,10 @@
 #include "positionpid.h"
 
 extern Coordinate myCoord;
-extern Coordinate EstiCoord;
+extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
-#define PATH_PID_TOLERANCE 1
-#define MAX_SPEED 2500
+#define PATH_PID_TOLERANCE 10
+#define MAX_SPEED 1000
 #define MIN_SPEED 500
 
 extern float initangleZ;
@@ -30,10 +30,13 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 			{
 				while(1)
 				{
-					Position_P(&myCoord, &pathlane.buffer[pathlane.Head + i]);
+					Position_P(&EstiCoord, &pathlane.buffer[pathlane.Head + i]);
 					CheckCoord();
 					if(abs(EstiCoord.x - pathlane.buffer[pathlane.Head + i].x) + abs(EstiCoord.y - pathlane.buffer[pathlane.Head + i].y) <= PATH_PID_TOLERANCE)
-						break;
+					{
+						chao_move_angle(0,0);
+						return 1;
+					}
 				}
 			}
 		}
@@ -41,10 +44,13 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 		{
 			while(1)
 			{
-				Position_P(&myCoord, &Destination);
+				Position_P(&EstiCoord, &Destination);
 				CheckCoord();
 				if(abs(EstiCoord.x - Destination.x) + abs(EstiCoord.y - Destination.y) <= PATH_PID_TOLERANCE)
-					break;
+				{
+					chao_move_angle(0,0);
+					return 1;
+				}
 			}
 		}
 	}
@@ -52,10 +58,13 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 	{
 		while(1)
 		{
-			Position_P(&myCoord, &Destination);
+			Position_P(&EstiCoord, &Destination);
 			CheckCoord();
 			if(abs(EstiCoord.x - Destination.x) + abs(EstiCoord.y - Destination.y) <= PATH_PID_TOLERANCE)
-				break;
+			{
+				chao_move_angle(0,0);
+				return 1;
+			}
 		}
 	}
 	return 0;
@@ -77,7 +86,7 @@ float Angle_normalization(float angle)
 
 float CalSpeed(int16_t x, int16_t y)
 {
-	float kp = 20.0;
+	float kp = 2.0;
 
 	float Speed = kp * (abs(x) + abs(y));
 	if(Speed > MAX_SPEED)
@@ -105,12 +114,14 @@ uint8_t CheckCoord(void)
 
 float Get_v_x(void)
 {
-	return (cmotor_rf.last5Speed - cmotor_lf.last5Speed + cmotor_lb.last5Speed - cmotor_rb.last5Speed) * 5.0 / 2;
+	float v_x = (cmotor_rf.goalSpeed - cmotor_lf.goalSpeed + cmotor_lb.goalSpeed - cmotor_rb.goalSpeed) * 50.0 / 4000;
+	return v_x;
 }
 
 float Get_v_y(void)
 {
-	return (cmotor_rf.last5Speed + cmotor_lf.last5Speed + cmotor_lb.last5Speed + cmotor_rb.last5Speed) * 3;
+	float v_y = (cmotor_rf.goalSpeed + cmotor_lf.goalSpeed + cmotor_lb.goalSpeed + cmotor_rb.goalSpeed) * 60.0 / 4000;
+	return v_y;
 }
 
 void Position_P(Coordinate* cur, Coordinate* goal)
@@ -147,7 +158,7 @@ void Position_P(Coordinate* cur, Coordinate* goal)
 	}
 	CheckCoord();
 	HAL_Delay(10); // delay 10 ms = 100 Hz
-	if(!CheckCoord())
+	if(CheckCoord() == 0)
 	{
 		EstiCoord.x = EstiCoord.x + 0.01 * Get_v_x();
 		EstiCoord.y = EstiCoord.y + 0.01 * Get_v_y();

@@ -60,10 +60,10 @@ Path* jymm_pathfind_straight(Coordinate *start, Coordinate *end) {
 //0 - 360 degree, 0 degree front, clockwise
 void chao_move_angle(float _angle, float speed) {
 	float angle_arc = (_angle / 180) * M_PI;
-	cmotor_lf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
-	cmotor_rf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
-	cmotor_lb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
-	cmotor_rb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_lf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
+	cmotor_rf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_lb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
+	cmotor_rb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
 }
 
 uint8_t mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end) {

@@ -75,8 +75,10 @@ JY62_HandleTypeDef himu;
 XB_HandleTypeDef hxb;
 
 // game information 1
-uint8_t gameStage;		// 0: pre-match(standby); 1: first half; 2: second half
+uint8_t gameStage;		    // 0: pre-match(standby); 1: first half; 2: second half
 uint8_t gameStatus;			// 0: standby; 1: running
+uint8_t task_mode;          // 0:set battery 1: get packet 2:send packet 3:charge
+
 uint32_t gameStageTimeLimit;		// in ms
 uint32_t gameStageTimeSinceStart;	// in ms
 Rectangle obstacles[5];			// area that depletes charge faster
@@ -88,10 +90,9 @@ Order *delivering[5];		// package picked up but not yet delivered
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
-Coordinate EstiCoord;       // predict coordinate
+fCoordinate EstiCoord;       // predict coordinate
 uint8_t CoordinateUpdate;   // 0 is not Update, 1 is Update
 
-fCoordinate estimatedCoord;	// coordinate calculated by Kalman Filter
 float angleZ;
 double omegaZ, accelY;		// turning speed and linear acceleration
 float initangleZ;                  // init angleZ
@@ -148,7 +149,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 
- 	HAL_Init();
+  	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -194,7 +195,6 @@ int main(void)
 	HAL_Delay(20);
 	HAL_TIM_Base_Start_IT(&htim6);
 
-	initangleZ = himu.theta[2];
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -202,28 +202,36 @@ int main(void)
 	sprintf(firstLine, "Good");
 	ssd1306_WriteString(firstLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
-	myCoord.x = 45;
-	myCoord.y = 45;
+
+	// test A*
+	myCoord.x = 0;
+	myCoord.y = 0;
 	Coordinate goal;
-	goal.x = 210;
-	goal.y = 210;
-	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
+	goal.x = 60;
+	goal.y = 0;
+	EstiCoord.x = (float)myCoord.x;
+	EstiCoord.y = (float)myCoord.y;
+	CoordinateUpdate = 0;
+	//uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
+//	GotoDestination(goal, 0);
 
     while (1) {
     	// test code to ensure the motor can work
-//		HAL_Delay(1000);
-//		chao_move_angle(0, 2000);
-//		HAL_Delay(1000);
-//		chao_move_angle(90, 2000);
-//		HAL_Delay(1000);
-//		chao_move_angle(180, 2000);
-//		HAL_Delay(1000);
-//		chao_move_angle(270, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(0, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(90, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(180, 2000);
+		HAL_Delay(1000);
+		chao_move_angle(270, 2000);
 
 //    	isArrived = GotoDestination(goal); //暂时不用管，还没有调通
 //    	if (isArrived == 1) break;
 		while(!gameStatus){		// if the game is not running
 	    	LED1_ON;
+	    	HAL_Delay(100);
+	    	LED1_OFF;
 			break;
 		}
 
@@ -231,7 +239,8 @@ int main(void)
 			if (!gameStatus)	// if the game stopped
 				break;
 			// do some initialization
-
+			chao_move_angle(0, 0);
+			initangleZ = -himu.theta[2];
 			// find angle offset
 		}
 
