@@ -209,20 +209,21 @@ int main(void)
 	// test A*
 	myCoord.x = 0;
 	myCoord.y = 0;
-//	Coordinate goal;
-//	goal.x = 60;
-//	goal.y = 0;
+	Coordinate goal;
+	goal.x = 50;
+	goal.y = 10;
 	EstiCoord.x = (float)myCoord.x;
 	EstiCoord.y = (float)myCoord.y;
 	CoordinateUpdate = 0;
-	//uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
-	//GotoDestination(goal, 0);
+//	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
+//	Position_P(&myCoord, &goal);
+	GotoDestination(goal, 0);
 
 
     while (1) {
     	// test code to ensure the motor can work
 //		HAL_Delay(1000);
-//		chao_move_angle(0, 2000);
+//		chao_move_angle(135, 1000);
 //		HAL_Delay(1000);
 //		chao_move_angle(90, 2000);
 //		HAL_Delay(1000);
