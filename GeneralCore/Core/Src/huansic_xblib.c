@@ -276,6 +276,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 	}
 
 	// set up next DMA
+	hxb->lastUpdated = HAL_GetTick();		// update last updated time stamp
 	hxb->nextPackageLength = 6;		// header length
 	hxb->nextPackageID = 0x00;		// the next one is header
 	HAL_UART_Receive_DMA(hxb->huart, hxb->buffer, hxb->nextPackageLength);
