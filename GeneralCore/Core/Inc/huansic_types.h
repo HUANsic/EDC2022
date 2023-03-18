@@ -138,6 +138,7 @@ typedef struct {
 
 	// max is 126
 	uint8_t buffer[130];	// put at the end to prevent block alignment issues
+	// uint8_t processing_buffer[130];		// double buffering
 
 	uint8_t pending_alignment;
 	uint8_t lastByte;
@@ -146,7 +147,7 @@ typedef struct {
 typedef struct Path_t{
 	Coordinate start, end;		// 4 + 4
 	struct Path_t* nextPath;	// 4
-	uint8_t referenceCount;		// 1 （4）
+	uint8_t referenceCount;		// 1 (4)
 } Path;
 
 #endif /* INC_HUANSIC_TYPES_H_ */

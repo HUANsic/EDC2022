@@ -313,6 +313,7 @@ enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb) {
 	if (hxb->buffer[0] == 0xAA && hxb->lastByte == 0x55) {		// if aligned (look for header)
 		hxb->pending_alignment = 0;
 		hxb->nextPackageID = 0x00;
+		hxb->buffer[1] = 0x55;		// for further processing
 		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[2], 4);		// receive the rest of header
 		hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 		return XB_OK;
