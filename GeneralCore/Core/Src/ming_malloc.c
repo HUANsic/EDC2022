@@ -155,12 +155,12 @@ void order_list_init(void)
 	orders.new = 0;
 }
 
-void order_append(Order_edc24 an_order)
+void order_append(Order *an_order)
 {
-	if(!(an_order.depPos.x == orders.buffer[orders.new].x && an_order.depPos.y == orders.buffer[orders.new].y))
+	if(!(an_order->startCoord.x == orders.buffer[orders.new].x && an_order->startCoord.y == orders.buffer[orders.new].y))
 	{
-		orders.buffer[orders.length].x = an_order.depPos.x;
-		orders.buffer[orders.length].y = an_order.depPos.y;
+		orders.buffer[orders.length].x = an_order->startCoord.x;
+		orders.buffer[orders.length].y = an_order->startCoord.y;
 		orders.new = orders.length;
 		orders.length += 1;
 	}

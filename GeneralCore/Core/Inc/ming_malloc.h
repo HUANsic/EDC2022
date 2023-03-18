@@ -9,8 +9,9 @@
 #define INC_MING_MALLOC_H_
 
 #include "stm32f1xx_hal.h"
+#include "huansic_types.h"
 #include "huansic_malloc.h"
-#include "zigbee_edc24.h"
+#include "stdlib.h"
 
 #define QUEUE_SIZE 2048
 #define LIST_SIZE 2048
@@ -77,7 +78,7 @@ uint8_t Insert_inLane(Coordinate *head_coor, uint8_t head_index);
 
 //order list
 void order_list_init(void);
-void order_append(Order_edc24 an_order);
+void order_append(Order *an_order);
 Coordinate Get_nearest_order(void);
 
 #endif /* INC_MING_MALLOC_H_ */

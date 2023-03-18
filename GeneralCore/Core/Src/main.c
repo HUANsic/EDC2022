@@ -48,7 +48,6 @@
 #define LED3_TOGGLE	HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin)
 
 #define LED1_BLINK(n) for(uint8_t i = 0; i < n; i++){LED1_ON; HAL_Delay(150); LED1_OFF; HAL_Delay(150);}
-#define MAX_MSG_LEN 200
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -64,7 +63,6 @@ TIM_HandleTypeDef htim8;
 
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
-UART_HandleTypeDef* zigbee_huart;
 DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart3_rx;
 
@@ -74,8 +72,6 @@ DMA_HandleTypeDef hdma_usart3_rx;
 Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 JY62_HandleTypeDef himu;
 XB_HandleTypeDef hxb;
-uint8_t receive_flag=0;
-extern uint8_t zigbeeMessage[MAX_MSG_LEN];
 
 // game information 1
 uint8_t gameStage;		    // 0: pre-match(standby); 1: first half; 2: second half
@@ -87,9 +83,11 @@ uint32_t gameStageTimeSinceStart;	// in ms
 Rectangle obstacles[5];			// area that depletes charge faster
 Coordinate allyBeacons[3];		// ally charging station coordinate
 Coordinate oppoBeacons[3];		// opponent charging station coordinate
+Coordinate want_allyBeacons[3];
 
 // game information 2
-extern Order_edc24 delivering[5];		// package picked up but not yet delivered
+Order *delivering[5];		// package picked up but not yet delivered
+uint8_t delivering_num = 0;
 extern Order_list orders;
 
 // game information 3
@@ -108,6 +106,7 @@ uint32_t gameStageTimeLeft;		// in ms
 // OLED display buffer
 char firstLine[16], secondLine[16], thirdLine[16], fourthLine[16];		// 128 / 8 = 16
 
+Coordinate merchant, consumer;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -130,8 +129,7 @@ static void HUAN_MOTOR2_Init(void);
 static void HUAN_MOTOR3_Init(void);
 static void HUAN_MOTOR4_Init(void);
 static void HUAN_IMU_Init(void);
-static void MING_zigbee_Init(void);
-//static void HUAN_ZIGBEE_Init(void);
+static void HUAN_ZIGBEE_Init(void);
 
 /* USER CODE END PFP */
 
@@ -188,8 +186,7 @@ int main(void)
 	HUAN_MOTOR3_Init();
 	HUAN_MOTOR4_Init();
 	HUAN_IMU_Init();
-//	HUAN_ZIGBEE_Init();
-	MING_zigbee_Init();
+	HUAN_ZIGBEE_Init();
 	order_list_init();
 
 	// tick per motor rev = 1080 (measured)
@@ -221,9 +218,7 @@ int main(void)
 	//uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
 	//GotoDestination(goal, 0);
 
-	Coordinate merchant;
-	Coordinate consumer;
-	Coordinate Beacon;
+
     while (1) {
     	// test code to ensure the motor can work
 //		HAL_Delay(1000);
@@ -235,37 +230,27 @@ int main(void)
 //		HAL_Delay(1000);
 //		chao_move_angle(270, 2000);
 
-    	GameStatus_edc24 GameStatus = getGameStatus();
-    	GameStage_edc24 GameStage = getGameStage();
-		if(GameStatus == GameStandby){		// if the game is not running
+		if(gameStatus == 0){		// if the game is not running
 	    	LED1_ON;
 	    	HAL_Delay(1000);
 	    	LED1_OFF;
 		}
 		else
 		{
-			while (GameStage == Prematch) {		// pre-match
+			while (gameStage == 0) {		// pre-match
 				chao_move_angle(0, 0);
 				// find angle offset
 				initangleZ = -himu.theta[2];
 				// do some initialization
 				// get obstacle list
-				for(uint8_t i = 0; i < 5; i++)
-				{
-					obstacles[i] = getOneBarrier(i);
-				}
 				Cal_Battery_Coord();
+				task_mode = 0;
 			}
 
-			while (GameStage == FirstHalf){			// first-half
-
+			while (gameStage == 1){			// first-half
 				if(task_mode==0){
 					//setChargingPile
-					uint8_t i;
-					for(i=0;i<3;i++){
-						GotoDestination(allyBeacons[i], 1);
-						setChargingPile();
-					}
+					set_Beacons();
 					task_mode = 1;
 				}
 				else {
@@ -273,18 +258,15 @@ int main(void)
 						task_mode = 3;
 					}
 					if(task_mode == 1){
-						//merchant = Get_nearest_order();
-						GotoDestination(merchant,1);
+						Get_packet(merchant);
 						task_mode = 4;
 					}
 					else if(task_mode == 2){
-						//consumer = Get_nearest_consumer();
-						GotoDestination(consumer,1);
+						Send_packet(consumer);
 						task_mode = 4;
 					}
 					else if(task_mode == 3){
-						Beacon = Get_nearest_Beacon();
-						GotoDestination(Beacon,1);
+						go_Charge();
 						HAL_Delay(1000);
 						task_mode = 4;
 					}
@@ -292,10 +274,10 @@ int main(void)
 					{
 						merchant = Get_nearest_order();
 						consumer = Get_nearest_consumer();
-						if(getOrderNum()>3){
+						if(delivering_num > 3){
 							task_mode = 2;
 						}
-						else if(getOrderNum() == 0){
+						else if(delivering_num == 0){
 							task_mode = 1;
 						}
 						else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
@@ -309,23 +291,20 @@ int main(void)
 
 			}
 
-			while (GameStage == SecondHalf){			// second-half
+			while (gameStage == 2){			// second-half
 				if(myCharge < 200){
 					task_mode = 3;
 				}
 				if(task_mode == 1){
-					//merchant = Get_nearest_order();
-					GotoDestination(merchant,1);
+					Get_packet(merchant);
 					task_mode = 4;
 				}
 				else if(task_mode == 2){
-					//consumer = Get_nearest_consumer();
-					GotoDestination(consumer,1);
+					Send_packet(consumer);
 					task_mode = 4;
 				}
 				else if(task_mode == 3){
-					Beacon = Get_nearest_Beacon();
-					GotoDestination(Beacon,1);
+					go_Charge();
 					HAL_Delay(1000);
 					task_mode = 4;
 				}
@@ -333,10 +312,10 @@ int main(void)
 				{
 					merchant = Get_nearest_order();
 					consumer = Get_nearest_consumer();
-					if(getOrderNum()>3){
+					if(delivering_num > 3){
 						task_mode = 2;
 					}
-					else if(getOrderNum() == 0){
+					else if(delivering_num == 0){
 						task_mode = 1;
 					}
 					else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
@@ -1021,6 +1000,7 @@ static void HUAN_ZIGBEE_Init(void) {
 	hxb.huart = &huart2;
 	hxb.hdma = &hdma_usart2_rx;
 	huansic_xb_init(&hxb);
+}
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {

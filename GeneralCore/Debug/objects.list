@@ -16,7 +16,6 @@
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32f1xx.o"
 "./Core/Src/task.o"
-"./Core/Src/zigbee_edc24.o"
 "./Core/Startup/startup_stm32f103rctx.o"
 "./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o"
 "./Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o"

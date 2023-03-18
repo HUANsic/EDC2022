@@ -29,6 +29,8 @@ extern float myCharge;				// current charge returned by Master
 
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
+extern uint8_t CoordinateUpdate;
+extern uint8_t delivering_num;
 
 __weak void custom_order_new_failed(uint8_t id) {
 
@@ -49,9 +51,9 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 		return XB_SUM_ERROR;
 
 	// get and check packet ID
-	if (hxb->buffer[0] != 0x01 && hxb->buffer[0] != 0x05)
+	if (hxb->buffer[2] != 0x01 && hxb->buffer[2] != 0x05)
 		return XB_ID_ERROR;
-	hxb->nextPackageID = hxb->buffer[0];
+	hxb->nextPackageID = hxb->buffer[2];
 
 	// read next package length
 	hxb->nextPackageLength = hxb->buffer[4]; // the length shall not be longer than 255 (the max possible is 225)
@@ -149,6 +151,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		index += 2;
 		myCoord.y = (uint16_t) hxb->buffer[index++] << 8;
 		myCoord.y = hxb->buffer[index++];
+		CoordinateUpdate = 1;
 
 		/* fetch battery */
 		temp = hxb->buffer[index++];
@@ -165,6 +168,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		uint8_t updatedOrderIndex = 0;
 		Order *tempOrder;
 		listLength = hxb->buffer[index++];
+		delivering_num = listLength;
 		for (i = 0; i < listLength; i++) {
 			temp = hxb->buffer[index + 24];
 			temp <<= 8;
@@ -215,7 +219,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		/* order management */
 		for (i = 0; i < 5; i++)
 			if (delivering[i]->id != -1) {
-				for (j = 0; i < updatedOrderIndex; j++)
+				for (j = 0; j < updatedOrderIndex; j++)
 					if (delivering[i]->id == updatedOrder[j]) {		// pulled from remote
 						j = 255;
 						break;
@@ -242,6 +246,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 					| hxb->buffer[index + 3];
 			tempOrder->startCoord.y = ((uint16_t) hxb->buffer[index + 6] << 8)
 					| hxb->buffer[index + 7];
+			order_append(tempOrder);
 			// end coordinate
 			tempOrder->destCoord.x = ((uint16_t) hxb->buffer[index + 10] << 8)
 					| hxb->buffer[index + 11];

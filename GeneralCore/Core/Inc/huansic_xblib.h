@@ -10,6 +10,7 @@
 
 #include "huansic_types.h"
 #include "huansic_malloc.h"
+#include "ming_malloc.h"
 
 void huansic_xb_init(XB_HandleTypeDef *hxb);
 

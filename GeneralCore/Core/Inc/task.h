@@ -16,11 +16,12 @@
 
 void Cal_Battery_Coord(void);
 
-void Get_packet(void);
+void Get_packet(Coordinate merchant);
 
-void Send_packet(void);
+void Send_packet(Coordinate consumer);
 
 void go_Charge(void);
+void set_Beacons(void);
 
 Coordinate Get_nearest_consumer(void);
 Coordinate Get_nearest_Beacon(void);

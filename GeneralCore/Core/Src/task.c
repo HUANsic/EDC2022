@@ -10,16 +10,25 @@ extern Coordinate myCoord;
 extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
 extern Coordinate allyBeacons[3];
+extern Coordinate want_allyBeacons[3];
 extern Rectangle obstacles[5];
-Order_edc24 delivering[5];
+extern Order *delivering[5];
+extern uint8_t delivering_num;
+extern XB_HandleTypeDef hxb;
 
 void go_Charge(void)
 {
-	// TODO:可以排个序
-	for(uint8_t i = 0; i < 3; i++)
-	{
-		GotoDestination(allyBeacons[i], 1);
-		// set a signal : this is a beacon
+	Coordinate Beacon;
+	Beacon = Get_nearest_Beacon();
+	GotoDestination(Beacon,1);
+}
+
+void set_Beacons(void)
+{
+	uint8_t i;
+	for(i = 0;i < 3; i++){
+		GotoDestination(want_allyBeacons[i], 1);
+		huansic_xb_setBeacon(&hxb);
 	}
 }
 
@@ -29,22 +38,22 @@ void Cal_Battery_Coord(void)
 	if(Find_crash(32552, 2))
 	{
 		//set a signal
-		allyBeacons[seted].x = 127;
-		allyBeacons[seted].y = 40;
+		want_allyBeacons[seted].x = 127;
+		want_allyBeacons[seted].y = 40;
 		seted += 1;
 	}
 	if(Find_crash(32726, 2))
 	{
 		//set a signal
-		allyBeacons[seted].x = 127;
-		allyBeacons[seted].y = 214;
+		want_allyBeacons[seted].x = 127;
+		want_allyBeacons[seted].y = 214;
 		seted += 1;
 	}
 	if(Find_crash(10367, 2))
 	{
 		//set a signal
-		allyBeacons[seted].x = 40;
-		allyBeacons[seted].y = 127;
+		want_allyBeacons[seted].x = 40;
+		want_allyBeacons[seted].y = 127;
 		seted += 1;
 	}
 	if(seted != 3)
@@ -52,8 +61,8 @@ void Cal_Battery_Coord(void)
 		if(Find_crash(54911, 2))
 		{
 			//set a signal
-			allyBeacons[seted].x = 214;
-			allyBeacons[seted].y = 127;
+			want_allyBeacons[seted].x = 214;
+			want_allyBeacons[seted].y = 127;
 			seted += 1;
 		}
 	}
@@ -63,8 +72,8 @@ void Cal_Battery_Coord(void)
 	{
 		if(Find_crash(x_i * 256 + y_i, 2))
 		{
-			allyBeacons[seted].x = x_i;
-			allyBeacons[seted].y = y_i;
+			want_allyBeacons[seted].x = x_i;
+			want_allyBeacons[seted].y = y_i;
 			seted += 1;
 		}
 		else
@@ -75,32 +84,30 @@ void Cal_Battery_Coord(void)
 	}
 }
 
-void Get_packet(void)
+void Get_packet(Coordinate merchant)
 {
-
+	GotoDestination(merchant,1);
 }
 
-void Send_packet(void)
+void Send_packet(Coordinate consumer)
 {
-
+	GotoDestination(consumer,1);
 }
 
 Coordinate Get_nearest_consumer(void)
 {
-	uint8_t total = getOrderNum();
 	int16_t mindis = 512;
 	int16_t distance;
 	uint8_t minindex = 0;
-	for(uint8_t i = 0;i < total; i++)
+	for(uint8_t i = 0;i < delivering_num; i++)
 	{
-		delivering[i] = getOneOrder(i);
-		distance = abs(myCoord.x - delivering[i].desPos.x) + abs(myCoord.y - delivering[i].desPos.y);
+		distance = abs(myCoord.x - delivering[i]->destCoord.x) + abs(myCoord.y - delivering[i]->destCoord.y);
 		if(distance < mindis){
 			mindis = distance;
 			minindex = i;
 		}
 	}
-	Coordinate nearest = delivering[minindex].desPos;
+	Coordinate nearest = delivering[minindex]->destCoord;
 	return nearest;
 
 }
