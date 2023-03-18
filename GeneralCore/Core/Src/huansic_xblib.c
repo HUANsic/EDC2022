@@ -61,7 +61,7 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageID = hxb->buffer[2];
 
 	// read next package length
-	hxb->nextPackageLength = hxb->buffer[4]; // the length shall not be longer than 255 (the max possible is 225)
+	hxb->nextPackageLength = hxb->buffer[3]; // the length shall not be longer than 255 (the max possible is 225)
 
 	// set up next DMA
 	HAL_UART_Receive_DMA(hxb->huart, hxb->buffer, hxb->nextPackageLength);
