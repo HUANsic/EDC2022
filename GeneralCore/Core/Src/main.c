@@ -185,7 +185,7 @@ int main(void)
 	HUAN_MOTOR2_Init();
 	HUAN_MOTOR3_Init();
 	HUAN_MOTOR4_Init();
-	HUAN_IMU_Init();
+//	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
 	order_list_init();
 
@@ -217,7 +217,7 @@ int main(void)
 	CoordinateUpdate = 0;
 //	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
 //	Position_P(&myCoord, &goal);
-	GotoDestination(goal, 0);
+//	GotoDestination(goal, 0);
 
 
     while (1) {
