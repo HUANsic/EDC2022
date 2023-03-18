@@ -45,14 +45,19 @@ void huansic_xb_init(XB_HandleTypeDef *hxb) {
 }
 
 enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
-	// checksum
-	if (hxb->buffer[5]
-			!= (hxb->buffer[0] ^ hxb->buffer[1] ^ hxb->buffer[2] ^ hxb->buffer[3] ^ hxb->buffer[4]))
-		return XB_SUM_ERROR;
+	if (!hxb)
+		return XB_ERROR;
+
+	// record checksum
+	hxb->checksum = hxb->buffer[5];
 
 	// get and check packet ID
-	if (hxb->buffer[2] != 0x01 && hxb->buffer[2] != 0x05)
+	if (hxb->buffer[2] != 0x01 && hxb->buffer[2] != 0x05) {
+		hxb->pending_alignment = 1;
+		hxb->lastByte = 0x00;
+		HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);		// check next byte
 		return XB_ID_ERROR;
+	}
 	hxb->nextPackageID = hxb->buffer[2];
 
 	// read next package length
@@ -67,6 +72,21 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 	uint8_t listLength = 0, i, j, index = 0;
 	uint32_t temp;
+
+	if (!hxb)
+		return XB_ERROR;
+
+	// checksum
+	for (i = 0, j = 0; i < hxb->nextPackageLength; i++)
+		j ^= hxb->buffer[i];
+
+	if (j != hxb->checksum) {
+		hxb->pending_alignment = 1;
+		hxb->lastByte = 0x00;
+		HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);		// check next byte
+		return XB_SUM_ERROR;
+	}
+
 	if (hxb->nextPackageID == 0x01) {		// game information
 		/* game stage */
 		gameStage = hxb->buffer[index++];
@@ -273,6 +293,9 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			tempOrder->reward = *(float*) &temp;
 		}
 	} else {
+		hxb->pending_alignment = 1;
+		hxb->lastByte = 0x00;
+		HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);		// check next byte
 		return XB_ID_ERROR;
 	}
 
@@ -304,6 +327,7 @@ void huansic_xb_dma_error(XB_HandleTypeDef *hxb) {
 void huansic_xb_it_error(XB_HandleTypeDef *hxb) {
 	// nothing much to do with error
 	hxb->pending_alignment = 1;
+	hxb->lastByte = 0x00;
 	HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);
 }
 

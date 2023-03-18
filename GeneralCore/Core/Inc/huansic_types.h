@@ -138,10 +138,10 @@ typedef struct {
 
 	// max is 126
 	uint8_t buffer[130];	// put at the end to prevent block alignment issues
-	// uint8_t processing_buffer[130];		// double buffering
 
 	uint8_t pending_alignment;
 	uint8_t lastByte;
+	uint8_t checksum;
 } XB_HandleTypeDef;
 
 typedef struct Path_t{
