@@ -10,8 +10,8 @@ extern Coordinate myCoord;
 extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
 #define PATH_PID_TOLERANCE 10
-#define MAX_SPEED 1000
-#define MIN_SPEED 500
+#define MAX_SPEED 1000.0
+#define MIN_SPEED 500.0
 
 extern float initangleZ;
 extern JY62_HandleTypeDef himu;
@@ -54,7 +54,7 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 			}
 		}
 	}
-	else if(mode == 0)
+	else
 	{
 		while(1)
 		{
@@ -86,7 +86,7 @@ float Angle_normalization(float angle)
 
 float CalSpeed(int16_t x, int16_t y)
 {
-	float kp = 2.0;
+	float kp = 10.0;
 
 	float Speed = kp * (abs(x) + abs(y));
 	if(Speed > MAX_SPEED)
@@ -114,20 +114,20 @@ uint8_t CheckCoord(void)
 
 float Get_v_x(void)
 {
-	float v_x = (cmotor_rf.last5Speed - cmotor_lf.last5Speed + cmotor_lb.last5Speed - cmotor_rb.last5Speed) * 50.0 / 4000;
+	float v_x = (cmotor_rf.lastSpeed - cmotor_lf.lastSpeed + cmotor_lb.lastSpeed - cmotor_rb.lastSpeed) * 50.0 / 20000;
 	return v_x;
 }
 
 float Get_v_y(void)
 {
-	float v_y = (cmotor_rf.last5Speed + cmotor_lf.last5Speed + cmotor_lb.last5Speed + cmotor_rb.last5Speed) * 60.0 / 4000;
+	float v_y = (cmotor_rf.lastSpeed + cmotor_lf.lastSpeed + cmotor_lb.lastSpeed + cmotor_rb.lastSpeed) * 60.0 / 20000;
 	return v_y;
 }
 
-void Position_P(Coordinate* cur, Coordinate* goal)
+void Position_P(fCoordinate* cur, Coordinate* goal)
 {
-	int16_t x_error = goal->x - cur->x;
-	int16_t y_error = goal->y - cur->y;
+	float x_error = goal->x - cur->x;
+	float y_error = goal->y - cur->y;
 	if (y_error == 0)
 	{
 		if(x_error < 0)
@@ -157,10 +157,18 @@ void Position_P(Coordinate* cur, Coordinate* goal)
 		chao_move_angle(angle, CalSpeed(x_error, y_error));
 	}
 	CheckCoord();
+	uint32_t timestart = HAL_GetTick();
 	HAL_Delay(10); // delay 10 ms = 100 Hz
 	if(CheckCoord() == 0)
 	{
-		EstiCoord.x = EstiCoord.x + 0.01 * Get_v_x();
-		EstiCoord.y = EstiCoord.y + 0.01 * Get_v_y();
+		float lf_v = cmotor_lf.lastSpeed;
+		float lb_v = cmotor_lb.lastSpeed;
+		float rf_v = cmotor_rf.lastSpeed;
+		float rb_v = cmotor_rb.lastSpeed;
+		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
+		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 500);
+		uint32_t timeend = HAL_GetTick();
+		EstiCoord.x = EstiCoord.x + (timeend - timestart) * 0.001 * v_x;
+		EstiCoord.y = EstiCoord.y + (timeend - timestart) * 0.001 * v_y;
 	}
 }

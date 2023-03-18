@@ -20,7 +20,7 @@ float Angle_normalization(float angle);
 
 float CalSpeed(int16_t x, int16_t y);
 
-void Position_P(Coordinate *cur, Coordinate *goal);
+void Position_P(fCoordinate *cur, Coordinate *goal);
 
 uint8_t CheckCoord(void);
 
