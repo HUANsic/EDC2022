@@ -60,6 +60,7 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 
 	// set up next DMA
 	HAL_UART_Receive_DMA(hxb->huart, hxb->buffer, hxb->nextPackageLength);
+	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 	return XB_OK;
 }
 
