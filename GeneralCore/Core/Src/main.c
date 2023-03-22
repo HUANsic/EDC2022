@@ -185,8 +185,9 @@ int main(void)
 	HUAN_MOTOR2_Init();
 	HUAN_MOTOR3_Init();
 	HUAN_MOTOR4_Init();
-//	HUAN_IMU_Init();
+	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
+	huansic_order_init();
 	order_list_init();
 
 	// tick per motor rev = 1080 (measured)
@@ -207,11 +208,11 @@ int main(void)
 	ssd1306_UpdateScreen();
 
 	// test A*
-	myCoord.x = 0;
-	myCoord.y = 0;
-	Coordinate goal;
-	goal.x = 50;
-	goal.y = 10;
+	myCoord.x = 127;
+	myCoord.y = 20;
+//	Coordinate goal;
+//	goal.x = 0;
+//	goal.y = 50;
 	EstiCoord.x = (float)myCoord.x;
 	EstiCoord.y = (float)myCoord.y;
 	CoordinateUpdate = 0;
@@ -232,19 +233,20 @@ int main(void)
 //		chao_move_angle(270, 2000);
 
 		if(gameStatus == 0){		// if the game is not running
-	    	LED1_ON;
-	    	HAL_Delay(1000);
-	    	LED1_OFF;
+//	    	LED1_ON;
+//	    	HAL_Delay(1000);
+//	    	LED1_OFF;
 		}
 		else
 		{
 			while (gameStage == 0) {		// pre-match
 				chao_move_angle(0, 0);
 				// find angle offset
-				initangleZ = -himu.theta[2];
+				//initangleZ = -himu.theta[2];
 				// do some initialization
-				// get obstacle list
 				Cal_Battery_Coord();
+				// get obstacle list
+				huansic_xb_requestGameInfo(&hxb);
 				task_mode = 0;
 			}
 
@@ -252,7 +254,11 @@ int main(void)
 				if(task_mode==0){
 					//setChargingPile
 					set_Beacons();
-					task_mode = 1;
+					while(orders.length == 0)
+					{
+						chao_move_angle(0,0);
+					}
+					task_mode = 4;
 				}
 				else {
 					if(myCharge < 200){
@@ -278,8 +284,23 @@ int main(void)
 						if(delivering_num > 3){
 							task_mode = 2;
 						}
+						else if(merchant.x == myCoord.x && merchant.y == myCoord.y)
+						{
+							if(delivering_num == 0)
+							{
+								chao_move_angle(0,0);
+							}
+							else
+							{
+								task_mode = 2;
+							}
+						}
 						else if(delivering_num == 0){
 							task_mode = 1;
+						}
+						else if(gameStageTimeLeft < 5000)
+						{
+							task_mode = 2;
 						}
 						else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
 							task_mode = 1;

@@ -157,12 +157,12 @@ void order_list_init(void)
 
 void order_append(Order *an_order)
 {
-	if(!(an_order->startCoord.x == orders.buffer[orders.new].x && an_order->startCoord.y == orders.buffer[orders.new].y))
+	if((an_order->startCoord.x != orders.buffer[orders.new].x) || (an_order->startCoord.y != orders.buffer[orders.new].y))
 	{
 		orders.buffer[orders.length].x = an_order->startCoord.x;
 		orders.buffer[orders.length].y = an_order->startCoord.y;
 		orders.new = orders.length;
-		orders.length += 1;
+		orders.length = orders.length + 1;
 	}
 }
 
@@ -170,6 +170,7 @@ Coordinate Get_nearest_order(void)
 {
 	if(orders.length == 0)
 		return myCoord;
+
 	uint8_t i;
 	int16_t mindis = 512;
 	uint8_t minindex = 0;

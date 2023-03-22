@@ -31,6 +31,8 @@ extern float myCharge;				// current charge returned by Master
 extern uint32_t gameStageTimeLeft;		// in ms
 extern uint8_t CoordinateUpdate;
 extern uint8_t delivering_num;
+uint8_t zigbeeSend[2][6]={0x55,0xAA,0x00,0x00,0x00,0x00,
+                          0x55,0xAA,0x02,0x00,0x00,0x00};        //小车可能发送的信息（0x00:请求游戏信息 0x02:设置充电桩）
 
 __weak void custom_order_new_failed(uint8_t id) {
 
@@ -142,7 +144,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		}
 	} else if (hxb->nextPackageID == 0x05) {		// game status
 		/* game status */
-		gameStatus = hxb->buffer[index++];
+		gameStatus = hxb->buffer[index++];//1
 
 		/* time since round started */
 		gameStageTimeSinceStart = hxb->buffer[index+3];
@@ -151,9 +153,9 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		gameStageTimeSinceStart <<= 8;
 		gameStageTimeSinceStart |= hxb->buffer[index+1];
 		gameStageTimeSinceStart <<= 8;
-		gameStageTimeSinceStart |= hxb->buffer[index];
+		gameStageTimeSinceStart |= hxb->buffer[index];//index = 1
 		gameStageTimeLeft = gameStageTimeLimit - gameStageTimeSinceStart;
-		index += 4;
+		index += 4;//5
 
 		/* fetch score */
 		temp = hxb->buffer[index+3];
@@ -164,15 +166,15 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		temp <<= 8;
 		temp |= hxb->buffer[index];
 		myScore = *(float*) &temp;			// decode float from uint32
-		index += 4;
+		index += 4;//9
 
 		/* my position */
 		myCoord.x = (uint16_t) hxb->buffer[index+1] << 8;
 		myCoord.x = hxb->buffer[index];
-		index += 2;
+		index += 2;//11
 		myCoord.y = (uint16_t) hxb->buffer[index+1] << 8;
 		myCoord.y = hxb->buffer[index];
-		index += 2;
+		index += 2;//13
 		CoordinateUpdate = 1;
 
 		/* fetch battery */
@@ -184,13 +186,13 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		temp <<= 8;
 		temp |= hxb->buffer[index];
 		myCharge = *(float*) &temp;			// decode float from uint32
-		index += 4;
+		index += 4;//17
 
 		/* my orders */
 		int8_t updatedOrder[] = { -1, -1, -1, -1, -1 };
 		uint8_t updatedOrderIndex = 0;
 		Order *tempOrder;
-		listLength = hxb->buffer[index++];
+		listLength = hxb->buffer[index++];//after_update : 18
 		delivering_num = listLength;
 		for (i = 0; i < listLength; i++) {
 			temp |= hxb->buffer[index + 17];
@@ -230,23 +232,25 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			temp <<= 8;
 			temp |= hxb->buffer[index + 12];
 			tempOrder->reward = *(float*) &temp;
+
+			delivering[i] = tempOrder;
 			// increment index and record id
-			index += 18;
+			index += 18;//18+listLength*18
 			updatedOrder[updatedOrderIndex++] = tempOrder->id;
 		}
 
 		/* order management */
-		for (i = 0; i < 5; i++)
-			if (delivering[i]->id != -1) {
+		for (i = 0; i < 5; i++){
+			if (delivering[i] != 0 && delivering[i]->id != -1) {
 				for (j = 0; j < updatedOrderIndex; j++)
 					if (delivering[i]->id == updatedOrder[j]) {		// pulled from remote
 						j = 255;
 						break;
 					}
-				if (j != 255)
+				if (j != 255 && j != 0)
 					huansic_order_delete(delivering[i]);// delete the order if the order is no longer in the delivery list
 			}
-
+		}
 		/* record latest order */
 		temp |= hxb->buffer[index + 17];
 		temp <<= 8;
@@ -303,13 +307,15 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 }
 
 void huansic_xb_requestGameInfo(XB_HandleTypeDef *hxb) {
-	uint8_t buffer = 0x00;
-	HAL_UART_Transmit(hxb->huart, &buffer, 1, 10);
+//	uint8_t buffer = 0x00;
+//	HAL_UART_Transmit(hxb->huart, &buffer, 1, 10);
+	HAL_UART_Transmit(hxb->huart, zigbeeSend[0], 6, HAL_MAX_DELAY);
 }
 
 void huansic_xb_setBeacon(XB_HandleTypeDef *hxb) {
-	uint8_t buffer = 0x02;
-	HAL_UART_Transmit(hxb->huart, &buffer, 1, 10);
+//	uint8_t buffer = 0x02;
+//	HAL_UART_Transmit(hxb->huart, &buffer, 1, 10);
+	HAL_UART_Transmit(hxb->huart, zigbeeSend[1], 6, HAL_MAX_DELAY);
 }
 
 void huansic_xb_dma_error(XB_HandleTypeDef *hxb) {

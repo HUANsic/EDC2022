@@ -9,9 +9,9 @@
 extern Coordinate myCoord;
 extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
-#define PATH_PID_TOLERANCE 10
-#define MAX_SPEED 1000.0
-#define MIN_SPEED 500.0
+#define PATH_PID_TOLERANCE 7
+#define MAX_SPEED 2000.0
+#define MIN_SPEED 750.0
 
 extern float initangleZ;
 extern JY62_HandleTypeDef himu;
@@ -86,7 +86,7 @@ float Angle_normalization(float angle)
 
 float CalSpeed(int16_t x, int16_t y)
 {
-	float kp = 10.0;
+	float kp = 15.0;
 
 	float Speed = kp * (abs(x) + abs(y));
 	if(Speed > MAX_SPEED)
@@ -104,8 +104,8 @@ uint8_t CheckCoord(void)
 {
 	if(CoordinateUpdate == 1)
 	{
-		EstiCoord.x = myCoord.x;
-		EstiCoord.y = myCoord.y;
+		EstiCoord.x = (float)myCoord.x;
+		EstiCoord.y = (float)myCoord.y;
 		CoordinateUpdate = 0;
 		return 1;
 	}
@@ -126,7 +126,8 @@ float Get_v_y(void)
 
 void Position_P(fCoordinate* cur, Coordinate* goal)
 {
-	float x_error = goal->x - cur->x;
+//	float x_error = goal->x - cur->x;
+	float x_error = cur->x - goal->x;
 	float y_error = goal->y - cur->y;
 	if (y_error == 0)
 	{
@@ -165,8 +166,9 @@ void Position_P(fCoordinate* cur, Coordinate* goal)
 		float lb_v = cmotor_lb.lastSpeed;
 		float rf_v = cmotor_rf.lastSpeed;
 		float rb_v = cmotor_rb.lastSpeed;
-		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
-		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 500);
+//		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
+		float v_x = ((rf_v - lf_v + lb_v - rb_v) / 200);
+		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 200);
 		uint32_t timeend = HAL_GetTick();
 		EstiCoord.x = EstiCoord.x + (timeend - timestart) * 0.001 * v_x;
 		EstiCoord.y = EstiCoord.y + (timeend - timestart) * 0.001 * v_y;

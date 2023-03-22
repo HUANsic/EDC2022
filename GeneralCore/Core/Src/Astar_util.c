@@ -99,7 +99,7 @@ uint8_t findend(uint16_t cur, uint16_t end, uint8_t step)
 void Find_around_node(uint16_t currentindex, int8_t lastdir, A_Star_Node *end, uint8_t step) {
 	uint16_t x = openlist.buffer[currentindex].cor / 256;
 	uint16_t y = openlist.buffer[currentindex].cor % 256;
-	uint8_t obstacleflag = 1;		//负责检测采取何种程度的避障
+	uint8_t obstacleflag = 2;		//负责检测采取何种程度的避障
 	// left
 	if (x >= step) {
 		uint16_t curx = x - step;
