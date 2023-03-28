@@ -79,6 +79,7 @@ uint8_t Insert_inLane(Coordinate *head_coor, uint8_t head_index);
 //order list
 void order_list_init(void);
 void order_append(Order *an_order);
-Coordinate Get_nearest_order(void);
+int8_t Get_nearest_order(void);
 
+void exitpoints_init(void);
 #endif /* INC_MING_MALLOC_H_ */

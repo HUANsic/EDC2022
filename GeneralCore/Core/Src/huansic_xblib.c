@@ -91,7 +91,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 
 	if (hxb->nextPackageID == 0x01) {		// game information
 		/* game stage */
-		gameStage = hxb->buffer[index++];
+		gameStage = hxb->buffer[index++];// 0
 
 		/* barrier list */
 		// listLength = hxb->buffer[index];		// the length is fixed to 5
@@ -109,7 +109,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			obstacles[i].coord2.y = (uint16_t) hxb->buffer[index+1] << 8;
 			obstacles[i].coord2.y = hxb->buffer[index];
 			index += 2;
-		}
+		}//2 ~ 41
 
 		/* total time of this round */
 		gameStageTimeLimit = hxb->buffer[index+3];
@@ -119,27 +119,27 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		gameStageTimeLimit |= hxb->buffer[index+1];
 		gameStageTimeLimit <<= 8;
 		gameStageTimeLimit |= hxb->buffer[index];
-		index += 4;
+		index += 4;// 42 ~ 45
 
 		/* ally beacons */
-		listLength = hxb->buffer[index];
+		listLength = hxb->buffer[index++];//46
 		for (i = 0; i < listLength; i++) {
 			allyBeacons[i].x = (uint16_t) hxb->buffer[index+1] << 8;
-			allyBeacons[i].x = hxb->buffer[index];
+			allyBeacons[i].x |= hxb->buffer[index];
 			index += 2;
 			allyBeacons[i].y = (uint16_t) hxb->buffer[index+1] << 8;
-			allyBeacons[i].y = hxb->buffer[index];
+			allyBeacons[i].y |= hxb->buffer[index];
 			index += 2;
 		}
 
 		/* opponent beacons */
-		listLength = hxb->buffer[index];
+		listLength = hxb->buffer[index++];
 		for (i = 0; i < listLength; i++) {
 			oppoBeacons[i].x = (uint16_t) hxb->buffer[index+1] << 8;
-			oppoBeacons[i].x = hxb->buffer[index];
+			oppoBeacons[i].x |= hxb->buffer[index];
 			index += 2;
 			oppoBeacons[i].y = (uint16_t) hxb->buffer[index+1] << 8;
-			oppoBeacons[i].y = hxb->buffer[index];
+			oppoBeacons[i].y |= hxb->buffer[index];
 			index += 2;
 		}
 	} else if (hxb->nextPackageID == 0x05) {		// game status
@@ -169,11 +169,23 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		index += 4;//9
 
 		/* my position */
-		myCoord.x = (uint16_t) hxb->buffer[index+1] << 8;
-		myCoord.x = hxb->buffer[index];
+		myCoord.x = hxb->buffer[index+1];
+		if(myCoord.x == 255){
+			myCoord.x = hxb->buffer[index] - 256;
+		}
+		else{
+			myCoord.x = myCoord.x << 8;
+			myCoord.x |= hxb->buffer[index];
+		}
 		index += 2;//11
-		myCoord.y = (uint16_t) hxb->buffer[index+1] << 8;
-		myCoord.y = hxb->buffer[index];
+		myCoord.y = hxb->buffer[index+1];
+		if(myCoord.y == 255){
+			myCoord.y = hxb->buffer[index] - 256;
+		}
+		else{
+			myCoord.y = myCoord.y << 8;
+			myCoord.y |= hxb->buffer[index];
+		}
 		index += 2;//13
 		CoordinateUpdate = 1;
 

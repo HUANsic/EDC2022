@@ -2,9 +2,9 @@
 ../Core/Src/huansic_xblib.c:41:6:huansic_xb_init	16	static
 ../Core/Src/huansic_xblib.c:49:16:huansic_xb_decodeHeader	16	static
 ../Core/Src/huansic_xblib.c:74:16:huansic_xb_decodeBody	40	static
-../Core/Src/huansic_xblib.c:309:6:huansic_xb_requestGameInfo	16	static
-../Core/Src/huansic_xblib.c:315:6:huansic_xb_setBeacon	16	static
-../Core/Src/huansic_xblib.c:321:6:huansic_xb_dma_error	16	static
-../Core/Src/huansic_xblib.c:327:6:huansic_xb_it_error	16	static
-../Core/Src/huansic_xblib.c:334:16:huansic_xb_isr	16	static
-../Core/Src/huansic_xblib.c:353:16:huansic_xb_dma_isr	16	static
+../Core/Src/huansic_xblib.c:321:6:huansic_xb_requestGameInfo	16	static
+../Core/Src/huansic_xblib.c:327:6:huansic_xb_setBeacon	16	static
+../Core/Src/huansic_xblib.c:333:6:huansic_xb_dma_error	16	static
+../Core/Src/huansic_xblib.c:339:6:huansic_xb_it_error	16	static
+../Core/Src/huansic_xblib.c:346:16:huansic_xb_isr	16	static
+../Core/Src/huansic_xblib.c:365:16:huansic_xb_dma_isr	16	static

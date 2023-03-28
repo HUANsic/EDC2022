@@ -11,6 +11,7 @@ List closelist;
 Lane pathlane;
 Order_list orders;
 extern Coordinate myCoord;
+extern Coordinate exitpoints[8];
 
 void Queue_init(void)
 {
@@ -166,14 +167,13 @@ void order_append(Order *an_order)
 	}
 }
 
-Coordinate Get_nearest_order(void)
+int8_t Get_nearest_order(void)
 {
-	if(orders.length == 0)
-		return myCoord;
-
 	uint8_t i;
 	int16_t mindis = 512;
-	uint8_t minindex = 0;
+	int8_t minindex = -1;
+	if(orders.length == 0)
+		return minindex;
 	for(i=0;i < orders.length; i++)
 	{
 		int16_t distance = abs(orders.buffer[i].x - myCoord.x) + abs(orders.buffer[i].y - myCoord.y);
@@ -183,13 +183,24 @@ Coordinate Get_nearest_order(void)
 			minindex = i;
 		}
 	}
-	Coordinate nearest = orders.buffer[minindex];
+    return minindex;
+}
 
-	for(i=minindex + 1; i < orders.length; i++)
-	{
-		orders.buffer[i - 1] = orders.buffer[i];
-	}
-
-	orders.length -= 1;
-	return nearest;
+void exitpoints_init(void){
+	exitpoints[0].x = 127;
+	exitpoints[0].y = 18;
+	exitpoints[1].x = 127;
+	exitpoints[1].y = 60;
+	exitpoints[2].x = 236;
+	exitpoints[2].y = 127;
+	exitpoints[3].x = 194;
+	exitpoints[3].y = 127;
+	exitpoints[4].x = 127;
+	exitpoints[4].y = 236;
+	exitpoints[5].x = 127;
+	exitpoints[5].y = 194;
+	exitpoints[6].x = 18;
+	exitpoints[6].y = 127;
+	exitpoints[7].x = 60;
+	exitpoints[7].y = 127;
 }
