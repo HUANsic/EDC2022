@@ -11,7 +11,7 @@ extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
 #define PATH_PID_TOLERANCE 5
 #define MAX_SPEED 2000.0
-#define MIN_SPEED 600.0
+#define MIN_SPEED 1000.0
 
 extern float initangleZ;
 extern JY62_HandleTypeDef himu;
@@ -278,7 +278,11 @@ void Position_P(fCoordinate* cur, Coordinate* goal)
 		azimuth = Angle_normalization(azimuth);
 		float angle = azimuth - Angle_normalization(initangleZ - himu.theta[2]);
 		angle = Angle_normalization(angle);
-		chao_move_angle(angle, CalSpeed(x_error, y_error));
+//		chao_move_angle(angle, CalSpeed(x_error, y_error));
+		if(cur->x < 10 || cur->x > 244 || cur->y < 10 || cur->y >244)
+			move_angle_omega(angle, CalSpeed(x_error, y_error));
+		else
+			chao_move_angle(angle, CalSpeed(x_error, y_error));
 	}
 	CheckCoord();
 	uint32_t timestart = HAL_GetTick();

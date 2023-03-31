@@ -225,6 +225,9 @@ int main(void)
 
     while (1) {
     	// test code to ensure the motor can work
+//    	cmotor_lb.goalSpeed = 1000;
+//		HAL_Delay(1000);
+//		cmotor_lb.goalSpeed = -1000;
 //		HAL_Delay(1000);
 //		chao_move_angle(135, 1000);
 //		HAL_Delay(1000);
@@ -343,7 +346,7 @@ int main(void)
 						merchant = orders.buffer[merchant_index];
 					consumer = Get_nearest_consumer();
 
-					if(delivering_num > 4){
+					if(delivering_num > 3){
 						task_mode = 2;
 					}
 					else if(merchant_index == -1)
