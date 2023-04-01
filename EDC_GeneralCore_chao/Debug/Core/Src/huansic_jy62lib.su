@@ -1,4 +1,0 @@
-../Core/Src/huansic_jy62lib.c:20:6:huansic_jy62_init	16	static
-../Core/Src/huansic_jy62lib.c:41:6:huansic_jy62_resetAngle	16	static
-../Core/Src/huansic_jy62lib.c:45:6:huansic_jy62_decodePackage	24	static
-../Core/Src/huansic_jy62lib.c:86:6:huansic_jy62_setDMA	16	static
