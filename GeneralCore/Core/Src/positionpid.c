@@ -10,7 +10,7 @@ extern Coordinate myCoord;
 extern fCoordinate EstiCoord;
 extern uint8_t CoordinateUpdate;
 #define PATH_PID_TOLERANCE 5
-#define MAX_SPEED 2000.0
+#define MAX_SPEED 2500.0
 #define MIN_SPEED 1000.0
 
 extern float initangleZ;
@@ -21,44 +21,11 @@ extern Coordinate exitpoints[8];
 
 uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 {
-	if(mode == 1)
-	{
-		uint8_t isGetAroad = mingyan_pathfind_avoidObstacle(&myCoord, &Destination);
-		if(isGetAroad != 0)
-		{
-			// success get a road
-			for(uint8_t i = 0; i < pathlane.Length; i ++)
-			{
-				while(1)
-				{
-					Position_P(&EstiCoord, &pathlane.buffer[pathlane.Head + i]);
-					CheckCoord();
-					if(abs(EstiCoord.x - pathlane.buffer[pathlane.Head + i].x) + abs(EstiCoord.y - pathlane.buffer[pathlane.Head + i].y) <= PATH_PID_TOLERANCE)
-					{
-						chao_move_angle(0,0);
-						return 1;
-					}
-				}
-			}
-		}
-		else
-		{
-			while(1)
-			{
-				Position_P(&EstiCoord, &Destination);
-				CheckCoord();
-				if(abs(EstiCoord.x - Destination.x) + abs(EstiCoord.y - Destination.y) <= PATH_PID_TOLERANCE)
-				{
-					chao_move_angle(0,0);
-					return 1;
-				}
-			}
-		}
-	}
-	else if(mode == 0)
+	if(mode == 0)
 	{
 		while(1)
 		{
+			CheckCoord();
 			Position_P(&EstiCoord, &Destination);
 			CheckCoord();
 			if(abs(EstiCoord.x - Destination.x) + abs(EstiCoord.y - Destination.y) <= PATH_PID_TOLERANCE)
@@ -108,6 +75,7 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 		// 里 里，或者在外面同一区域的直接走
 		if((myCoordState == 0 && DesCoordState == 0)||(myCoord.x<38&&Destination.x<38)||(myCoord.x>216&&Destination.x>216)||(myCoord.y<38&&Destination.y<38)||(myCoord.y>216&&Destination.y>216)){
 			while(1){
+				CheckCoord();
 				Position_P(&EstiCoord, &Destination);
 				CheckCoord();
 				if(abs(EstiCoord.x - Destination.x) + abs(EstiCoord.y - Destination.y) <= PATH_PID_TOLERANCE){
@@ -166,6 +134,7 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 				}
 			}
 			while(1){
+				CheckCoord();
 				Position_P(&EstiCoord, &middle1);
 				CheckCoord();
 				if(abs(EstiCoord.x - middle1.x) + abs(EstiCoord.y - middle1.y) <= PATH_PID_TOLERANCE){
@@ -174,6 +143,7 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 				}
 			}
 			while(1){
+				CheckCoord();
 				Position_P(&EstiCoord, &middle2);
 				CheckCoord();
 				if(abs(EstiCoord.x - middle2.x) + abs(EstiCoord.y - middle2.y) <= PATH_PID_TOLERANCE){
@@ -182,6 +152,7 @@ uint8_t GotoDestination(Coordinate Destination, uint8_t mode)
 				}
 			}
 			while(1){
+				CheckCoord();
 				Position_P(&EstiCoord, &Destination);
 				CheckCoord();
 				if(abs(EstiCoord.x - Destination.x) + abs(EstiCoord.y - Destination.y) <= PATH_PID_TOLERANCE){
@@ -278,26 +249,26 @@ void Position_P(fCoordinate* cur, Coordinate* goal)
 		azimuth = Angle_normalization(azimuth);
 		float angle = azimuth - Angle_normalization(initangleZ - himu.theta[2]);
 		angle = Angle_normalization(angle);
-//		chao_move_angle(angle, CalSpeed(x_error, y_error));
+
 		if(cur->x < 10 || cur->x > 244 || cur->y < 10 || cur->y >244)
 			move_angle_omega(angle, CalSpeed(x_error, y_error));
 		else
 			chao_move_angle(angle, CalSpeed(x_error, y_error));
 	}
-	CheckCoord();
-	uint32_t timestart = HAL_GetTick();
-	HAL_Delay(10); // delay 10 ms = 100 Hz
-	if(CheckCoord() == 0)
-	{
-		float lf_v = cmotor_lf.lastSpeed;
-		float lb_v = cmotor_lb.lastSpeed;
-		float rf_v = cmotor_rf.lastSpeed;
-		float rb_v = cmotor_rb.lastSpeed;
-//		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
-		float v_x = ((rf_v - lf_v + lb_v - rb_v) / 200);
-		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 200);
-		uint32_t timeend = HAL_GetTick();
-		EstiCoord.x = EstiCoord.x + (timeend - timestart) * 0.001 * v_x;
-		EstiCoord.y = EstiCoord.y + (timeend - timestart) * 0.001 * v_y;
-	}
+//	CheckCoord();
+//	uint32_t timestart = HAL_GetTick();
+//	HAL_Delay(10); // delay 10 ms = 100 Hz
+//	if(CheckCoord() == 0)
+//	{
+//		float lf_v = cmotor_lf.lastSpeed;
+//		float lb_v = cmotor_lb.lastSpeed;
+//		float rf_v = cmotor_rf.lastSpeed;
+//		float rb_v = cmotor_rb.lastSpeed;
+////		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
+//		float v_x = ((rf_v - lf_v + lb_v - rb_v) / 200);
+//		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 200);
+//		uint32_t timeend = HAL_GetTick();
+//		EstiCoord.x = EstiCoord.x + (timeend - timestart) * 0.001 * v_x;
+//		EstiCoord.y = EstiCoord.y + (timeend - timestart) * 0.001 * v_y;
+//	}
 }

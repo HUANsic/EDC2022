@@ -22,6 +22,8 @@ void huansic_xb_requestGameInfo(XB_HandleTypeDef *hxb);
 
 void huansic_xb_setBeacon(XB_HandleTypeDef *hxb);
 
+void ming_xb_setspeed(XB_HandleTypeDef *hxb, int16_t _speedpid);
+
 void huansic_xb_dma_error(XB_HandleTypeDef *hxb);
 
 void huansic_xb_it_error(XB_HandleTypeDef *hxb);
