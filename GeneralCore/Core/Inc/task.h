@@ -10,7 +10,6 @@
 
 #include "main.h"
 #include "positionpid.h"
-#include "Astar_util.h"
 #include "stm32f1xx_hal.h"
 #include "huansic_types.h"
 

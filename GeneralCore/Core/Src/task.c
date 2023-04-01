@@ -34,15 +34,15 @@ void Cal_Battery_Coord(void)
 	uint8_t seted = 0;
 	//set a signal
 	want_allyBeacons[seted].x = 127;
-	want_allyBeacons[seted].y = 40;
+	want_allyBeacons[seted].y = 60;
 	seted += 1;
 	//set a signal
 	want_allyBeacons[seted].x = 127;
-	want_allyBeacons[seted].y = 100;
+	want_allyBeacons[seted].y = 120;
 	seted += 1;
 	//set a signal
 	want_allyBeacons[seted].x = 127;
-	want_allyBeacons[seted].y = 160;
+	want_allyBeacons[seted].y = 180;
 	seted += 1;
 }
 

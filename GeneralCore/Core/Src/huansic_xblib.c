@@ -32,8 +32,8 @@ extern uint32_t gameStageTimeLeft;		// in ms
 extern uint8_t CoordinateUpdate;
 extern uint8_t delivering_num;
 extern uint8_t allyBeacons_num;
-uint8_t zigbeeSend[2][6]={0x55,0xAA,0x00,0x00,0x00,0x00,
-                          0x55,0xAA,0x02,0x00,0x00,0x00};        //小车可能发送的信息（0x00:请求游戏信息 0x02:设置充电桩）
+uint8_t zigbeeSend[2][6]={{0x55,0xAA,0x00,0x00,0x00,0x00},
+                          {0x55,0xAA,0x02,0x00,0x00,0x00}};        //小车可能发送的信息（0x00:请求游戏信息 0x02:设置充电桩）
 
 __weak void custom_order_new_failed(uint8_t id) {
 
@@ -334,6 +334,10 @@ void huansic_xb_setBeacon(XB_HandleTypeDef *hxb) {
 //	uint8_t buffer = 0x02;
 //	HAL_UART_Transmit(hxb->huart, &buffer, 1, 10);
 	HAL_UART_Transmit(hxb->huart, zigbeeSend[1], 6, HAL_MAX_DELAY);
+}
+
+void ming_xb_setspeed(XB_HandleTypeDef *hxb, int16_t _speedpid){
+	HAL_UART_Transmit(hxb->huart, _speedpid, 2, HAL_MAX_DELAY);
 }
 
 void huansic_xb_dma_error(XB_HandleTypeDef *hxb) {

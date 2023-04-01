@@ -113,7 +113,7 @@ char firstLine[22], secondLine[22], thirdLine[22], fourthLine[22];		// 128 / 6 =
 Coordinate merchant, consumer, charge;
 
 // debug information
-uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_ErrorCount, xb_IT_SuccessCount;
+uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_ErrorCount, xb_IT_SuccessCount = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -197,6 +197,7 @@ int main(void)
 	HUAN_MOTOR4_Init();
 	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
+	ssd1306_Init();
 	huansic_order_init();
 	order_list_init();
 	exitpoints_init();
@@ -227,23 +228,17 @@ int main(void)
 	ssd1306_WriteString(thirdLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
 
-	// test A*
-
-//	myCoord.x = 127;
-//	myCoord.y = 20;
-//	Coordinate goal;
-//	goal.x = 0;
-//	goal.y = 50;
-//	EstiCoord.x = (float)myCoord.x;
-//	EstiCoord.y = (float)myCoord.y;
 	CoordinateUpdate = 0;
-	int8_t merchant_index;
-//	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
-//	Position_P(&myCoord, &goal);
-//	GotoDestination(goal, 0);
+	int8_t merchant_index = -1;
 
     while (1) {
     	// test code to ensure the motor can work
+//    	HAL_Delay(3000);
+//    	cmotor_rb.goalSpeed = 2000;
+//    	while(1){
+//
+//    	}
+//    	huansic_xb_requestGameInfo(&hxb);
 //    	cmotor_lb.goalSpeed = 1000;
 //		HAL_Delay(1000);
 //		cmotor_lb.goalSpeed = -1000;
@@ -388,7 +383,7 @@ int main(void)
 						task_mode = 2;
 						overtime = 0;
 					}
-					else if(gameStageTimeLeft < 7000 && delivering_num > 0){
+					else if(gameStageTimeLeft < 10000 && delivering_num > 0){
 						task_mode = 2;
 					}
 					else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
@@ -1052,9 +1047,9 @@ static void HUAN_MOTOR1_Init(void) {
 	cmotor_lf.neg_channel = TIM_CHANNEL_3;
 //	cmotor_lf.neg_channel = TIM_CHANNEL_4;
 	cmotor_lf.encoderInverted = 1;
-	cmotor_lf.kp = 0.0003;
-	cmotor_lf.ki = 0.00002;
-	cmotor_lf.kd = 0.00006;
+	cmotor_lf.kp = 0.0005;
+	cmotor_lf.ki = 0.000015;
+	cmotor_lf.kd = 0.00003;
 	huansic_motor_init(&cmotor_lf);
 }
 
@@ -1066,9 +1061,9 @@ static void HUAN_MOTOR2_Init(void) {
 	cmotor_rf.negTimer = &htim1;
 	cmotor_rf.neg_channel = TIM_CHANNEL_2;
 	cmotor_rf.encoderInverted = 0;
-	cmotor_rf.kp = 0.0003;
-	cmotor_rf.ki = 0.00002;
-	cmotor_rf.kd = 0.00006;
+	cmotor_rf.kp = 0.0005;
+	cmotor_rf.ki = 0.000015;
+	cmotor_rf.kd = 0.00003;
 	huansic_motor_init(&cmotor_rf);
 }
 
@@ -1082,9 +1077,9 @@ static void HUAN_MOTOR3_Init(void) {
 	cmotor_lb.neg_channel = TIM_CHANNEL_3;
 //	cmotor_lb.neg_channel = TIM_CHANNEL_4;
 	cmotor_lb.encoderInverted = 1;
-	cmotor_lb.kp = 0.0003;
-	cmotor_lb.ki = 0.00002;
-	cmotor_lb.kd = 0.00006;
+	cmotor_lb.kp = 0.0005;
+	cmotor_lb.ki = 0.000015;
+	cmotor_lb.kd = 0.00003;
 	huansic_motor_init(&cmotor_lb);
 }
 
@@ -1096,9 +1091,9 @@ static void HUAN_MOTOR4_Init(void) {
 	cmotor_rb.negTimer = &htim8;
 	cmotor_rb.neg_channel = TIM_CHANNEL_2;
 	cmotor_rb.encoderInverted = 0;
-	cmotor_rb.kp = 0.0003;
-	cmotor_rb.ki = 0.00002;
-	cmotor_rb.kd = 0.00006;
+	cmotor_rb.kp = 0.0005;
+	cmotor_rb.ki = 0.000015;
+	cmotor_rb.kd = 0.00003;
 	huansic_motor_init(&cmotor_rb);
 }
 
