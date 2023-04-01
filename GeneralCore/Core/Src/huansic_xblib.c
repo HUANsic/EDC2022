@@ -31,6 +31,7 @@ extern float myCharge;				// current charge returned by Master
 extern uint32_t gameStageTimeLeft;		// in ms
 extern uint8_t CoordinateUpdate;
 extern uint8_t delivering_num;
+extern uint8_t allyBeacons_num;
 uint8_t zigbeeSend[2][6]={0x55,0xAA,0x00,0x00,0x00,0x00,
                           0x55,0xAA,0x02,0x00,0x00,0x00};        //小车可能发送的信息（0x00:请求游戏信息 0x02:设置充电桩）
 
@@ -123,6 +124,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 
 		/* ally beacons */
 		listLength = hxb->buffer[index++];//46
+		allyBeacons_num = listLength;
 		for (i = 0; i < listLength; i++) {
 			allyBeacons[i].x = (uint16_t) hxb->buffer[index+1] << 8;
 			allyBeacons[i].x |= hxb->buffer[index];
@@ -235,6 +237,10 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 			temp <<= 8;
 			temp |= hxb->buffer[index + 8];
 			tempOrder->timeLimit = temp;
+			//start time
+			if(tempOrder->startTime == 0)
+				tempOrder->startTime = HAL_GetTick();
+
 			// reward
 			temp = hxb->buffer[index + 15];
 			temp <<= 8;

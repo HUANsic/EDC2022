@@ -89,12 +89,14 @@ Coordinate exitpoints[8];         	// record the exit.
 // game information 2
 Order *delivering[5];		// package picked up but not yet delivered
 uint8_t delivering_num = 0;
+uint8_t allyBeacons_num = 0;
 extern Order_list orders;
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
 fCoordinate EstiCoord;       // predict coordinate
 uint8_t CoordinateUpdate;   // 0 is not Update, 1 is Update
+uint8_t overtime = 0;
 
 float angleZ;
 double omegaZ, accelY;		// turning speed and linear acceleration
@@ -152,6 +154,7 @@ int main(void)
 	/* MCU Configuration--------------------------------------------------------*/
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
@@ -294,7 +297,10 @@ int main(void)
 						else if(merchant_index == -1)
 						{
 							if(delivering_num == 0){
+//								charge.x = 127;
+//								charge.y = 127;
 								chao_move_angle(0,0);
+//								GotoDestination(charge, 2);
 							}
 							else{
 								task_mode = 2;
@@ -303,7 +309,11 @@ int main(void)
 						else if(delivering_num == 0){
 							task_mode = 1;
 						}
-						else if(gameStageTimeLeft < 10000 && delivering_num > 0){
+						else if(overtime == 1){
+							task_mode = 2;
+							overtime = 0;
+						}
+						else if(gameStageTimeLeft < 7000 && delivering_num > 0){
 							task_mode = 2;
 						}
 						else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
@@ -361,7 +371,11 @@ int main(void)
 					else if(delivering_num == 0){
 						task_mode = 1;
 					}
-					else if(gameStageTimeLeft < 10000 && delivering_num > 0){
+					else if(overtime == 1){
+						task_mode = 2;
+						overtime = 0;
+					}
+					else if(gameStageTimeLeft < 7000 && delivering_num > 0){
 						task_mode = 2;
 					}
 					else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){

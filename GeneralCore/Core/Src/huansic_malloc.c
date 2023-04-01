@@ -95,8 +95,10 @@ Path* huansic_path_break(Path *newTail) {
 
 void huansic_order_init() {
 	uint8_t i;
-	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++)
+	for (i = 0; i < HUANSIC_ORDER_PREMALLOC_SIZE; i++){
 		orderBuffers[i].id = -1;
+		orderBuffers[i].startTime = 0;
+	}
 	for (i = 0; i < 5; i++)
 		delivering[i] = &orderBuffers[i];		// give it some default value
 }
@@ -127,8 +129,10 @@ Order* huansic_order_new(int8_t id) {
 void huansic_order_delete(Order *ptr) {
 	if (ptr->id == -1)
 		custom_order_free_fault(ptr);
-	else
+	else{
 		ptr->id = -1;		// simple as is
+		ptr->startTime = 0;
+	}
 }
 
 Order* huansic_order_findClosestDest(Coordinate *coord) {
