@@ -1155,6 +1155,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 void HUAN_PeriodicInt1000ms_ISR() {
 	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
 	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
+	ssd1306_SetCursor(0, 8);
+	ssd1306_WriteString(secondLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 16);
+	ssd1306_WriteString(thirdLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
 }
 /* USER CODE END 4 */
