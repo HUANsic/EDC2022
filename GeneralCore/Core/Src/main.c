@@ -85,16 +85,19 @@ Rectangle obstacles[5];			// area that depletes charge faster
 Coordinate allyBeacons[3];		// ally charging station coordinate
 Coordinate oppoBeacons[3];		// opponent charging station coordinate
 Coordinate want_allyBeacons[3];
+Coordinate exitpoints[8];         	// record the exit.
 
 // game information 2
 Order *delivering[5];		// package picked up but not yet delivered
 uint8_t delivering_num = 0;
+uint8_t allyBeacons_num = 0;
 extern Order_list orders;
 
 // game information 3
 Coordinate myCoord;			// precise coordinate returned by game master
 fCoordinate EstiCoord;       // predict coordinate
 uint8_t CoordinateUpdate;   // 0 is not Update, 1 is Update
+uint8_t overtime = 0;
 
 float angleZ;
 double omegaZ, accelY;		// turning speed and linear acceleration
@@ -107,7 +110,7 @@ uint32_t gameStageTimeLeft;		// in ms
 // OLED display buffer
 char firstLine[22], secondLine[22], thirdLine[22], fourthLine[22];		// 128 / 6 = 21
 
-Coordinate merchant, consumer;
+Coordinate merchant, consumer, charge;
 
 // debug information
 uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_ErrorCount, xb_IT_SuccessCount;
@@ -156,6 +159,7 @@ int main(void)
 	/* MCU Configuration--------------------------------------------------------*/
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
@@ -184,17 +188,18 @@ int main(void)
 	MX_TIM6_Init();
 	MX_TIM7_Init();
 	/* USER CODE BEGIN 2 */
-	//Motor init
+	//Motor initialization part
 	cmotor_lf.encoderInverted = 1;
 	cmotor_lb.encoderInverted = 1;
 	HUAN_MOTOR1_Init();
 	HUAN_MOTOR2_Init();
 	HUAN_MOTOR3_Init();
 	HUAN_MOTOR4_Init();
-//	HUAN_IMU_Init();
+	HUAN_IMU_Init();
 	HUAN_ZIGBEE_Init();
+	huansic_order_init();
 	order_list_init();
-
+	exitpoints_init();
 	// tick per motor rev = 1080 (measured)
 	// tick per rotor rev = 54 (calculated)
 	// reduction ratio = 20 (given)
@@ -223,20 +228,25 @@ int main(void)
 	ssd1306_UpdateScreen();
 
 	// test A*
-	myCoord.x = 0;
-	myCoord.y = 0;
-	Coordinate goal;
-	goal.x = 50;
-	goal.y = 10;
-	EstiCoord.x = (float) myCoord.x;
-	EstiCoord.y = (float) myCoord.y;
+
+//	myCoord.x = 127;
+//	myCoord.y = 20;
+//	Coordinate goal;
+//	goal.x = 0;
+//	goal.y = 50;
+//	EstiCoord.x = (float)myCoord.x;
+//	EstiCoord.y = (float)myCoord.y;
 	CoordinateUpdate = 0;
+	int8_t merchant_index;
 //	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
 //	Position_P(&myCoord, &goal);
 //	GotoDestination(goal, 0);
 
-	while (1) {
-		// test code to ensure the motor can work
+    while (1) {
+    	// test code to ensure the motor can work
+//    	cmotor_lb.goalSpeed = 1000;
+//		HAL_Delay(1000);
+//		cmotor_lb.goalSpeed = -1000;
 //		HAL_Delay(1000);
 //		chao_move_angle(135, 1000);
 //		HAL_Delay(1000);
@@ -246,49 +256,82 @@ int main(void)
 //		HAL_Delay(1000);
 //		chao_move_angle(270, 2000);
 
-		if (gameStatus == 0) {		// if the game is not running
-			LED1_ON;
-			HAL_Delay(1000);
-			LED1_OFF;
-		} else {
+		if(gameStatus == 0){		// if the game is not running
+//	    	LED1_ON;
+//	    	HAL_Delay(1000);
+//	    	LED1_OFF;
+		}
+		else
+		{
 			while (gameStage == 0) {		// pre-match
 				chao_move_angle(0, 0);
 				// find angle offset
-				initangleZ = -himu.theta[2];
+				//initangleZ = -himu.theta[2];
 				// do some initialization
-				// get obstacle list
 				Cal_Battery_Coord();
+				// get obstacle list
+				huansic_xb_requestGameInfo(&hxb);
 				task_mode = 0;
 			}
 
-			while (gameStage == 1) {			// first-half
-				if (task_mode == 0) {
+			while (gameStage == 1){			// first-half
+				if(task_mode == 0){
 					//setChargingPile
 					set_Beacons();
-					task_mode = 1;
-				} else {
-					if (myCharge < 200) {
-						task_mode = 3;
+					while(orders.length == 0)
+					{
+						chao_move_angle(0,0);
 					}
-					if (task_mode == 1) {
+					task_mode = 4;
+				}
+				else {
+					if(task_mode == 1){
+						for(uint8_t i= merchant_index + 1; i < orders.length; i++)
+						{
+							orders.buffer[i - 1] = orders.buffer[i];
+						}
+						orders.length -= 1;
 						Get_packet(merchant);
 						task_mode = 4;
 					} else if (task_mode == 2) {
 						Send_packet(consumer);
 						task_mode = 4;
-					} else if (task_mode == 3) {
-						go_Charge();
-						HAL_Delay(1000);
-						task_mode = 4;
-					} else {
-						merchant = Get_nearest_order();
+					}
+					else if(task_mode == 4)// if task_mode == 4
+					{
+						merchant_index = Get_nearest_order();
+						if(merchant_index == -1)
+							merchant = myCoord;
+						else
+							merchant = orders.buffer[merchant_index];
 						consumer = Get_nearest_consumer();
-						if (delivering_num > 3) {
+
+						if(delivering_num > 4){
 							task_mode = 2;
-						} else if (delivering_num == 0) {
+						}
+						else if(merchant_index == -1)
+						{
+							if(delivering_num == 0){
+//								charge.x = 127;
+//								charge.y = 127;
+								chao_move_angle(0,0);
+//								GotoDestination(charge, 2);
+							}
+							else{
+								task_mode = 2;
+							}
+						}
+						else if(delivering_num == 0){
 							task_mode = 1;
-						} else if ((abs(merchant.x - myCoord.x) + abs(merchant.y - myCoord.y))
-								< (abs(consumer.x - myCoord.x) + abs(consumer.y - myCoord.y))) {
+						}
+						else if(overtime == 1){
+							task_mode = 2;
+							overtime = 0;
+						}
+						else if(gameStageTimeLeft < 7000 && delivering_num > 0){
+							task_mode = 2;
+						}
+						else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
 							task_mode = 1;
 						} else {
 							task_mode = 2;
@@ -297,35 +340,65 @@ int main(void)
 				}
 
 			}
-
-			while (gameStage == 2) {			// second-half
-				if (myCharge < 200) {
-					task_mode = 3;
+			//得做初始化
+			while (gameStage == 2){			// second-half
+				while(myCharge < 500)
+				{
+					huansic_xb_requestGameInfo(&hxb);
+					charge = Get_nearest_Beacon();
+					GotoDestination(charge, 0);
 				}
-				if (task_mode == 1) {
+				if(task_mode == 1){
+					for(uint8_t i= merchant_index + 1; i < orders.length; i++)
+					{
+						orders.buffer[i - 1] = orders.buffer[i];
+					}
+					orders.length -= 1;
 					Get_packet(merchant);
 					task_mode = 4;
 				} else if (task_mode == 2) {
 					Send_packet(consumer);
 					task_mode = 4;
-				} else if (task_mode == 3) {
-					go_Charge();
-					HAL_Delay(1000);
-					task_mode = 4;
-				} else {
-					merchant = Get_nearest_order();
+				}
+				else if(task_mode == 4)// if task_mode == 4
+				{
+					merchant_index = Get_nearest_order();
+					if(merchant_index == -1)
+						merchant = myCoord;
+					else
+						merchant = orders.buffer[merchant_index];
 					consumer = Get_nearest_consumer();
-					if (delivering_num > 3) {
+
+					if(delivering_num > 3){
 						task_mode = 2;
-					} else if (delivering_num == 0) {
+					}
+					else if(merchant_index == -1)
+					{
+						if(delivering_num == 0){
+							chao_move_angle(0,0);
+						}
+						else{
+							task_mode = 2;
+						}
+					}
+					else if(delivering_num == 0){
 						task_mode = 1;
-					} else if ((abs(merchant.x - myCoord.x) + abs(merchant.y - myCoord.y))
-							< (abs(consumer.x - myCoord.x) + abs(consumer.y - myCoord.y))) {
+					}
+					else if(overtime == 1){
+						task_mode = 2;
+						overtime = 0;
+					}
+					else if(gameStageTimeLeft < 7000 && delivering_num > 0){
+						task_mode = 2;
+					}
+					else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
 						task_mode = 1;
 					} else {
 						task_mode = 2;
 					}
 				}
+				else
+					task_mode = 4;
 			}
 		}
 

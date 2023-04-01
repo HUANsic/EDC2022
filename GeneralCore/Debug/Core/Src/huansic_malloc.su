@@ -6,7 +6,7 @@
 ../Core/Src/huansic_malloc.c:70:6:huansic_path_cascade	16	static
 ../Core/Src/huansic_malloc.c:84:7:huansic_path_break	24	static
 ../Core/Src/huansic_malloc.c:96:6:huansic_order_init	16	static
-../Core/Src/huansic_malloc.c:104:8:huansic_order_new	24	static
-../Core/Src/huansic_malloc.c:127:6:huansic_order_delete	16	static
-../Core/Src/huansic_malloc.c:134:8:huansic_order_findClosestDest	40	static
-../Core/Src/huansic_malloc.c:151:8:huansic_order_findClosestStart	40	static
+../Core/Src/huansic_malloc.c:106:8:huansic_order_new	24	static
+../Core/Src/huansic_malloc.c:129:6:huansic_order_delete	16	static
+../Core/Src/huansic_malloc.c:138:8:huansic_order_findClosestDest	40	static
+../Core/Src/huansic_malloc.c:155:8:huansic_order_findClosestStart	40	static

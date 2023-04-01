@@ -19,6 +19,8 @@ uint8_t mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end);
 
 // convert Path to PWM/Duty Cycle/Motor Speed
 void chao_move_angle(float _angle, float speed);
+
+void move_angle_omega(float _angle, float speed);
 // decide where to go
 // void name_get_destination();
 

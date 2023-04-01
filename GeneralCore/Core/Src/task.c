@@ -15,83 +15,45 @@ extern Rectangle obstacles[5];
 extern Order *delivering[5];
 extern uint8_t delivering_num;
 extern XB_HandleTypeDef hxb;
-
-void go_Charge(void)
-{
-	Coordinate Beacon;
-	Beacon = Get_nearest_Beacon();
-	GotoDestination(Beacon,1);
-}
+extern uint8_t allyBeacons_num;
+extern uint8_t overtime;
 
 void set_Beacons(void)
 {
 	uint8_t i;
 	for(i = 0;i < 3; i++){
-		GotoDestination(want_allyBeacons[i], 1);
+		GotoDestination(want_allyBeacons[i], 0);
+		HAL_Delay(100);
 		huansic_xb_setBeacon(&hxb);
+		HAL_Delay(100);
 	}
 }
 
 void Cal_Battery_Coord(void)
 {
 	uint8_t seted = 0;
-	if(Find_crash(32552, 2))
-	{
-		//set a signal
-		want_allyBeacons[seted].x = 127;
-		want_allyBeacons[seted].y = 40;
-		seted += 1;
-	}
-	if(Find_crash(32726, 2))
-	{
-		//set a signal
-		want_allyBeacons[seted].x = 127;
-		want_allyBeacons[seted].y = 214;
-		seted += 1;
-	}
-	if(Find_crash(10367, 2))
-	{
-		//set a signal
-		want_allyBeacons[seted].x = 40;
-		want_allyBeacons[seted].y = 127;
-		seted += 1;
-	}
-	if(seted != 3)
-	{
-		if(Find_crash(54911, 2))
-		{
-			//set a signal
-			want_allyBeacons[seted].x = 214;
-			want_allyBeacons[seted].y = 127;
-			seted += 1;
-		}
-	}
-	uint8_t x_i = 127;
-	uint8_t y_i = 127;
-	while(seted != 3)
-	{
-		if(Find_crash(x_i * 256 + y_i, 2))
-		{
-			want_allyBeacons[seted].x = x_i;
-			want_allyBeacons[seted].y = y_i;
-			seted += 1;
-		}
-		else
-		{
-			x_i -= 5;
-			y_i -= 5;
-		}
-	}
+	//set a signal
+	want_allyBeacons[seted].x = 127;
+	want_allyBeacons[seted].y = 40;
+	seted += 1;
+	//set a signal
+	want_allyBeacons[seted].x = 127;
+	want_allyBeacons[seted].y = 100;
+	seted += 1;
+	//set a signal
+	want_allyBeacons[seted].x = 127;
+	want_allyBeacons[seted].y = 160;
+	seted += 1;
 }
 
 void Get_packet(Coordinate merchant)
 {
-	GotoDestination(merchant,1);
+	GotoDestination(merchant,0);
 }
 
 void Send_packet(Coordinate consumer)
 {
-	GotoDestination(consumer,1);
+	GotoDestination(consumer,0);
 }
 
 Coordinate Get_nearest_consumer(void)
@@ -99,8 +61,16 @@ Coordinate Get_nearest_consumer(void)
 	int16_t mindis = 512;
 	int16_t distance;
 	uint8_t minindex = 0;
+	if(delivering_num == 0)
+		return myCoord;
+	uint32_t nowtime = HAL_GetTick();
 	for(uint8_t i = 0;i < delivering_num; i++)
 	{
+		if(delivering[i]->timeLimit + delivering[i]->startTime - nowtime < 5000){
+			minindex = i;
+			overtime = 1;
+			break;
+		}
 		distance = abs(myCoord.x - delivering[i]->destCoord.x) + abs(myCoord.y - delivering[i]->destCoord.y);
 		if(distance < mindis){
 			mindis = distance;
@@ -116,9 +86,8 @@ Coordinate Get_nearest_Beacon(void){
 	int16_t mindis = 512;
 	int16_t distance;
 	uint8_t minindex = 0;
-	for(uint8_t i = 0;i < 3;i++)
+	for(uint8_t i = 0;i < allyBeacons_num;i++)
 	{
-
 		distance = abs(myCoord.x - allyBeacons[i].x) + abs(myCoord.y - allyBeacons[i].y);
 		if(distance < mindis){
 			mindis = distance;

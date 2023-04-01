@@ -23,6 +23,7 @@
 /*inside functions*/
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)
+#define HALFLENGTH 14
 
 /* exported variables */
 // game information 1
@@ -65,6 +66,20 @@ void chao_move_angle(float _angle, float speed) {
 	cmotor_lb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc);
 	cmotor_rb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc);
 }
+
+void move_angle_omega(float _angle, float speed){
+	float omega = _angle <= 180 ? _angle: (_angle - 360);
+	if(abs(omega) < 15)
+		omega = 0;
+	else
+		omega = 0.4 * omega;
+	float angle_arc = (_angle / 180) * M_PI;
+	cmotor_lf.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc) - omega * HALFLENGTH;
+	cmotor_rf.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc) + omega * HALFLENGTH;
+	cmotor_lb.goalSpeed = speed * cos(angle_arc) - speed * sin(angle_arc) - omega * HALFLENGTH;
+	cmotor_rb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc) + omega * HALFLENGTH;
+}
+
 
 uint8_t mingyan_pathfind_avoidObstacle(Coordinate *start, Coordinate *end) {
 	return A_Star_main(start, end, 5);
