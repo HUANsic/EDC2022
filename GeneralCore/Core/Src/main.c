@@ -59,6 +59,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim8;
 
 UART_HandleTypeDef huart2;
@@ -76,7 +77,7 @@ XB_HandleTypeDef hxb;
 // game information 1
 uint8_t gameStage;		    // 0: pre-match(standby); 1: first half; 2: second half
 uint8_t gameStatus;			// 0: standby; 1: running
-uint8_t task_mode=0;          // 0:set battery 1: get packet 2:send packet 3:charge
+uint8_t task_mode = 0;          // 0:set battery 1: get packet 2:send packet 3:charge
 
 uint32_t gameStageTimeLimit;		// in ms
 uint32_t gameStageTimeSinceStart;	// in ms
@@ -104,9 +105,12 @@ int32_t myCharge;				// current charge returned by Master
 // interchange information 1
 uint32_t gameStageTimeLeft;		// in ms
 // OLED display buffer
-char firstLine[16], secondLine[16], thirdLine[16], fourthLine[16];		// 128 / 8 = 16
+char firstLine[22], secondLine[22], thirdLine[22], fourthLine[22];		// 128 / 6 = 21
 
 Coordinate merchant, consumer;
+
+// debug information
+uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_ErrorCount, xb_IT_SuccessCount;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -123,6 +127,7 @@ static void MX_TIM8_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_TIM6_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 static void HUAN_MOTOR1_Init(void);
 static void HUAN_MOTOR2_Init(void);
@@ -177,6 +182,7 @@ int main(void)
 	MX_USART2_UART_Init();
 	MX_USART3_UART_Init();
 	MX_TIM6_Init();
+	MX_TIM7_Init();
 	/* USER CODE BEGIN 2 */
 	//Motor init
 	cmotor_lf.encoderInverted = 1;
@@ -196,14 +202,24 @@ int main(void)
 	//Set PID timer after data stables
 	HAL_Delay(20);
 	HAL_TIM_Base_Start_IT(&htim6);
+	HAL_TIM_Base_Start_IT(&htim7);
 
+	jy62_DMA_ErrorCount = 0;
+	jy62_IT_SuccessCount = 0;
+	xb_DMA_ErrorCount = 0;
+	xb_IT_SuccessCount = 0;
+	/* USER CODE END 2 */
 
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-	sprintf(firstLine, "Good");
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	sprintf(firstLine, "    ERR   SUC");
+	sprintf(secondLine, "XB");
+	sprintf(thirdLine, "JY");
 	ssd1306_WriteString(firstLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 8);
+	ssd1306_WriteString(secondLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 16);
+	ssd1306_WriteString(thirdLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
 
 	// test A*
@@ -212,16 +228,15 @@ int main(void)
 	Coordinate goal;
 	goal.x = 50;
 	goal.y = 10;
-	EstiCoord.x = (float)myCoord.x;
-	EstiCoord.y = (float)myCoord.y;
+	EstiCoord.x = (float) myCoord.x;
+	EstiCoord.y = (float) myCoord.y;
 	CoordinateUpdate = 0;
 //	uint8_t flag = mingyan_pathfind_avoidObstacle(&myCoord, &goal);
 //	Position_P(&myCoord, &goal);
 //	GotoDestination(goal, 0);
 
-
-    while (1) {
-    	// test code to ensure the motor can work
+	while (1) {
+		// test code to ensure the motor can work
 //		HAL_Delay(1000);
 //		chao_move_angle(135, 1000);
 //		HAL_Delay(1000);
@@ -231,13 +246,11 @@ int main(void)
 //		HAL_Delay(1000);
 //		chao_move_angle(270, 2000);
 
-		if(gameStatus == 0){		// if the game is not running
-	    	LED1_ON;
-	    	HAL_Delay(1000);
-	    	LED1_OFF;
-		}
-		else
-		{
+		if (gameStatus == 0) {		// if the game is not running
+			LED1_ON;
+			HAL_Delay(1000);
+			LED1_OFF;
+		} else {
 			while (gameStage == 0) {		// pre-match
 				chao_move_angle(0, 0);
 				// find angle offset
@@ -248,43 +261,36 @@ int main(void)
 				task_mode = 0;
 			}
 
-			while (gameStage == 1){			// first-half
-				if(task_mode==0){
+			while (gameStage == 1) {			// first-half
+				if (task_mode == 0) {
 					//setChargingPile
 					set_Beacons();
 					task_mode = 1;
-				}
-				else {
-					if(myCharge < 200){
+				} else {
+					if (myCharge < 200) {
 						task_mode = 3;
 					}
-					if(task_mode == 1){
+					if (task_mode == 1) {
 						Get_packet(merchant);
 						task_mode = 4;
-					}
-					else if(task_mode == 2){
+					} else if (task_mode == 2) {
 						Send_packet(consumer);
 						task_mode = 4;
-					}
-					else if(task_mode == 3){
+					} else if (task_mode == 3) {
 						go_Charge();
 						HAL_Delay(1000);
 						task_mode = 4;
-					}
-					else
-					{
+					} else {
 						merchant = Get_nearest_order();
 						consumer = Get_nearest_consumer();
-						if(delivering_num > 3){
+						if (delivering_num > 3) {
 							task_mode = 2;
-						}
-						else if(delivering_num == 0){
+						} else if (delivering_num == 0) {
 							task_mode = 1;
-						}
-						else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
+						} else if ((abs(merchant.x - myCoord.x) + abs(merchant.y - myCoord.y))
+								< (abs(consumer.x - myCoord.x) + abs(consumer.y - myCoord.y))) {
 							task_mode = 1;
-						}
-						else{
+						} else {
 							task_mode = 2;
 						}
 					}
@@ -292,44 +298,38 @@ int main(void)
 
 			}
 
-			while (gameStage == 2){			// second-half
-				if(myCharge < 200){
+			while (gameStage == 2) {			// second-half
+				if (myCharge < 200) {
 					task_mode = 3;
 				}
-				if(task_mode == 1){
+				if (task_mode == 1) {
 					Get_packet(merchant);
 					task_mode = 4;
-				}
-				else if(task_mode == 2){
+				} else if (task_mode == 2) {
 					Send_packet(consumer);
 					task_mode = 4;
-				}
-				else if(task_mode == 3){
+				} else if (task_mode == 3) {
 					go_Charge();
 					HAL_Delay(1000);
 					task_mode = 4;
-				}
-				else
-				{
+				} else {
 					merchant = Get_nearest_order();
 					consumer = Get_nearest_consumer();
-					if(delivering_num > 3){
+					if (delivering_num > 3) {
 						task_mode = 2;
-					}
-					else if(delivering_num == 0){
+					} else if (delivering_num == 0) {
 						task_mode = 1;
-					}
-					else if((abs(merchant.x-myCoord.x)+abs(merchant.y-myCoord.y))<(abs(consumer.x-myCoord.x)+abs(consumer.y-myCoord.y))){
+					} else if ((abs(merchant.x - myCoord.x) + abs(merchant.y - myCoord.y))
+							< (abs(consumer.x - myCoord.x) + abs(consumer.y - myCoord.y))) {
 						task_mode = 1;
-					}
-					else{
+					} else {
 						task_mode = 2;
 					}
 				}
 			}
 		}
 
-    /* USER CODE END WHILE */
+		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
 	}
@@ -731,6 +731,44 @@ static void MX_TIM6_Init(void)
 }
 
 /**
+ * @brief TIM7 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM7_Init(void)
+{
+
+	/* USER CODE BEGIN TIM7_Init 0 */
+
+	/* USER CODE END TIM7_Init 0 */
+
+	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+
+	/* USER CODE BEGIN TIM7_Init 1 */
+
+	/* USER CODE END TIM7_Init 1 */
+	htim7.Instance = TIM7;
+	htim7.Init.Prescaler = 7200 - 1;
+	htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim7.Init.Period = 10000 - 1;
+	htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+			{
+		Error_Handler();
+	}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+			{
+		Error_Handler();
+	}
+	/* USER CODE BEGIN TIM7_Init 2 */
+
+	/* USER CODE END TIM7_Init 2 */
+
+}
+
+/**
  * @brief TIM8 Initialization Function
  * @param None
  * @retval None
@@ -1005,15 +1043,21 @@ static void HUAN_ZIGBEE_Init(void) {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
-		if (himu.pending_alignment)
-			huansic_jy62_isr(&himu);
-		else
-			huansic_jy62_dma_isr(&himu);
+		if (himu.pending_alignment) {
+			if (huansic_jy62_isr(&himu))
+				jy62_IT_SuccessCount++;
+		} else {
+			if (!huansic_jy62_dma_isr(&himu))
+				jy62_DMA_ErrorCount++;
+		}
 	} else if (hxb.huart == huart) {
-		if(hxb.pending_alignment)
-			huansic_xb_isr(&hxb);
-		else
-			huansic_xb_dma_isr(&hxb);
+		if (hxb.pending_alignment) {
+			if (huansic_xb_isr(&hxb))
+				xb_IT_SuccessCount++;
+		} else {
+			if (!huansic_xb_dma_isr(&hxb))
+				xb_DMA_ErrorCount++;
+		}
 	}
 }
 
@@ -1021,14 +1065,24 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		if (himu.pending_alignment)
 			huansic_jy62_error(&himu);
-		else
+		else {
 			huansic_jy62_dma_error(&himu);
+			jy62_DMA_ErrorCount++;
+		}
 	} else if (hxb.huart == huart) {
 		if (hxb.pending_alignment)
 			huansic_xb_it_error(&hxb);
-		else
+		else {
 			huansic_xb_dma_error(&hxb);
+			xb_DMA_ErrorCount++;
+		}
 	}
+}
+
+void HUAN_PeriodicInt1000ms_ISR() {
+	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
+	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
+	ssd1306_UpdateScreen();
 }
 /* USER CODE END 4 */
 
