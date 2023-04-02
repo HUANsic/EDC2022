@@ -1138,6 +1138,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 			huansic_jy62_dma_error(&himu);
 			jy62_DMA_ErrorCount++;
 		} else {
+			if(himu.huart->ErrorCode | HAL_UART_ERROR_ORE){
+				himu.huart->Instance->SR;
+				himu.huart->Instance->DR;		// clear the error flags
+			}
 			huansic_jy62_it_error(&himu);
 		}
 	} else if (hxb.huart == huart) {
@@ -1146,6 +1150,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
+			if(hxb.huart->ErrorCode | HAL_UART_ERROR_ORE){
+				hxb.huart->Instance->SR;
+				hxb.huart->Instance->DR;		// clear the error flags
+			}
 			huansic_xb_it_error(&hxb);
 		}
 	}
