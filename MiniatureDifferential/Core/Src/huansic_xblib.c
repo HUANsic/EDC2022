@@ -44,7 +44,7 @@ void huansic_xb_align(XB_HandleTypeDef *hxb) {
 void huansic_xb_init(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = 6;		// header length
 	huansic_xb_align(hxb);
-	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->uartPort, &hxb->buffer[0], hxb->nextPackageLength);
 }
 
 uint8_t huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
@@ -81,7 +81,7 @@ uint8_t huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = hxb->buffer[4];
 
 	// set up next DMA
-	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->uartPort, &hxb->buffer[0], hxb->nextPackageLength);
 	return 1;
 }
 
@@ -523,7 +523,7 @@ void huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 	// set up next DMA
 	hxb->nextPackageLength = 6;		// header length
 	hxb->nextPackageID = 0x00;		// the next one is header
-	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->uartPort, &hxb->buffer[0], hxb->nextPackageLength);
 }
 
 void huansic_xb_decodeRemote(XB_HandleTypeDef *hxb) {
@@ -543,7 +543,7 @@ void huansic_xb_decodeRemote(XB_HandleTypeDef *hxb) {
 	// set up next DMA
 	hxb->nextPackageLength = 6;		// header length
 	hxb->nextPackageID = 0x00;		// the next one is header
-	HAL_UART_Receive_DMA(hxb->uartPort, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->uartPort, &hxb->buffer[0], hxb->nextPackageLength);
 }
 
 void huansic_xb_requestGameInfo(XB_HandleTypeDef *hxb) {

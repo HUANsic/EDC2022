@@ -1149,10 +1149,13 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
 //			HAL_UART_DeInit(&huart2);
 //			MX_USART2_UART_Init();
-			hxb.huart->Lock = HAL_UNLOCKED;
+			huart->ErrorCode = HAL_UART_ERROR_NONE;
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
+			hxb.huart->Instance->SR;
+			hxb.huart->Instance->DR;
+			hxb.huart->Instance->DR;
 			HAL_UART_DeInit(&huart2);
 			MX_USART2_UART_Init();
 			huansic_xb_it_error(&hxb);
