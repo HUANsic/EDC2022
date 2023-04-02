@@ -88,7 +88,7 @@ Coordinate want_allyBeacons[3];
 Coordinate exitpoints[8];         	// record the exit.
 
 // game information 2
-Order *delivering[5];		// package picked up but not yet delivered
+Order *delivering[8];		// package picked up but not yet delivered
 uint8_t delivering_num = 0;
 uint8_t allyBeacons_num = 0;
 extern Order_list orders;
@@ -1108,18 +1108,18 @@ static void HUAN_ZIGBEE_Init(void) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		if (himu.pending_alignment) {
-			if (huansic_jy62_isr(&himu))
+			if (!huansic_jy62_isr(&himu))
 				jy62_IT_SuccessCount++;
 		} else {
-			if (!huansic_jy62_dma_isr(&himu))
+			if (huansic_jy62_dma_isr(&himu))
 				jy62_DMA_ErrorCount++;
 		}
 	} else if (hxb.huart == huart) {
 		if (hxb.pending_alignment) {
-			if (huansic_xb_isr(&hxb))
+			if (!huansic_xb_isr(&hxb))
 				xb_IT_SuccessCount++;
 		} else {
-			if (!huansic_xb_dma_isr(&hxb))
+			if (huansic_xb_dma_isr(&hxb))
 				xb_DMA_ErrorCount++;
 		}
 	}
@@ -1145,7 +1145,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
 void HUAN_PeriodicInt1000ms_ISR() {
 	sprintf(firstLine, "Coord: %03d, %03d", myCoord.x, myCoord.y);
-	sprintf(secondLine, "TimeLeft: %06u", gameStageTimeLeft);
+	sprintf(secondLine, "TimeLeft: %08u", gameStageTimeLeft);
 //	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
 //	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
 	ssd1306_WriteString(firstLine, Font_6x8, White);
