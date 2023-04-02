@@ -1135,27 +1135,26 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		jy62_uart_normal = 1;
-		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
+		if (huart->ErrorCode & HAL_UART_ERROR_DMA) {
 			__HAL_DMA_CLEAR_FLAG(himu.hdma, DMA_FLAG_TE2 | DMA_FLAG_HT2 | DMA_FLAG_TC2 | DMA_FLAG_GL2);
 			huansic_jy62_dma_error(&himu);
 			jy62_DMA_ErrorCount++;
 		} else {
-			if (himu.huart->ErrorCode | HAL_UART_ERROR_ORE) {
+			if (himu.huart->ErrorCode & HAL_UART_ERROR_ORE) {
 				__HAL_UART_CLEAR_OREFLAG(himu.huart);
 			}
 			huansic_jy62_it_error(&himu);
 		}
 	} else if (hxb.huart == huart) {
 		xb_uart_normal = 1;
-		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
+		if (huart->ErrorCode & HAL_UART_ERROR_DMA) {
 //			HAL_UART_DeInit(&huart2);
 //			MX_USART2_UART_Init();
 			__HAL_DMA_CLEAR_FLAG(hxb.hdma, DMA_FLAG_TE6 | DMA_FLAG_HT6 | DMA_FLAG_TC6 | DMA_FLAG_GL6);
-			hxb.hdma->DmaBaseAddress->IFCR = 0x0F << ((hxb.hdma->ChannelIndex - 1) * 4);
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
-			if (hxb.huart->ErrorCode | HAL_UART_ERROR_ORE) {
+			if (hxb.huart->ErrorCode & HAL_UART_ERROR_ORE) {
 				__HAL_UART_CLEAR_OREFLAG(hxb.huart);
 			}
 //			HAL_UART_DeInit(&huart2);
