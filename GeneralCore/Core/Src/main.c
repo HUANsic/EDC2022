@@ -1136,12 +1136,14 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		jy62_uart_normal = 1;
 		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
+			himu.hdma->DmaBaseAddress->IFCR = 0x0F << ((himu.hdma->ChannelIndex - 1) * 4);
 			huansic_jy62_dma_error(&himu);
 			jy62_DMA_ErrorCount++;
 		} else {
 			if (himu.huart->ErrorCode | HAL_UART_ERROR_ORE) {
 				himu.huart->Instance->SR;
-				himu.huart->Instance->DR;		// clear the error flags
+				himu.huart->Instance->DR;		// clear the error flag
+				himu.huart->Instance->DR;		// clear the RXNE flag
 			}
 			huansic_jy62_it_error(&himu);
 		}
@@ -1150,19 +1152,21 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
 //			HAL_UART_DeInit(&huart2);
 //			MX_USART2_UART_Init();
-			huart->ErrorCode = HAL_UART_ERROR_NONE;
 			hxb.hdma->DmaBaseAddress->IFCR = 0x0F << ((hxb.hdma->ChannelIndex - 1) * 4);
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
-			hxb.huart->Instance->SR;
-			hxb.huart->Instance->DR;
-			hxb.huart->Instance->DR;
-			HAL_UART_DeInit(&huart2);
-			MX_USART2_UART_Init();
+			if (hxb.huart->ErrorCode | HAL_UART_ERROR_ORE) {
+				hxb.huart->Instance->SR;
+				hxb.huart->Instance->DR;		// clear the error flag
+				hxb.huart->Instance->DR;		// clear the RXNE flag
+			}
+//			HAL_UART_DeInit(&huart2);
+//			MX_USART2_UART_Init();
 			huansic_xb_it_error(&hxb);
 		}
 	}
+	huart->ErrorCode = HAL_UART_ERROR_NONE;
 }
 
 void HUAN_PeriodicInt1000ms_ISR(void) {
