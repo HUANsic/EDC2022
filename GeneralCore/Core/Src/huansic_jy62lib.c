@@ -187,15 +187,15 @@ enum IMU_STATUS huansic_jy62_isr(JY62_HandleTypeDef *himu) {
 void huansic_jy62_dma_error(JY62_HandleTypeDef *himu){
 	// nothing much to do with error
 	himu->pending_alignment = 1;
-	if(himu->huart->gState != HAL_UART_STATE_READY){
-		himu->huart->gState = HAL_UART_STATE_READY;
-	}
-	if(himu->huart->RxState != HAL_UART_STATE_READY){
-		himu->huart->RxState = HAL_UART_STATE_READY;
-	}
-	if(himu->hdma->State != HAL_DMA_STATE_READY){
-		himu->hdma->State = HAL_DMA_STATE_READY;
-	}
+//	if(himu->huart->gState != HAL_UART_STATE_READY){
+//		himu->huart->gState = HAL_UART_STATE_READY;
+//	}
+//	if(himu->huart->RxState != HAL_UART_STATE_READY){
+//		himu->huart->RxState = HAL_UART_STATE_READY;
+//	}
+//	if(himu->hdma->State != HAL_DMA_STATE_READY){
+//		himu->hdma->State = HAL_DMA_STATE_READY;
+//	}
 	HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);
 }
 
@@ -207,12 +207,12 @@ void huansic_jy62_dma_error(JY62_HandleTypeDef *himu){
 void huansic_jy62_it_error(JY62_HandleTypeDef *himu){
 	// nothing much to do with error
 	himu->pending_alignment = 1;
-	if(himu->huart->gState != HAL_UART_STATE_READY){
-		himu->huart->gState = HAL_UART_STATE_READY;
-	}
-	if(himu->huart->RxState != HAL_UART_STATE_READY){
-		himu->huart->RxState = HAL_UART_STATE_READY;
-	}
+//	if(himu->huart->gState != HAL_UART_STATE_READY){
+//		himu->huart->gState = HAL_UART_STATE_READY;
+//	}
+//	if(himu->huart->RxState != HAL_UART_STATE_READY){
+//		himu->huart->RxState = HAL_UART_STATE_READY;
+//	}
 	HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);
 }
 
