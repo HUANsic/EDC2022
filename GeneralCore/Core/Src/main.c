@@ -1159,8 +1159,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 				__HAL_UART_CLEAR_OREFLAG(hxb.huart);
 			}
 //			HAL_UART_DeInit(&huart2);
-//			MX_USART2_UART_Init();
-			HAL_UARTEx_ReceiveToIdle_DMA();
+//			MX_USART2_UART_Init()
 			huansic_xb_it_error(&hxb);
 		}
 	}
