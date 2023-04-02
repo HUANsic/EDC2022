@@ -88,7 +88,7 @@ Coordinate want_allyBeacons[3];
 Coordinate exitpoints[8];         	// record the exit.
 
 // game information 2
-Order *delivering[5];		// package picked up but not yet delivered
+Order *delivering[8];		// package picked up but not yet delivered
 uint8_t delivering_num = 0;
 uint8_t allyBeacons_num = 0;
 extern Order_list orders;
@@ -304,13 +304,10 @@ int main(void)
 						if (delivering_num > 4) {
 							task_mode = 2;
 						}
-						else if (merchant_index == -1)
-								{
-							if (delivering_num == 0) {
-//								charge.x = 127;
-//								charge.y = 127;
-								chao_move_angle(0, 0);
-//								GotoDestination(charge, 2);
+						else if(merchant_index == -1)
+						{
+							if(delivering_num == 0){
+								chao_move_angle(0,0);
 							}
 							else {
 								task_mode = 2;
@@ -336,11 +333,11 @@ int main(void)
 				}
 
 			}
-			//得�?��?始化
-			while (gameStage == 2) {			// second-half
-				while (myCharge < 500)
+
+			while (gameStage == 2){			// second-half
+				while(myCharge < 500)
 				{
-					huansic_xb_requestGameInfo(&hxb);
+//					huansic_xb_requestGameInfo(&hxb);
 					charge = Get_nearest_Beacon();
 					GotoDestination(charge, 0);
 				}
@@ -1152,6 +1149,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 		}
 	}
 }
+
 
 void HUAN_PeriodicInt1000ms_ISR(void) {
 	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);

@@ -18,7 +18,7 @@
 Path pathBuffers[HUANSIC_PATH_PREMALLOC_SIZE];
 Order orderBuffers[HUANSIC_ORDER_PREMALLOC_SIZE];
 
-extern Order *delivering[5];
+extern Order *delivering[8];
 
 __weak void custom_path_free_fault(Path *ptr) {
 
