@@ -217,15 +217,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	sprintf(firstLine, "    ERR   SUC");
-	sprintf(secondLine, "XB");
-	sprintf(thirdLine, "JY");
-	ssd1306_WriteString(firstLine, Font_6x8, White);
-	ssd1306_SetCursor(0, 8);
-	ssd1306_WriteString(secondLine, Font_6x8, White);
-	ssd1306_SetCursor(0, 16);
-	ssd1306_WriteString(thirdLine, Font_6x8, White);
-	ssd1306_UpdateScreen();
+//	sprintf(firstLine, "    ERR   SUC");
+//	sprintf(secondLine, "XB");
+//	sprintf(thirdLine, "JY");
+//	ssd1306_WriteString(firstLine, Font_6x8, White);
+//	ssd1306_SetCursor(0, 8);
+//	ssd1306_WriteString(secondLine, Font_6x8, White);
+//	ssd1306_SetCursor(0, 16);
+//	ssd1306_WriteString(thirdLine, Font_6x8, White);
+//	ssd1306_UpdateScreen();
 
 	CoordinateUpdate = 0;
 	int8_t merchant_index = -1;
@@ -271,7 +271,7 @@ int main(void)
 			while (gameStage == 1){			// first-half
 				if(task_mode == 0){
 					//setChargingPile
-					set_Beacons();
+//					set_Beacons();
 					while(orders.length == 0)
 					{
 						chao_move_angle(0,0);
@@ -306,10 +306,7 @@ int main(void)
 						else if(merchant_index == -1)
 						{
 							if(delivering_num == 0){
-//								charge.x = 127;
-//								charge.y = 127;
 								chao_move_angle(0,0);
-//								GotoDestination(charge, 2);
 							}
 							else{
 								task_mode = 2;
@@ -334,11 +331,11 @@ int main(void)
 				}
 
 			}
-			//å¾—å?šåˆ?å§‹åŒ–
+
 			while (gameStage == 2){			// second-half
 				while(myCharge < 500)
 				{
-					huansic_xb_requestGameInfo(&hxb);
+//					huansic_xb_requestGameInfo(&hxb);
 					charge = Get_nearest_Beacon();
 					GotoDestination(charge, 0);
 				}
@@ -1147,12 +1144,15 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 }
 
 void HUAN_PeriodicInt1000ms_ISR() {
-	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
-	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
+	sprintf(firstLine, "Coord: %03d, %03d", myCoord.x, myCoord.y);
+	sprintf(secondLine, "TimeLeft: %06u", gameStageTimeLeft);
+//	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
+//	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
+	ssd1306_WriteString(firstLine, Font_6x8, White);
 	ssd1306_SetCursor(0, 8);
 	ssd1306_WriteString(secondLine, Font_6x8, White);
 	ssd1306_SetCursor(0, 16);
-	ssd1306_WriteString(thirdLine, Font_6x8, White);
+//	ssd1306_WriteString(thirdLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
 }
 /* USER CODE END 4 */
