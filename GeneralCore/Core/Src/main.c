@@ -1147,8 +1147,8 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	} else if (hxb.huart == huart) {
 		xb_uart_normal = 1;
 		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
-			HAL_UART_DeInit(&huart3);
-			MX_USART3_UART_Init();
+			HAL_UART_DeInit(&huart2);
+			MX_USART2_UART_Init();
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
