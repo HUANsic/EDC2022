@@ -195,7 +195,7 @@ void huansic_jy62_dma_error(JY62_HandleTypeDef *himu){
  * 		@param	himu	jy62 whose port has sent out the error
  * 		@retval	enum IMU_STATUS
  */
-void huansic_jy62_error(JY62_HandleTypeDef *himu){
+void huansic_jy62_it_error(JY62_HandleTypeDef *himu){
 	// nothing much to do with error
 	himu->pending_alignment = 1;
 	HAL_UART_Receive_IT(himu->huart, &himu->buffer[0], 1);

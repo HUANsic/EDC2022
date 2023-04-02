@@ -44,6 +44,6 @@ void huansic_jy62_dma_error(JY62_HandleTypeDef *himu);
  * 		@param	himu	jy62 whose port has sent out the error
  * 		@retval	enum IMU_STATUS
  */
-void huansic_jy62_error(JY62_HandleTypeDef *himu);
+void huansic_jy62_it_error(JY62_HandleTypeDef *himu);
 
 #endif /* INC_HUANSIC_JY62LIB_H_ */

@@ -114,6 +114,7 @@ Coordinate merchant, consumer, charge;
 
 // debug information
 uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_ErrorCount, xb_IT_SuccessCount = 0;
+uint8_t jy62_uart_normal, xb_uart_normal;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1110,6 +1111,7 @@ static void HUAN_ZIGBEE_Init(void) {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
+		jy62_uart_normal = 1;
 		if (himu.pending_alignment) {
 			if (!huansic_jy62_isr(&himu))
 				jy62_IT_SuccessCount++;
@@ -1118,6 +1120,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 				jy62_DMA_ErrorCount++;
 		}
 	} else if (hxb.huart == huart) {
+		xb_uart_normal = 1;
 		if (hxb.pending_alignment) {
 			if (!huansic_xb_isr(&hxb))
 				xb_IT_SuccessCount++;
@@ -1130,13 +1133,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
+		jy62_uart_normal = 1;
 		if (himu.pending_alignment)
-			huansic_jy62_error(&himu);
+			huansic_jy62_it_error(&himu);
 		else {
 			huansic_jy62_dma_error(&himu);
 			jy62_DMA_ErrorCount++;
 		}
 	} else if (hxb.huart == huart) {
+		xb_uart_normal = 1;
 		if (hxb.pending_alignment)
 			huansic_xb_it_error(&hxb);
 		else {
@@ -1146,7 +1151,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	}
 }
 
-void HUAN_PeriodicInt1000ms_ISR() {
+void HUAN_PeriodicInt1000ms_ISR(void) {
 	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
 	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
 	ssd1306_SetCursor(0, 8);
@@ -1154,6 +1159,16 @@ void HUAN_PeriodicInt1000ms_ISR() {
 	ssd1306_SetCursor(0, 16);
 	ssd1306_WriteString(thirdLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
+
+	// check status of UART
+	if(!jy62_uart_normal){
+		huansic_jy62_it_error(&himu);
+	}
+	if(!xb_uart_normal){
+		huansic_xb_it_error(&hxb);
+	}
+	jy62_uart_normal = 0;
+	xb_uart_normal = 0;
 }
 /* USER CODE END 4 */
 
