@@ -1152,10 +1152,8 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
-			if(hxb.huart->ErrorCode | HAL_UART_ERROR_ORE){
-				hxb.huart->Instance->SR;
-				hxb.huart->Instance->DR;		// clear the error flags
-			}
+			HAL_UART_DeInit(&huart2);
+			MX_USART2_UART_Init();
 			huansic_xb_it_error(&hxb);
 		}
 	}
