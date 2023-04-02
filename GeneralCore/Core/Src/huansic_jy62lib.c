@@ -43,25 +43,25 @@ enum IMU_STATUS huansic_jy62_init(JY62_HandleTypeDef *himu) {
 	if (!himu->huart)
 		return IMU_ERROR;
 
-#ifdef HUANSIC_JY62_RATE_20HZ
-#if (HUANSIC_JY62_BAUD != 9600)
+//#ifdef HUANSIC_JY62_RATE_20HZ
+//#if (HUANSIC_JY62_BAUD != 9600)
 	HAL_UART_Transmit(himu->huart, JY62_BAUD_9600, 3, 10);
 	HAL_UART_DeInit(himu->huart);
 	himu->huart->Init.BaudRate = 9600;
 	HAL_UART_Init(himu->huart);
 	HAL_Delay(10);
-#endif
-#endif
+//#endif
+//#endif
 
-#ifdef HUANSIC_JY62_RATE_100HZ
-#if HUANSIC_JY62_BAUD != 115200
-	HAL_UART_Transmit(himu->huart, JY62_BAUD_115200, 3, 10);
-	HAL_UART_DeInit(himu->huart);
-	himu->huart->Init.BaudRate = 115200;
-	HAL_UART_Init(himu->huart);
-	HAL_Delay(10);
-#endif
-#endif
+//#ifdef HUANSIC_JY62_RATE_100HZ
+//#if HUANSIC_JY62_BAUD != 115200
+//	HAL_UART_Transmit(himu->huart, JY62_BAUD_115200, 3, 10);
+//	HAL_UART_DeInit(himu->huart);
+//	himu->huart->Init.BaudRate = 115200;
+//	HAL_UART_Init(himu->huart);
+//	HAL_Delay(10);
+//#endif
+//#endif
 
 	HAL_Delay(3);
 

@@ -257,7 +257,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 		}
 
 		/* order management */
-		for (i = 0; i < 5; i++) {
+		for (i = 0; i < 8; i++) {
 			if (delivering[i] != 0 && delivering[i]->id != -1) {
 				for (j = 0; j < updatedOrderIndex; j++)
 					if (delivering[i]->id == updatedOrder[j]) {		// pulled from remote

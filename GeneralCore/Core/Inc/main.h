@@ -31,6 +31,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#define HUANSIC_JY62_RATE_20HZ
+#define HUANSIC_JY62_BAUD 115200
+
 #include "ssd1306.h"
 #include "huansic_jy62lib.h"
 #include "huansic_motorlib.h"

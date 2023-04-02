@@ -137,7 +137,7 @@ typedef struct {
 	uint8_t nextPackageLength;		// length of next DMA receive
 
 	// max is 126
-	uint8_t buffer[130];	// put at the end to prevent block alignment issues
+	uint8_t buffer[200];	// put at the end to prevent block alignment issues
 
 	uint8_t pending_alignment;
 	uint8_t lastByte;
