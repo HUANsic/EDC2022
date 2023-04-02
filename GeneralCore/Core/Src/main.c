@@ -1160,9 +1160,11 @@ void HUAN_PeriodicInt1000ms_ISR(void) {
 
 	// check status of UART
 	if(!jy62_uart_normal){
+		himu.huart->Instance->DR;		// just read
 		huansic_jy62_it_error(&himu);
 	}
 	if(!xb_uart_normal){
+		hxb.huart->Instance->DR;		// just read
 		huansic_xb_it_error(&hxb);
 	}
 	jy62_uart_normal = 0;
