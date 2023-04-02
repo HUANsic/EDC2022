@@ -71,7 +71,7 @@ enum IMU_STATUS huansic_jy62_init(JY62_HandleTypeDef *himu) {
 	// instead, just use DMA
 	himu->pending_alignment = 0;
 	HAL_UART_Receive_DMA(himu->huart, &himu->buffer[0], 33);
-	himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+	__HAL_DMA_DISABLE_IT(himu->hdma, DMA_IT_HT);		// disable half transfer interrupt
 
 #ifdef HUANSIC_JY62_DEBUG
 	himu->counter = 0;
@@ -147,7 +147,7 @@ enum IMU_STATUS huansic_jy62_dma_isr(JY62_HandleTypeDef *himu) {
 	__huansic_jy62_decode_temp(himu, 2);
 	// start to receive the next package
 	HAL_UART_Receive_DMA(himu->huart, &himu->buffer[0], 33);
-	himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+	__HAL_DMA_DISABLE_IT(himu->hdma, DMA_IT_HT);		// disable half transfer interrupt
 
 #ifdef HUANSIC_JY62_DEBUG
 	himu->counter++;
@@ -174,7 +174,7 @@ enum IMU_STATUS huansic_jy62_isr(JY62_HandleTypeDef *himu) {
 		// header just aligned
 		himu->pending_alignment = 0;
 		HAL_UART_Receive_DMA(himu->huart, &himu->buffer[1], 32);		// receive the rest
-		himu->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+		__HAL_DMA_DISABLE_IT(himu->hdma, DMA_IT_HT);		// disable half transfer interrupt
 		return IMU_OK;
 	}
 }

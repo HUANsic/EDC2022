@@ -43,7 +43,7 @@ void huansic_xb_init(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageID = 0x00;
 	hxb->nextPackageLength = 6;		// header length
 	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
-	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+	__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
 }
 
 enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
@@ -67,7 +67,7 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 
 	// set up next DMA
 	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
-	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+	__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
 	return XB_OK;
 }
 
@@ -319,7 +319,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = 6;		// header length
 	hxb->nextPackageID = 0x00;		// the next one is header
 	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
-	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+	__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
 	return XB_OK;
 }
 
@@ -356,7 +356,7 @@ enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb) {
 		hxb->nextPackageID = 0x00;
 		hxb->buffer[1] = 0x55;		// for further processing
 		HAL_UART_Receive_DMA(hxb->huart, &(hxb->buffer[2]), 4);		// receive the rest of header
-		hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
+		__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
 		return XB_OK;
 	} else {
 		hxb->pending_alignment = 1;		// enter aligning mode if not already
