@@ -336,6 +336,7 @@ void huansic_xb_setBeacon(XB_HandleTypeDef *hxb) {
 void huansic_xb_dma_error(XB_HandleTypeDef *hxb) {
 	// nothing much to do with error
 	hxb->pending_alignment = 1;
+	hxb->lastByte = 0x00;
 	HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);
 }
 
