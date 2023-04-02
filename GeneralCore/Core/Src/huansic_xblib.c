@@ -42,7 +42,7 @@ void huansic_xb_init(XB_HandleTypeDef *hxb) {
 	hxb->pending_alignment = 0;
 	hxb->nextPackageID = 0x00;
 	hxb->nextPackageLength = 6;		// header length
-	HAL_UART_Receive_DMA(hxb->huart, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
 	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 }
 
@@ -66,7 +66,7 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = hxb->buffer[3]; // the length shall not be longer than 255 (the max possible is 225)
 
 	// set up next DMA
-	HAL_UART_Receive_DMA(hxb->huart, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
 	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 	return XB_OK;
 }
@@ -318,7 +318,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 	hxb->lastUpdated = HAL_GetTick();		// update last updated time stamp
 	hxb->nextPackageLength = 6;		// header length
 	hxb->nextPackageID = 0x00;		// the next one is header
-	HAL_UART_Receive_DMA(hxb->huart, hxb->buffer, hxb->nextPackageLength);
+	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
 	hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 	return XB_OK;
 }
@@ -337,14 +337,14 @@ void huansic_xb_dma_error(XB_HandleTypeDef *hxb) {
 	// nothing much to do with error
 	hxb->pending_alignment = 1;
 	hxb->lastByte = 0x00;
-	HAL_UART_Receive_IT(hxb->huart, hxb->buffer, 1);
+	HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);
 }
 
 void huansic_xb_it_error(XB_HandleTypeDef *hxb) {
 	// nothing much to do with error
 	hxb->pending_alignment = 1;
 	hxb->lastByte = 0x00;
-	HAL_UART_Receive_IT(hxb->huart, hxb->buffer, 1);
+	HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);
 }
 
 enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb) {
@@ -355,13 +355,13 @@ enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb) {
 		hxb->pending_alignment = 0;
 		hxb->nextPackageID = 0x00;
 		hxb->buffer[1] = 0x55;		// for further processing
-		HAL_UART_Receive_DMA(hxb->huart, hxb->buffer + 2, 4);		// receive the rest of header
+		HAL_UART_Receive_DMA(hxb->huart, &(hxb->buffer[2]), 4);		// receive the rest of header
 		hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 		return XB_OK;
 	} else {
 		hxb->pending_alignment = 1;		// enter aligning mode if not already
 		hxb->lastByte = hxb->buffer[0];
-		HAL_UART_Receive_IT(hxb->huart, hxb->buffer, 1);		// check next byte
+		HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);		// check next byte
 		return IMU_HEADER_ERROR;
 	}
 }
