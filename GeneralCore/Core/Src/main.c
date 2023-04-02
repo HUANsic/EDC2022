@@ -113,7 +113,7 @@ char firstLine[22], secondLine[22], thirdLine[22], fourthLine[22];		// 128 / 6 =
 Coordinate merchant, consumer, charge;
 
 // debug information
-uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_ErrorCount, xb_IT_SuccessCount = 0;
+uint8_t jy62_DMA_ErrorCount, jy62_IT_SuccessCount, xb_DMA_SW_ErrorCount, xb_DMA_HW_ErrorCount, xb_IT_SuccessCount = 0;
 uint8_t jy62_uart_normal, xb_uart_normal;
 /* USER CODE END PV */
 
@@ -212,7 +212,8 @@ int main(void)
 
 	jy62_DMA_ErrorCount = 0;
 	jy62_IT_SuccessCount = 0;
-	xb_DMA_ErrorCount = 0;
+	xb_DMA_SW_ErrorCount = 0;
+	xb_DMA_HW_ErrorCount = 0;
 	xb_IT_SuccessCount = 0;
 	/* USER CODE END 2 */
 
@@ -1125,7 +1126,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 				xb_IT_SuccessCount++;
 		} else {
 			if (huansic_xb_dma_isr(&hxb))
-				xb_DMA_ErrorCount++;
+				xb_DMA_SW_ErrorCount++;
 		}
 	}
 }
@@ -1143,7 +1144,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 		xb_uart_normal = 1;
 		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
 			huansic_xb_dma_error(&hxb);
-			xb_DMA_ErrorCount++;
+			xb_DMA_HW_ErrorCount++;
 		} else {
 			huansic_xb_it_error(&hxb);
 		}
@@ -1152,7 +1153,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
 
 void HUAN_PeriodicInt1000ms_ISR(void) {
-	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_ErrorCount, xb_IT_SuccessCount);
+	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_HW_ErrorCount, xb_IT_SuccessCount);
 	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
 	ssd1306_SetCursor(0, 8);
 	ssd1306_WriteString(secondLine, Font_6x8, White);
