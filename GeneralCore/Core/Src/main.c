@@ -334,7 +334,7 @@ int main(void)
 				}
 
 			}
-			//得�?��?始化
+			//得�?��?始化
 			while (gameStage == 2){			// second-half
 				while(myCharge < 500)
 				{
@@ -1111,18 +1111,18 @@ static void HUAN_ZIGBEE_Init(void) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		if (himu.pending_alignment) {
-			if (huansic_jy62_isr(&himu))
+			if (!huansic_jy62_isr(&himu))
 				jy62_IT_SuccessCount++;
 		} else {
-			if (!huansic_jy62_dma_isr(&himu))
+			if (huansic_jy62_dma_isr(&himu))
 				jy62_DMA_ErrorCount++;
 		}
 	} else if (hxb.huart == huart) {
 		if (hxb.pending_alignment) {
-			if (huansic_xb_isr(&hxb))
+			if (!huansic_xb_isr(&hxb))
 				xb_IT_SuccessCount++;
 		} else {
-			if (!huansic_xb_dma_isr(&hxb))
+			if (huansic_xb_dma_isr(&hxb))
 				xb_DMA_ErrorCount++;
 		}
 	}
