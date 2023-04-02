@@ -337,14 +337,14 @@ void huansic_xb_dma_error(XB_HandleTypeDef *hxb) {
 	// nothing much to do with error
 	hxb->pending_alignment = 1;
 	hxb->lastByte = 0x00;
-	HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);
+	HAL_UART_Receive_IT(hxb->huart, hxb->buffer, 1);
 }
 
 void huansic_xb_it_error(XB_HandleTypeDef *hxb) {
 	// nothing much to do with error
 	hxb->pending_alignment = 1;
 	hxb->lastByte = 0x00;
-	HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);
+	HAL_UART_Receive_IT(hxb->huart, hxb->buffer, 1);
 }
 
 enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb) {
@@ -355,13 +355,13 @@ enum XB_STATUS huansic_xb_isr(XB_HandleTypeDef *hxb) {
 		hxb->pending_alignment = 0;
 		hxb->nextPackageID = 0x00;
 		hxb->buffer[1] = 0x55;		// for further processing
-		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[2], 4);		// receive the rest of header
+		HAL_UART_Receive_DMA(hxb->huart, hxb->buffer + 2, 4);		// receive the rest of header
 		hxb->hdma->Instance->CCR &= ~DMA_IT_HT;		// disable half transfer interrupt
 		return XB_OK;
 	} else {
 		hxb->pending_alignment = 1;		// enter aligning mode if not already
 		hxb->lastByte = hxb->buffer[0];
-		HAL_UART_Receive_IT(hxb->huart, &hxb->buffer[0], 1);		// check next byte
+		HAL_UART_Receive_IT(hxb->huart, hxb->buffer, 1);		// check next byte
 		return IMU_HEADER_ERROR;
 	}
 }
