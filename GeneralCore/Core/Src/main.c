@@ -1147,6 +1147,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	} else if (hxb.huart == huart) {
 		xb_uart_normal = 1;
 		if (huart->ErrorCode | HAL_UART_ERROR_DMA) {
+			hxb.hdma->DmaBaseAddress->IFCR = (0x09 << ((hxb.hdma->ChannelIndex - 1) * 4));		// clear DMA error flag
 			huansic_xb_dma_error(&hxb);
 			xb_DMA_HW_ErrorCount++;
 		} else {
