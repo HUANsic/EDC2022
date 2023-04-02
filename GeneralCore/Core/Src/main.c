@@ -218,15 +218,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//	sprintf(firstLine, "    ERR   SUC");
-//	sprintf(secondLine, "XB");
-//	sprintf(thirdLine, "JY");
-//	ssd1306_WriteString(firstLine, Font_6x8, White);
-//	ssd1306_SetCursor(0, 8);
-//	ssd1306_WriteString(secondLine, Font_6x8, White);
-//	ssd1306_SetCursor(0, 16);
-//	ssd1306_WriteString(thirdLine, Font_6x8, White);
-//	ssd1306_UpdateScreen();
+	sprintf(firstLine, "    ERR   SUC");
+	sprintf(secondLine, "XB");
+	sprintf(thirdLine, "JY");
+	ssd1306_WriteString(firstLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 8);
+	ssd1306_WriteString(secondLine, Font_6x8, White);
+	ssd1306_SetCursor(0, 16);
+	ssd1306_WriteString(thirdLine, Font_6x8, White);
+	ssd1306_UpdateScreen();
 
 	CoordinateUpdate = 0;
 	int8_t merchant_index = -1;
@@ -272,7 +272,7 @@ int main(void)
 			while (gameStage == 1){			// first-half
 				if(task_mode == 0){
 					//setChargingPile
-//					set_Beacons();
+					set_Beacons();
 					while(orders.length == 0)
 					{
 						chao_move_angle(0,0);
@@ -1155,7 +1155,7 @@ void HUAN_PeriodicInt1000ms_ISR(void) {
 	ssd1306_SetCursor(0, 8);
 	ssd1306_WriteString(secondLine, Font_6x8, White);
 	ssd1306_SetCursor(0, 16);
-//	ssd1306_WriteString(thirdLine, Font_6x8, White);
+	ssd1306_WriteString(thirdLine, Font_6x8, White);
 	ssd1306_UpdateScreen();
 
 	// check status of UART
