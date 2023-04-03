@@ -42,6 +42,11 @@ void huansic_xb_init(XB_HandleTypeDef *hxb) {
 	hxb->pending_alignment = 0;
 	hxb->nextPackageID = 0x00;
 	hxb->nextPackageLength = 6;		// header length
+	// flush UART buffer
+	uint8_t temp = hxb->huart->Instance->SR;
+	temp = hxb->huart->Instance->DR;
+	temp = hxb->huart->Instance->DR;
+	(void) temp;
 	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
 	__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
 }
@@ -66,8 +71,33 @@ enum XB_STATUS huansic_xb_decodeHeader(XB_HandleTypeDef *hxb) {
 	hxb->nextPackageLength = hxb->buffer[3]; // the length shall not be longer than 255 (the max possible is 225)
 
 	// set up next DMA
-	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
+	// check if overrun occurred
+	if (__HAL_UART_GET_FLAG(hxb->huart, UART_FLAG_ORE)) {
+		// perform the clear flag sequence and read the overrun data
+		volatile uint8_t i = hxb->huart->Instance->SR;
+		hxb->buffer[0] = hxb->huart->Instance->DR;
+		(void) i;
+		while (!__HAL_UART_GET_FLAG(hxb->huart, UART_FLAG_RXNE))
+			;		// wait for the data in shift register to move into data register
+		hxb->buffer[1] = hxb->huart->Instance->DR;
+		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[2],
+				hxb->nextPackageLength < 2 ? hxb->nextPackageLength : (hxb->nextPackageLength - 2));
+	}
+
+	// check if RX buffer is empty
+	else if (__HAL_UART_GET_FLAG(hxb->huart, UART_FLAG_RXNE)) {
+		hxb->buffer[0] = hxb->huart->Instance->DR;		// read data
+		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[1],
+				hxb->nextPackageLength < 1 ? hxb->nextPackageLength : (hxb->nextPackageLength - 1));
+	}
+
+	// otherwise, receive normally
+	else {
+		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
+	}
+
 	__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
+
 	return XB_OK;
 }
 
@@ -318,8 +348,33 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 	hxb->lastUpdated = HAL_GetTick();		// update last updated time stamp
 	hxb->nextPackageLength = 6;		// header length
 	hxb->nextPackageID = 0x00;		// the next one is header
-	HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
+
+	// check if overrun occurred
+	if (__HAL_UART_GET_FLAG(hxb->huart, UART_FLAG_ORE)) {
+		// perform the clear flag sequence and read the overrun data
+		i = hxb->huart->Instance->SR;
+		hxb->buffer[0] = hxb->huart->Instance->DR;
+		while (!__HAL_UART_GET_FLAG(hxb->huart, UART_FLAG_RXNE))
+			;		// wait for the data in shift register to move into data register
+		hxb->buffer[1] = hxb->huart->Instance->DR;
+		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[2],
+				hxb->nextPackageLength < 2 ? hxb->nextPackageLength : (hxb->nextPackageLength - 2));
+	}
+
+	// check if RX buffer is empty
+	else if (__HAL_UART_GET_FLAG(hxb->huart, UART_FLAG_RXNE)) {
+		hxb->buffer[0] = hxb->huart->Instance->DR;		// read data
+		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[1],
+				hxb->nextPackageLength < 1 ? hxb->nextPackageLength : (hxb->nextPackageLength - 1));
+	}
+
+	// otherwise, receive normally
+	else {
+		HAL_UART_Receive_DMA(hxb->huart, &hxb->buffer[0], hxb->nextPackageLength);
+	}
+
 	__HAL_DMA_DISABLE_IT(hxb->hdma, DMA_IT_HT);		// disable half transfer interrupt
+
 	return XB_OK;
 }
 
