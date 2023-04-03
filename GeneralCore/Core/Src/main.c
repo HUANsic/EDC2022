@@ -364,7 +364,7 @@ int main(void)
 						merchant = orders.buffer[merchant_index];
 					consumer = Get_nearest_consumer();
 
-					if (delivering_num > 2) {
+					if (delivering_num > 3) {
 						task_mode = 2;
 					}
 					else if (merchant_index == -1)
