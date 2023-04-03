@@ -6,8 +6,6 @@
  */
 
 #include "collab_util.h"
-#include "math.h"
-#include "stdlib.h"
 
 /* constants and definitions */
 #define PATH_DEFAULT_LINEAR_SPEED 10	// in cm/s
@@ -47,6 +45,7 @@ extern Motor_HandleTypeDef cmotor_lf, cmotor_rf, cmotor_lb, cmotor_rb;
 
 // interchange information 1
 extern uint32_t gameStageTimeLeft;		// in ms
+extern Order_list orders;
 
 //0 - 360 degree, 0 degree front, clockwise
 void chao_move_angle(float _angle, float speed) {
@@ -62,7 +61,7 @@ void move_angle_omega(float _angle, float speed){
 	if(abs(omega) < 15)
 		omega = 0;
 	else
-		omega = 0.4 * omega;
+		omega = 0.3 * omega;
 	float angle_arc = (_angle / 180) * M_PI;
 	if(omega * HALFLENGTH + 1.414 * speed > 3500)
 		speed = 2000;
@@ -72,3 +71,62 @@ void move_angle_omega(float _angle, float speed){
 	cmotor_rb.goalSpeed = speed * cos(angle_arc) + speed * sin(angle_arc) + omega * HALFLENGTH;
 }
 
+void move_random(void){
+	uint8_t isInBarrier = 0;
+	if((myCoord.x >=38 && myCoord.x<=40) && ((myCoord.y >=38 && myCoord.y<=107)||(myCoord.y >=147 && myCoord.y<=216)))
+		isInBarrier = 1;//左侧俩墙
+	else if((myCoord.x >=214 && myCoord.x<=216) && ((myCoord.y >=38 && myCoord.y<=107)||(myCoord.y >=147 && myCoord.y<=216)))
+		isInBarrier = 3;//右侧俩墙
+	else if((myCoord.y >=38 && myCoord.y<=40) && ((myCoord.x >=38 && myCoord.x<=107)||(myCoord.x >=147 && myCoord.x<=216)))
+		isInBarrier = 2;//上面俩墙
+	else if((myCoord.y >=214 && myCoord.y<=216) && ((myCoord.x >=38 && myCoord.x<=107)||(myCoord.x >=147 && myCoord.x<=216)))
+		isInBarrier = 4;//下面俩墙
+	else{
+		for(uint8_t i = 0;i < 5; i++){
+			if(myCoord.x >= obstacles[i].coord1.x && myCoord.y >= obstacles[i].coord1.y && myCoord.x <= obstacles[i].coord2.x && myCoord.y <= obstacles[i].coord2.y){
+				isInBarrier = 5;//在场上的障碍物里
+				break;
+			}
+		}
+	}
+	if(isInBarrier == 0){
+		while(orders.length == 0){
+			cmotor_lf.goalSpeed = 500;
+			cmotor_rf.goalSpeed = -500;
+			cmotor_lb.goalSpeed = 500;
+			cmotor_rb.goalSpeed = -500;
+		}
+	}
+	else{
+		Coordinate safeplace;
+		if(isInBarrier == 1){
+			safeplace.x = myCoord.x - 10;
+			safeplace.y = myCoord.y;
+			GotoDestination(safeplace, 0);
+		}
+		else if(isInBarrier == 2){
+			safeplace.x = myCoord.x;
+			safeplace.y = myCoord.y - 10;
+			GotoDestination(safeplace, 0);
+		}
+		else if(isInBarrier == 3){
+			safeplace.x = myCoord.x + 10;
+			safeplace.y = myCoord.y;
+			GotoDestination(safeplace, 0);
+		}
+		else if(isInBarrier == 4){
+			safeplace.x = myCoord.x;
+			safeplace.y = myCoord.y + 10;
+			GotoDestination(safeplace, 0);
+		}
+		else{
+			//TODO
+		}
+		while(orders.length == 0){
+			cmotor_lf.goalSpeed = 500;
+			cmotor_rf.goalSpeed = -500;
+			cmotor_lb.goalSpeed = 500;
+			cmotor_rb.goalSpeed = -500;
+		}
+	}
+}

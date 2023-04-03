@@ -91,6 +91,7 @@ Coordinate exitpoints[8];         	// record the exit.
 Order *delivering[8];		// package picked up but not yet delivered
 uint8_t delivering_num = 0;
 uint8_t allyBeacons_num = 0;
+uint8_t oppoBeacons_num = 0;
 extern Order_list orders;
 
 // game information 3
@@ -295,7 +296,7 @@ int main(void)
 						task_mode = 4;
 					}
 					else if (task_mode == 4)			// if task_mode == 4
-							{
+					{
 						merchant_index = Get_nearest_order();
 						if (merchant_index == -1)
 							merchant = myCoord;
@@ -309,7 +310,7 @@ int main(void)
 						else if (merchant_index == -1)
 								{
 							if (delivering_num == 0) {
-								chao_move_angle(0, 0);
+								move_random();
 							}
 							else {
 								task_mode = 2;
@@ -370,7 +371,8 @@ int main(void)
 					else if (merchant_index == -1)
 							{
 						if (delivering_num == 0) {
-							chao_move_angle(0, 0);
+							charge = Get_nearest_Beacon();
+							GotoDestination(charge, 0);
 						}
 						else {
 							task_mode = 2;
@@ -1166,8 +1168,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 }
 
 void HUAN_PeriodicInt1000ms_ISR(void) {
+	sprintf(firstLine, "    ERR   SUC");
 	sprintf(secondLine, "XB  %02X    %02X", xb_DMA_HW_ErrorCount, xb_IT_SuccessCount);
 	sprintf(thirdLine, "JY  %02X    %02X", jy62_DMA_ErrorCount, jy62_IT_SuccessCount);
+	ssd1306_WriteString(firstLine, Font_6x8, White);
 	ssd1306_SetCursor(0, 8);
 	ssd1306_WriteString(secondLine, Font_6x8, White);
 	ssd1306_SetCursor(0, 16);

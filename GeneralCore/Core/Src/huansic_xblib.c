@@ -32,6 +32,7 @@ extern uint32_t gameStageTimeLeft;		// in ms
 extern uint8_t CoordinateUpdate;
 extern uint8_t delivering_num;
 extern uint8_t allyBeacons_num;
+extern uint8_t oppoBeacons_num;
 uint8_t zigbeeSend[6] = { 0x55, 0xAA, 0x00, 0x00, 0x00, 0x00 };  //小车可能发送的信息（0x00:请求游戏信息 0x02:设置充电桩）
 
 __weak void custom_order_new_failed(uint8_t id) {
@@ -165,6 +166,7 @@ enum XB_STATUS huansic_xb_decodeBody(XB_HandleTypeDef *hxb) {
 
 		/* opponent beacons */
 		listLength = hxb->buffer[index++];
+		oppoBeacons_num = listLength;
 		for (i = 0; i < listLength; i++) {
 			oppoBeacons[i].x = (uint16_t) hxb->buffer[index + 1] << 8;
 			oppoBeacons[i].x |= hxb->buffer[index];
