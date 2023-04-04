@@ -255,20 +255,20 @@ void Position_P(fCoordinate* cur, Coordinate* goal)
 		else
 			chao_move_angle(angle, CalSpeed(x_error, y_error));
 	}
-//	CheckCoord();
-//	uint32_t timestart = HAL_GetTick();
-//	HAL_Delay(10); // delay 10 ms = 100 Hz
-//	if(CheckCoord() == 0)
-//	{
-//		float lf_v = cmotor_lf.lastSpeed;
-//		float lb_v = cmotor_lb.lastSpeed;
-//		float rf_v = cmotor_rf.lastSpeed;
-//		float rb_v = cmotor_rb.lastSpeed;
-////		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
-//		float v_x = ((rf_v - lf_v + lb_v - rb_v) / 200);
-//		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 200);
-//		uint32_t timeend = HAL_GetTick();
-//		EstiCoord.x = EstiCoord.x + (timeend - timestart) * 0.001 * v_x;
-//		EstiCoord.y = EstiCoord.y + (timeend - timestart) * 0.001 * v_y;
-//	}
+	CheckCoord();
+	uint32_t timestart = HAL_GetTick();
+	HAL_Delay(10); // delay 10 ms = 100 Hz
+	if(CheckCoord() == 0)
+	{
+		float lf_v = cmotor_lf.lastSpeed;
+		float lb_v = cmotor_lb.lastSpeed;
+		float rf_v = cmotor_rf.lastSpeed;
+		float rb_v = cmotor_rb.lastSpeed;
+//		float v_x = -((rf_v - lf_v + lb_v - rb_v) / 500);
+		float v_x = ((rf_v - lf_v + lb_v - rb_v) / 20);
+		float v_y = ((rf_v + lf_v + lb_v + rb_v) / 20);
+		uint32_t timeend = HAL_GetTick();
+		EstiCoord.x = EstiCoord.x + (timeend - timestart) * 0.001 * v_x;
+		EstiCoord.y = EstiCoord.y + (timeend - timestart) * 0.001 * v_y;
+	}
 }

@@ -282,6 +282,9 @@ int main(void)
 					}
 					task_mode = 4;
 				}
+				else if(hxb->lastUpdated + 1000 < HAL_GetTick()) {
+					chao_move_angle(0, 0);
+				}
 				else {
 					if (task_mode == 1) {
 						for (uint8_t i = merchant_index + 1; i < orders.length; i++)
@@ -344,7 +347,10 @@ int main(void)
 					charge = Get_nearest_Beacon();
 					GotoDestination(charge, 0);
 				}
-				if (task_mode == 1) {
+				if(hxb->lastUpdated + 1000 < HAL_GetTick()) {
+					chao_move_angle(0, 0);
+				}
+				else if (task_mode == 1) {
 					for (uint8_t i = merchant_index + 1; i < orders.length; i++)
 							{
 						orders.buffer[i - 1] = orders.buffer[i];
