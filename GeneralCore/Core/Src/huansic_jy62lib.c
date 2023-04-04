@@ -43,25 +43,16 @@ enum IMU_STATUS huansic_jy62_init(JY62_HandleTypeDef *himu) {
 	if (!himu->huart)
 		return IMU_ERROR;
 
-//#ifdef HUANSIC_JY62_RATE_20HZ
-//#if (HUANSIC_JY62_BAUD != 9600)
-	HAL_UART_Transmit(himu->huart, JY62_BAUD_9600, 3, 10);
+	if (himu->huart->Init.BaudRate != 9600) {		// if it is not 9600bps
+		// make it 9600 to send the package
+		HAL_UART_DeInit(himu->huart);
+		himu->huart->Init.BaudRate = 9600;
+		HAL_UART_Init(himu->huart);
+	}
+	HAL_UART_Transmit(himu->huart, JY62_BAUD_115200, 3, 10);
 	HAL_UART_DeInit(himu->huart);
-	himu->huart->Init.BaudRate = 9600;
+	himu->huart->Init.BaudRate = 115200;
 	HAL_UART_Init(himu->huart);
-	HAL_Delay(10);
-//#endif
-//#endif
-
-//#ifdef HUANSIC_JY62_RATE_100HZ
-//#if HUANSIC_JY62_BAUD != 115200
-//	HAL_UART_Transmit(himu->huart, JY62_BAUD_115200, 3, 10);
-//	HAL_UART_DeInit(himu->huart);
-//	himu->huart->Init.BaudRate = 115200;
-//	HAL_UART_Init(himu->huart);
-//	HAL_Delay(10);
-//#endif
-//#endif
 
 	HAL_Delay(3);
 
@@ -184,7 +175,7 @@ enum IMU_STATUS huansic_jy62_isr(JY62_HandleTypeDef *himu) {
  * 		@param	himu	jy62 whose port has sent out the error
  * 		@retval	enum IMU_STATUS
  */
-void huansic_jy62_dma_error(JY62_HandleTypeDef *himu){
+void huansic_jy62_dma_error(JY62_HandleTypeDef *himu) {
 	// nothing much to do with error
 	himu->pending_alignment = 1;
 //	if(himu->huart->gState != HAL_UART_STATE_READY){
@@ -204,7 +195,7 @@ void huansic_jy62_dma_error(JY62_HandleTypeDef *himu){
  * 		@param	himu	jy62 whose port has sent out the error
  * 		@retval	enum IMU_STATUS
  */
-void huansic_jy62_it_error(JY62_HandleTypeDef *himu){
+void huansic_jy62_it_error(JY62_HandleTypeDef *himu) {
 	// nothing much to do with error
 	himu->pending_alignment = 1;
 //	if(himu->huart->gState != HAL_UART_STATE_READY){
