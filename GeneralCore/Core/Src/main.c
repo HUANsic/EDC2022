@@ -1110,8 +1110,7 @@ static void HUAN_MOTOR4_Init(void) {
 
 static void HUAN_IMU_Init(void) {
 	himu.huart = &huart3;
-	himu.hdma = &hdma_usart3_rx;
-	huansic_jy62_init(&himu);
+	huansic_jy62_init_dma(&himu);
 }
 
 static void HUAN_ZIGBEE_Init(void) {
@@ -1120,16 +1119,17 @@ static void HUAN_ZIGBEE_Init(void) {
 	huansic_xb_init(&hxb);
 }
 
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
+	if (himu.huart == huart) {
+		jy62_uart_normal = 1;
+		huansic_jy62_idle_isr(&himu);
+	}
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		jy62_uart_normal = 1;
-		if (himu.pending_alignment) {
-			if (!huansic_jy62_isr(&himu))
-				jy62_IT_SuccessCount++;
-		} else {
-			if (huansic_jy62_dma_isr(&himu))
-				jy62_DMA_ErrorCount++;
-		}
+		huansic_jy62_dma_isr(&himu);
 	} else if (hxb.huart == huart) {
 		xb_uart_normal = 1;
 		if (hxb.pending_alignment) {
@@ -1145,16 +1145,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	if (himu.huart == huart) {
 		jy62_uart_normal = 1;
-		if (huart->ErrorCode & HAL_UART_ERROR_DMA) {
-			__HAL_DMA_CLEAR_FLAG(himu.hdma, DMA_FLAG_TE2 | DMA_FLAG_HT2 | DMA_FLAG_TC2 | DMA_FLAG_GL2);
-			huansic_jy62_dma_error(&himu);
-			jy62_DMA_ErrorCount++;
-		} else {
-			if (himu.huart->ErrorCode & HAL_UART_ERROR_ORE) {
-				__HAL_UART_CLEAR_OREFLAG(himu.huart);
-			}
-			huansic_jy62_it_error(&himu);
-		}
+		huansic_jy62_error_isr(&himu);
 	} else if (hxb.huart == huart) {
 		xb_uart_normal = 1;
 		if (huart->ErrorCode & HAL_UART_ERROR_DMA) {
@@ -1188,8 +1179,7 @@ void HUAN_PeriodicInt1000ms_ISR(void) {
 
 	// check status of UART
 	if (!jy62_uart_normal) {
-		himu.huart->Instance->DR;		// just read
-		huansic_jy62_it_error(&himu);
+		huansic_jy62_idle_isr(&himu);
 	}
 	if (!xb_uart_normal) {
 		hxb.huart->Instance->DR;		// just read

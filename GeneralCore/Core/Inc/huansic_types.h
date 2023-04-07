@@ -10,8 +10,7 @@
 
 #include "stm32f1xx_hal.h"
 
-enum IMU_STATUS
-{
+enum IMU_STATUS {
 	IMU_OK = HAL_OK,
 	IMU_ERROR = HAL_ERROR,
 	IMU_BUSY = HAL_BUSY,
@@ -88,42 +87,28 @@ typedef struct {
 	float goalSpeed;				// 4
 } Motor_HandleTypeDef;
 
-/*		// deprecated
- typedef struct {
- UART_HandleTypeDef *huart;
-
- float accel[3];		// 4 + 4 + 4
- float omega[3];		// 4 + 4 + 4
- float theta[3];		// 4 + 4 + 4
- float temperature;		// 4
-
- uint32_t lastUpdated;	// 4
- uint8_t buffer[10];
- uint8_t newChar;
- enum IMU_STATE state;
- } JY62_HandeleTypeDef;
- */
-
 typedef struct {
 	UART_HandleTypeDef *huart;
-	DMA_HandleTypeDef *hdma;
-
-	float accel[3];		// 4 + 4 + 4
-	float omega[3];		// 4 + 4 + 4
-	float theta[3];		// 4 + 4 + 4
-	float temperature;		// 4
-
-	uint32_t lastUpdated;	// 4
-
+	float accel[3];
+	float omega[3];
+	float theta[3];
+	float temperature;
+	uint32_t lastUpdated;
 	uint8_t buffer[33];
-	uint8_t pending_alignment;
-
-#ifdef HUANSIC_JY62_DEBUG
+#ifndef JY62_MINIMAL
 	GPIO_TypeDef *port;
 	uint16_t pin;
-	uint8_t counter;
+	uint16_t dma_hw_error_counter;
+	uint16_t it_hw_error_counter;
+	uint16_t pid_error_counter;
+	uint16_t checksum_error_counter;
+	uint16_t header_error_counter;
+	uint16_t success_counter;
+	uint16_t accel_success_counter;
+	uint16_t omega_success_counter;
+	uint16_t theta_success_counter;
+	uint16_t recover_counter;
 #endif
-
 } JY62_HandleTypeDef;
 
 typedef struct {
